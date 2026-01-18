@@ -1,0 +1,124 @@
+package grainalcohol.dtt.mixin;
+
+import grainalcohol.dtt.diary.dailystat.DailyStat;
+import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stat;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(PlayerEntity.class)
+public class PlayerEntityMixin {
+    @Inject(method = "tick", at = @At("TAIL"))
+    public void tick(CallbackInfo ci) {
+        PlayerEntity self = (PlayerEntity) (Object) this;
+        if (!(self instanceof ServerPlayerEntity serverPlayerEntity)) {
+            return;
+        }
+
+        if (self.getWorld().getTimeOfDay() % 24000 == 0) {  //每天0时更新统计数据
+            DailyStatManager.updateDailyStat(serverPlayerEntity);
+        }
+    }
+
+    @Inject(method = "eatFood", at = @At("RETURN"))
+    public void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+        PlayerEntity self = (PlayerEntity) (Object) this;
+        if (self.getWorld().isClient()) {
+            return;
+        }
+        DailyStatManager.getTodayDailyStat(self.getUuid()).setHasAte(true);
+    }
+
+    @Inject(method = "increaseStat(Lnet/minecraft/stat/Stat;I)V", at = @At("HEAD"))
+    public void increaseDailyStat(Stat<?> stat, int amount, CallbackInfo ci) {
+        PlayerEntity self = (PlayerEntity) (Object) this;
+
+        if (self.getWorld().isClient()) {
+            return;
+        }
+
+        if (stat.getType() == Stats.CUSTOM) {
+            Identifier statId = (Identifier) stat.getValue();
+
+            if (statId.equals(Stats.WALK_ONE_CM)) {
+                DailyStatManager.getTodayDailyStat(self.getUuid()).increaseDistanceMoved(amount);
+            }
+            if (statId.equals(Stats.DAMAGE_TAKEN)) {
+                DailyStatManager.getTodayDailyStat(self.getUuid()).increaseDamageTaken(amount);
+            }
+            if (statId.equals(Stats.TRADED_WITH_VILLAGER)) {
+                DailyStatManager.getTodayDailyStat(self.getUuid()).increaseTradedCount(amount);
+            }
+            if (statId.equals(Stats.POT_FLOWER)) {
+                DailyStatManager.getTodayDailyStat(self.getUuid()).setHasFlowerPotted(true);
+            }
+            if (statId.equals(Stats.RAID_WIN)) {
+                DailyStatManager.getTodayDailyStat(self.getUuid()).setHasRaidWon(true);
+            }
+        }
+    }
+
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    public void readDailyStatFromNbt(NbtCompound nbt, CallbackInfo ci) {
+        PlayerEntity self = (PlayerEntity) (Object) this;
+
+        if (self.getWorld().isClient()) {
+            return;
+        }
+
+        if (nbt.contains(DailyStat.DAILY_STAT_NBT_KEY)) {
+            NbtCompound dailyStatNbt = nbt.getCompound(DailyStat.DAILY_STAT_NBT_KEY);
+
+            if (dailyStatNbt.contains(DailyStat.TODAY_DAILY_STAT_NBT_KEY)) {
+                DailyStat todayStat = new DailyStat();
+                todayStat.readFromNbt(dailyStatNbt.getCompound(DailyStat.TODAY_DAILY_STAT_NBT_KEY));
+                DailyStatManager.setTodayDailyStat(self.getUuid(), todayStat);
+            }
+            if (dailyStatNbt.contains(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY)) {
+                DailyStat yesterdayStat = new DailyStat();
+                yesterdayStat.readFromNbt(dailyStatNbt.getCompound(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY));
+                DailyStatManager.setYesterdayDailyStat(self.getUuid(), yesterdayStat);
+            }
+            if (dailyStatNbt.contains(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY)) {
+                DailyStat movingAverageStat = new DailyStat();
+                movingAverageStat.readFromNbt(dailyStatNbt.getCompound(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY));
+                DailyStatManager.setMovingAverageDailyStat(self.getUuid(), movingAverageStat);
+            }
+        }
+    }
+
+    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    public void writeDailyStatToNbt(NbtCompound nbt, CallbackInfo ci) {
+        PlayerEntity self = (PlayerEntity) (Object) this;
+
+        if (self.getWorld().isClient()) {
+            return;
+        }
+
+        NbtCompound dailyStatNbt = new NbtCompound();
+
+        NbtCompound todayNbtCompound = new NbtCompound();
+        DailyStatManager.getTodayDailyStat(self.getUuid()).writeToNbt(todayNbtCompound);
+        dailyStatNbt.put(DailyStat.TODAY_DAILY_STAT_NBT_KEY, todayNbtCompound);
+
+        NbtCompound yesterdayNbtCompound = new NbtCompound();
+        DailyStatManager.getYesterdayDailyStat(self.getUuid()).writeToNbt(yesterdayNbtCompound);
+        dailyStatNbt.put(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY, yesterdayNbtCompound);
+
+        NbtCompound movingAverageNbtCompound = new NbtCompound();
+        DailyStatManager.getMovingAverageDailyStat(self.getUuid()).writeToNbt(movingAverageNbtCompound);
+        dailyStatNbt.put(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY, movingAverageNbtCompound);
+
+        nbt.put(DailyStat.DAILY_STAT_NBT_KEY, dailyStatNbt);
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "required": true,
+  "package": "grainalcohol.dtt.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "client.GameRenderMixin",
+    "client.InGameHudMixin"
+  ],
+  "mixins": [
+    "AnimalEntityMixin",
+    "BrewedPotionCriterionMixin",
+    "DiaryUpdatePacketMixin",
+    "PlayerEntityMixin",
+    "RaidMixin",
+    "event.ClientMentalIllnessMixin",
+    "event.DepressionRegistryMixin",
+    "event.MentalIllnessMixin",
+    "event.MentalStatusMixin",
+    "modification.ClientMentalStatusMixin",
+    "modification.ClientTickEventListenerMixin",
+    "modification.DepressionRegistryMixin",
+    "modification.EntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
