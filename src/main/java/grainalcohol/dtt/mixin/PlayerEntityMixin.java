@@ -2,6 +2,9 @@ package grainalcohol.dtt.mixin;
 
 import grainalcohol.dtt.diary.dailystat.DailyStat;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.init.DTTTag;
+import net.depression.mental.MentalStatus;
+import net.depression.server.Registry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -37,6 +40,11 @@ public class PlayerEntityMixin {
             return;
         }
         DailyStatManager.getTodayDailyStat(self.getUuid()).setHasAte(true);
+        if (stack.isIn(DTTTag.MENTAL_HEAL_FOODS)) {
+            MentalStatus mentalStatus = Registry.mentalStatus.get(self.getUuid());
+            mentalStatus.emotionValue += 2;
+            mentalStatus.mentalHeal(1);
+        }
     }
 
     @Inject(method = "increaseStat(Lnet/minecraft/stat/Stat;I)V", at = @At("HEAD"))

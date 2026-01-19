@@ -28,6 +28,7 @@ public class DTTMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+        // TODO：增加一个类似“无力”的状态效果，该效果下无法与方块/实体互动，无法下载具/生物
         DTTNetwork.init();
         DTTConfig.getInstance();
         DTTStat.init();

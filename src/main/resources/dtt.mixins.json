@@ -16,10 +16,12 @@
     "event.DepressionRegistryMixin",
     "event.MentalIllnessMixin",
     "event.MentalStatusMixin",
+    "event.PTSDManagerMixin",
     "modification.ClientMentalStatusMixin",
     "modification.ClientTickEventListenerMixin",
-    "modification.DepressionRegistryMixin",
-    "modification.EntityMixin"
+    "modification.EntityMixin",
+    "modification.MentalStatusMixin",
+    "modification.PTSDManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

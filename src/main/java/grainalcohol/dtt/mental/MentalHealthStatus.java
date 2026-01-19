@@ -24,18 +24,18 @@ public enum MentalHealthStatus {
     ;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MentalHealthStatus.class);
-    private final int healthyLevel;
+    private final int severity; // 来自mentalHealthLevel字段
     private final String name;
     private final double feelingInfluenceMultiplier;
 
-    MentalHealthStatus(int healthyLevel, String name, double feelingInfluenceMultiplier) {
-        this.healthyLevel = healthyLevel;
+    MentalHealthStatus(int severity, String name, double feelingInfluenceMultiplier) {
+        this.severity = severity;
         this.name = name;
         this.feelingInfluenceMultiplier = feelingInfluenceMultiplier;
     }
 
-    public int getHealthyLevel() {
-        return healthyLevel;
+    public int getSeverity() {
+        return severity;
     }
 
     public String getName() {
@@ -102,6 +102,24 @@ public enum MentalHealthStatus {
         };
     }
 
+    public static MentalHealthStatus from(double mentalHealthValue, boolean isMania) {
+        if (mentalHealthValue >= 70.0 && mentalHealthValue <= 100.0) {
+            return MentalHealthStatus.HEALTHY;
+        } else if (mentalHealthValue >= 40.0) {
+            return MentalHealthStatus.MILD_DEPRESSION;
+        } else if (mentalHealthValue >= 20.0) {
+            return MentalHealthStatus.MODERATE_DEPRESSION;
+        } else if (mentalHealthValue >= 0.0) {
+            if (isMania) {
+                return MentalHealthStatus.MANIC_PHASE;
+            }
+            return MentalHealthStatus.MAJOR_DEPRESSION;
+        } else {
+            LOGGER.error("Invalid mentalHealthValue: {}", mentalHealthValue);
+            return MentalHealthStatus.NONE;
+        }
+    }
+
     public static MentalHealthStatus from(String name) {
         for (MentalHealthStatus status : values()) {
             if (status.getName().equals(name)) {
@@ -147,7 +165,7 @@ public enum MentalHealthStatus {
             LOGGER.error("Cannot compare when one is NONE");
             return false;
         }
-        return this.getHealthyLevel() < other.getHealthyLevel();
+        return this.getSeverity() < other.getSeverity();
     }
 
     public boolean isSickerThan(MentalHealthStatus other) {
@@ -155,11 +173,11 @@ public enum MentalHealthStatus {
             LOGGER.error("Cannot compare when one is NONE");
             return false;
         }
-        return this.getHealthyLevel() > other.getHealthyLevel();
+        return this.getSeverity() > other.getSeverity();
     }
 
     public boolean isSeverelyIll() {
-        return this.getHealthyLevel() >= 3;
+        return this.getSeverity() >= 3;
     }
 
     public boolean isSick() {

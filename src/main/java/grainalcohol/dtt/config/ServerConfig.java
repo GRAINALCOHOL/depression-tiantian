@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Set;
 
 public class ServerConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerConfig.class);
@@ -64,6 +65,16 @@ public class ServerConfig {
      * 默认5，战斗状态下被阻止闭眼的最大次数，超过后强制闭眼/打盹一次，设置为-1则不限制闭眼次数
      */
     public int maximumPreventCloseEyesCount = 5;
+
+    public String commentForDamageType = "首先，我要在这屎山上拉一坨新的，没有人能阻止我！" +
+            "然后，如果你想阻止某些伤害类型触发PTSD，就把你需要的伤害类型的id的“不带命名空间前缀，使用首字母小写驼峰命名法”版本添加进去，而且大概率只能使用原版的伤害类型，" +
+            "比如：minecraft:generic_kill 应该写成 genericKill。" + "再然后，如果你想阻止某些实体触发PTSD，就把它们完整的实体id添加进去，" +
+            "比如：minecraft:zombie，这里不需要改。" + "最后，如果你想阻止某些声音事件映射触发PTSD，就把它们的映射目标添加进去，就是depression/damagesource-sound-mao.toml里面的内容。" +
+            "最后的最后，“player”伤害类型和实体id是永远无法被阻止的。";
+    public Set<String> universalPTSDBlackList = Set.of(
+            "genericKill",
+            "minecraft:polar_bear"
+    );
 
     public static ServerConfig load() {
         try {
