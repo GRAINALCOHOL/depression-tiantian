@@ -438,12 +438,46 @@
   "diary.dtt.manic_insertion.failed": "躁狂插入内容，失败的感受",
 
   // 游戏文本
+  "message.dtt.mental_health_scale.mental_health_index": "心理健康指数：%s",
+  "text.dtt.mental_health_scale.mental_health_index.hover": "精神健康值：%s\n情绪值：%s",
+  "message.dtt.mental_health_scale.assessment": "心理评估结果：%s",
+  "text.dtt.mental_health_scale.assessment.hover": "患病情况：%s",
+
+  "mental.assessment.dtt.healthy": "心理健康状态良好，无需担忧。",
+  "mental.assessment.dtt.mild_depression": "可能存在抑郁风险。建议关注情绪变化，适当调整活动安排。",
+  "mental.assessment.dtt.moderate_depression": "抑郁症状明显，建议密切关注情绪状态并适当使用药物干预。",
+  "mental.assessment.dtt.major_depression": "处于严重抑郁状态，建议使用抗抑郁药物治疗并保证自身安全。",
+  "mental.assessment.dtt.manic_phase": "情绪过于高涨，可能已患双相情感障碍，建议通过联合用药进行治疗。",
+  "mental.assessment.dtt.none": "未知结果。",
+
+  "mental.status.dtt.healthy": "健康",
+  "mental.status.dtt.mild_depressed": "轻度抑郁状态",
+  "mental.status.dtt.moderate_depressed": "中度抑郁状态",
+  "mental.status.dtt.major_depressed": "重度抑郁状态",
+  "mental.status.dtt.manic_phase": "躁狂状态",
+  "mental.status.dtt.none": "未知",
+
+  "mental.illness.dtt.healthy": "健康",
+  "mental.illness.dtt.mild_depression": "轻度抑郁症",
+  "mental.illness.dtt.moderate_depression": "中度抑郁症",
+  "mental.illness.dtt.major_depressive_disorder": "重度抑郁障碍",
+  "mental.illness.dtt.bipolar_disorder": "双相情感障碍",
+  "mental.illness.dtt.none": "未知",
+
+  "mental.severity.dtt.healthy": "健康的",
+  "mental.severity.dtt.mild": "轻度的",
+  "mental.severity.dtt.moderate": "中度的",
+  "mental.severity.dtt.severe": "严重的",
+  "mental.severity.dtt.none": "未知的",
+
   "stat.dtt.animal_tamed": "驯服动物次数",
   "stat.dtt.monster_killed": "怪物击杀数",
   "stat.dtt.pet_bred": "繁殖宠物次数",
 
   "commands.dtt.trigger.close_eyes.no_effect": "无效的目标。",
   "commands.dtt.trigger.close_eyes.not_depressed": "目标当前不处于抑郁状态。",
+
+  "effect.dtt.anorexia": "厌食",
 
   "key.dtt.test": "temp translation key",
   "category.dtt": "Depression-TianTian"

@@ -1,10 +1,7 @@
 package grainalcohol.dtt;
 
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.init.DTTCommand;
-import grainalcohol.dtt.init.DTTListener;
-import grainalcohol.dtt.init.DTTNetwork;
-import grainalcohol.dtt.init.DTTStat;
+import grainalcohol.dtt.init.*;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.util.Identifier;
@@ -32,6 +29,7 @@ public class DTTMod implements ModInitializer {
         DTTNetwork.init();
         DTTConfig.getInstance();
         DTTStat.init();
+        DTTStatusEffect.init();
         DTTListener.archEventInit();
         DTTListener.dttEventInit();
         DTTCommand.register();

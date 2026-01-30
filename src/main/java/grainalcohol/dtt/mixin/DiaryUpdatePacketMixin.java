@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DiaryUpdatePacketMixin {
     @Inject(method = "sendToPlayer", at = @At("HEAD"), cancellable = true)
     private static void sendToPlayer(ServerPlayerEntity player, CallbackInfo ci) {
-        if (!DTTConfig.getInstance().getServerConfig().useEnhancedDiaryGenerator) {
+        if (!DTTConfig.getInstance().getServerConfig().diaryConfig.useEnhancedDiaryGenerator) {
             return;
         }
 

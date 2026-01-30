@@ -3,6 +3,7 @@ package grainalcohol.dtt.mental;
 import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,20 +14,20 @@ import org.slf4j.LoggerFactory;
  * 包括健康、轻度抑郁、中度抑郁、重度抑郁障碍和双相情感障碍。<br>
  */
 public enum MentalIllnessStatus {
-    HEALTHY(0, 0, "healthy"),
-    MILD_DEPRESSION(1, 1,  "mild_depression"),
-    MODERATE_DEPRESSION(2, 2,  "moderate_depression"),
-    MAJOR_DEPRESSIVE_DISORDER(3, 3,  "major_depressive_disorder"),
-    BIPOLAR_DISORDER(4, 3,  "bipolar_disorder"),
-    NONE(-1, -1,  "none")
+    HEALTHY("healthy", Severity.HEALTHY, 0),
+    MILD_DEPRESSION("mild_depression", Severity.MILD, 1),
+    MODERATE_DEPRESSION("moderate_depression", Severity.MODERATE, 2),
+    MAJOR_DEPRESSIVE_DISORDER("major_depressive_disorder", Severity.SEVERE, 3),
+    BIPOLAR_DISORDER("bipolar_disorder", Severity.SEVERE, 3),
+    NONE("none", Severity.NONE, -1)
     ;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MentalIllnessStatus.class);
     private final int mentalHealthId;
-    private final int severity; // 来自mentalHealthLevel字段
+    private final Severity severity; // 来自mentalHealthLevel字段
     private final String name;
 
-    MentalIllnessStatus(int mentalHealthId, int severity, String name) {
+    MentalIllnessStatus(String name, Severity severity, int mentalHealthId) {
         this.name = name;
         this.severity = severity;
         this.mentalHealthId = mentalHealthId;
@@ -93,18 +94,18 @@ public enum MentalIllnessStatus {
 
     public boolean isHealthierThan(MentalIllnessStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare when one is NONE");
+            LOGGER.error("Cannot compare which is healthier when one is NONE");
             return false;
         }
-        return this.severity < other.severity;
+        return this.getSeverity().isHealthierThan(other.getSeverity());
     }
 
     public boolean isSickerThan(MentalIllnessStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare when one is NONE");
+            LOGGER.error("Cannot compare which is sicker when one is NONE");
             return false;
         }
-        return this.severity > other.severity;
+        return this.getSeverity().isSickerThan(other.getSeverity());
     }
 
     public static MentalIllnessStatus from(String name) {
@@ -116,8 +117,16 @@ public enum MentalIllnessStatus {
         return NONE;
     }
 
-    public int getSeverity() {
+    public Text getDisplayText() {
+        return Text.translatable("mental.illness.dtt." + this.getName());
+    }
+
+    public Severity getSeverity() {
         return severity;
+    }
+
+    public int getSeverityInt() {
+        return severity.getLevel();
     }
 
     public int getMentalHealthId() {
@@ -125,6 +134,6 @@ public enum MentalIllnessStatus {
     }
 
     public boolean isSeverelyIll() {
-        return this.getSeverity() >= 3;
+        return this.getSeverity().isSeverelyIll();
     }
 }

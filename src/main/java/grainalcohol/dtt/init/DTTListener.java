@@ -3,6 +3,7 @@ package grainalcohol.dtt.init;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
+import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
 import grainalcohol.dtt.network.PlayerLookDirectionPacket;
@@ -49,11 +50,11 @@ public class DTTListener {
             }
         });
         MentalIllnessEvent.CLOSE_EYES_EVENT.register((player, causedBySleepinessStatusEffect) -> {
-            player.sendMessage(Text.literal("close eyes event triggered"));
+            DTTMod.LOGGER.info("close eyes event triggered");
             DTTNetwork.CHANNEL.sendToPlayer(player, new PlayerLookDirectionPacket(true));
         });
         MentalIllnessEvent.OPEN_EYES_EVENT.register(player -> {
-            player.sendMessage(Text.literal("open eyes event triggered"));
+            DTTMod.LOGGER.info("open eyes event triggered");
             DTTNetwork.CHANNEL.sendToPlayer(player, new PlayerLookDirectionPacket(false));
         });
     }

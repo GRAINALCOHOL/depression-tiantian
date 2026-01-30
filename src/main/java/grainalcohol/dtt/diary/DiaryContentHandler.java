@@ -63,7 +63,7 @@ public class DiaryContentHandler {
             // 因抑郁情绪拒绝写日记
             return generateTranslationKey(DiaryParagraph.NO_DIARY);
         }
-        int variantCount = DTTConfig.getInstance().getServerConfig().diaryTranslationKeyVariantCount;
+        int variantCount = DTTConfig.getInstance().getServerConfig().diaryConfig.diaryTranslationKeyVariantCount;
 
         String mentalHealthChangeKey = "";
         if (isHasCured()) {
@@ -151,7 +151,7 @@ public class DiaryContentHandler {
      * @return 生成的translationKey，生成失败返回空字符串
      */
     public String generateTranslationKey(DiaryParagraph paragraph, boolean enableWarp) {
-        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().makeDiarySlightlyMorePositive;
+        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.makeDiarySlightlyMorePositive;
         String result = switch (paragraph) {
             case MANIC_INSERTION -> composeTranslationKey(
                     // 躁狂额外内容与感受相关

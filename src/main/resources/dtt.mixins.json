@@ -10,6 +10,8 @@
     "AnimalEntityMixin",
     "BrewedPotionCriterionMixin",
     "DiaryUpdatePacketMixin",
+    "ItemStackMixin",
+    "LivingEntityMixin",
     "PlayerEntityMixin",
     "RaidMixin",
     "event.ClientMentalIllnessMixin",
@@ -20,8 +22,10 @@
     "modification.ClientMentalStatusMixin",
     "modification.ClientTickEventListenerMixin",
     "modification.EntityMixin",
+    "modification.MentalHealthScaleItemMixin",
     "modification.MentalStatusMixin",
-    "modification.PTSDManagerMixin"
+    "modification.PTSDManagerMixin",
+    "modification.VillageAdditionsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

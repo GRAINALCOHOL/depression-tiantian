@@ -23,13 +23,15 @@ public abstract class GameRenderMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void loadShaderOnCameraEntity(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-        if (!mentalIllnessShaderApplied && MentalIllnessStatus.from(DepressionClient.clientMentalStatus.mentalHealthId).isSeverelyIll()) {
-            if (postProcessor != null) {
-                originalShader = new Identifier(postProcessor.getName());
-            }
+        if (MentalIllnessStatus.from(DepressionClient.clientMentalStatus.mentalHealthId).isSeverelyIll()) {
+            if (!mentalIllnessShaderApplied) {
+                if (postProcessor != null) {
+                    originalShader = new Identifier(postProcessor.getName());
+                }
 
-            loadPostProcessor(new Identifier("shaders/post/desaturate.json"));
-            mentalIllnessShaderApplied = true;
+                loadPostProcessor(new Identifier("shaders/post/desaturate.json"));
+                mentalIllnessShaderApplied = true;
+            }
         } else {
             if (originalShader != null) {
                 loadPostProcessor(originalShader);

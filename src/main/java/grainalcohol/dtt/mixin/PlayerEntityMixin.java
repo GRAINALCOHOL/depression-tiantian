@@ -2,15 +2,15 @@ package grainalcohol.dtt.mixin;
 
 import grainalcohol.dtt.diary.dailystat.DailyStat;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
-import grainalcohol.dtt.init.DTTTag;
-import net.depression.mental.MentalStatus;
-import net.depression.server.Registry;
+import grainalcohol.dtt.init.DTTStatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,17 +34,14 @@ public class PlayerEntityMixin {
     }
 
     @Inject(method = "eatFood", at = @At("RETURN"))
-    public void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+    public void onEatFoodReturn(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         PlayerEntity self = (PlayerEntity) (Object) this;
         if (self.getWorld().isClient()) {
             return;
         }
         DailyStatManager.getTodayDailyStat(self.getUuid()).setHasAte(true);
-        if (stack.isIn(DTTTag.MENTAL_HEAL_FOODS)) {
-            MentalStatus mentalStatus = Registry.mentalStatus.get(self.getUuid());
-            mentalStatus.emotionValue += 2;
-            mentalStatus.mentalHeal(1);
-        }
+        self.sendMessage(Text.literal("food " + stack.getItem() + " has eaten"));
+        // 删除了吃东西回情绪的功能，原版就有
     }
 
     @Inject(method = "increaseStat(Lnet/minecraft/stat/Stat;I)V", at = @At("HEAD"))

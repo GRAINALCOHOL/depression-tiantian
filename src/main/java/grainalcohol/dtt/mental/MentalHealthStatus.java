@@ -1,5 +1,7 @@
 package grainalcohol.dtt.mental;
 
+import net.depression.client.ClientMentalIllness;
+import net.depression.client.ClientMentalStatus;
 import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
@@ -15,27 +17,31 @@ import org.slf4j.LoggerFactory;
  * 包括健康、轻度抑郁、中度抑郁、重度抑郁/抑郁相和躁狂相状态。<br>
  */
 public enum MentalHealthStatus {
-    HEALTHY(0, "healthy", 0.0), // 健康
-    MILD_DEPRESSION(1, "mild_depression", 0.1), // 轻度抑郁
-    MODERATE_DEPRESSION(2, "moderate_depression", 0.2), // 中度抑郁
-    MAJOR_DEPRESSION(3, "major_depression", 0.4), // 重度抑郁或抑郁相
-    MANIC_PHASE(3, "manic_phase", 0.4), // 躁狂相
-    NONE(-1, "none", 0.0)
+    HEALTHY("healthy", Severity.HEALTHY, 0.0), // 健康
+    MILD_DEPRESSION("mild_depression", Severity.MILD, 0.1), // 轻度抑郁
+    MODERATE_DEPRESSION("moderate_depression", Severity.MODERATE, 0.2), // 中度抑郁
+    MAJOR_DEPRESSION("major_depression", Severity.SEVERE, 0.4), // 重度抑郁或抑郁相
+    MANIC_PHASE("manic_phase", Severity.SEVERE, 0.4), // 躁狂相
+    NONE("none", Severity.NONE, 0.0)
     ;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MentalHealthStatus.class);
-    private final int severity; // 来自mentalHealthLevel字段
     private final String name;
+    private final Severity severity;
     private final double feelingInfluenceMultiplier;
 
-    MentalHealthStatus(int severity, String name, double feelingInfluenceMultiplier) {
-        this.severity = severity;
+    MentalHealthStatus(String name, Severity severity, double feelingInfluenceMultiplier) {
         this.name = name;
+        this.severity = severity;
         this.feelingInfluenceMultiplier = feelingInfluenceMultiplier;
     }
 
-    public int getSeverity() {
+    public Severity getSeverity() {
         return severity;
+    }
+
+    public int getSeverityInt() {
+        return severity.getLevel();
     }
 
     public String getName() {
@@ -83,6 +89,15 @@ public enum MentalHealthStatus {
         }
 
         return from(mentalStatus.mentalIllness);
+    }
+
+    public static MentalHealthStatus from(ClientMentalStatus clientMentalStatus) {
+        if (clientMentalStatus == null) {
+            LOGGER.error("Null clientMentalStatus provided");
+            return MentalHealthStatus.NONE;
+        }
+
+        return from(clientMentalStatus.mentalHealthValue, clientMentalStatus.isMania);
     }
 
     /**
@@ -162,22 +177,22 @@ public enum MentalHealthStatus {
 
     public boolean isHealthierThan(MentalHealthStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare when one is NONE");
+            LOGGER.error("Cannot compare which is healthier when one is NONE");
             return false;
         }
-        return this.getSeverity() < other.getSeverity();
+        return this.getSeverity().isHealthierThan(other.getSeverity());
     }
 
     public boolean isSickerThan(MentalHealthStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare when one is NONE");
+            LOGGER.error("Cannot compare which is sicker when one is NONE");
             return false;
         }
-        return this.getSeverity() > other.getSeverity();
+        return this.getSeverity().isSickerThan(other.getSeverity());
     }
 
     public boolean isSeverelyIll() {
-        return this.getSeverity() >= 3;
+        return this.getSeverity().isSeverelyIll();
     }
 
     public boolean isSick() {

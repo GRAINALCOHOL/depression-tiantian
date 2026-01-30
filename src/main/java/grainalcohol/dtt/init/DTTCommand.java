@@ -4,7 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.mental.MentalHealthStatus;
+import net.depression.mental.MentalStatus;
 import net.depression.network.CloseEyePacket;
+import net.depression.server.Registry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,7 +32,25 @@ public class DTTCommand {
                                 )
                         )
                 )
+                .then(literal("check")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .then(literal("combat_status")
+                                .executes(DTTCommand::checkCombatStatus)
+                        )
+                )
         );
+    }
+
+    private static int checkCombatStatus(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        MentalStatus mentalStatus = Registry.mentalStatus.get(player.getUuid());
+        player.sendMessage(Text.literal(mentalStatus.combatCountdown > 0 ? "In Combat" : "Not in Combat"));
+
+        return 1;
     }
 
     private static int triggerCloseEyes(CommandContext<ServerCommandSource> context, boolean force) {

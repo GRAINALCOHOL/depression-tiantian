@@ -45,11 +45,12 @@ public class MentalIllnessMixin {
     )
     private void onCloseEyesRedirectAndEvent(ServerPlayerEntity serverPlayerEntity, @Local(name = "isSleepy") boolean isSleepy) {
         // 非战斗状态下正常闭眼
-        if (!(mentalStatus.combatCountdown > 0 && DTTConfig.getInstance().getServerConfig().saferCombat)) {
+        if (!(mentalStatus.combatCountdown > 0 && DTTConfig.getInstance().getServerConfig().commonConfig.saferCombat)) {
             closeEyes(serverPlayerEntity, isSleepy);
+            return;
         }
 
-        int maxCount = DTTConfig.getInstance().getServerConfig().maximumPreventCloseEyesCount;
+        int maxCount = DTTConfig.getInstance().getServerConfig().commonConfig.maximumPreventCloseEyesCount;
         if (maxCount <= -1 || dtt$preventedCloseEyeCount < maxCount) {
             // 设置为-1则无限制阻止闭眼
             // 处于战斗状态并且saferCombat配置为true则不会闭眼
@@ -69,12 +70,13 @@ public class MentalIllnessMixin {
         CloseEyePacket.sendToPlayer(serverPlayerEntity);
         // 触发闭眼事件
         boolean causedByMentalIllness = self.mentalHealthId >= 3 && !self.isMania;
-        // 由于depression在这里使用的是短路与，因此不需要检查两者都为true的情况，这可能是个设计缺陷
+        // 即使depression设计为短路与，这里获取到的isSleepy变量也不会因为短路与而失效
+        // 所以必须处理两者都为true的情况，但由于短路与的特性，causedBySleepinessStatusEffect为false
         if (!causedByMentalIllness && isSleepy) {
             // 由困倦状态效果触发闭眼
             MentalIllnessEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(serverPlayerEntity, true);
         }
-        if (causedByMentalIllness && !isSleepy) {
+        if ((causedByMentalIllness && !isSleepy) || (causedByMentalIllness && isSleepy)) {
             // 由精神疾病触发闭眼
             MentalIllnessEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(serverPlayerEntity, false);
         }
