@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "client.GameRenderMixin",
-    "client.InGameHudMixin"
+    "client.InGameHudMixin",
+    "client.MouseMixin"
   ],
   "mixins": [
     "AnimalEntityMixin",
@@ -14,6 +15,7 @@
     "LivingEntityMixin",
     "PlayerEntityMixin",
     "RaidMixin",
+    "ServerPlayerEntityMixin",
     "event.ClientMentalIllnessMixin",
     "event.DepressionRegistryMixin",
     "event.MentalIllnessMixin",
@@ -21,9 +23,9 @@
     "event.PTSDManagerMixin",
     "modification.ClientMentalStatusMixin",
     "modification.ClientTickEventListenerMixin",
-    "modification.EntityMixin",
     "modification.MentalHealthScaleItemMixin",
     "modification.MentalStatusMixin",
+    "modification.PlayerEventListenerMixin",
     "modification.PTSDManagerMixin",
     "modification.VillageAdditionsMixin"
   ],

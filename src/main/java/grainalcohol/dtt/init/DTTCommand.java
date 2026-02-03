@@ -4,6 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.mental.MentalHealthStatus;
+import net.depression.client.ClientMentalIllness;
+import net.depression.client.ClientMentalStatus;
+import net.depression.client.DepressionClient;
 import net.depression.mental.MentalStatus;
 import net.depression.network.CloseEyePacket;
 import net.depression.server.Registry;
@@ -34,11 +37,22 @@ public class DTTCommand {
                 )
                 .then(literal("check")
                         .requires(source -> source.hasPermissionLevel(2))
-                        .then(literal("combat_status")
-                                .executes(DTTCommand::checkCombatStatus)
-                        )
+                        .then(literal("combat_status").executes(DTTCommand::checkCombatStatus))
+                        .then(literal("is_close_eyes").executes(DTTCommand::checkIsCloseEyes))
                 )
         );
+    }
+
+    private static int checkIsCloseEyes(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        boolean isCloseEyes = DepressionClient.clientMentalStatus.mentalIllness.isCloseEye;
+        player.sendMessage(Text.literal(isCloseEyes ? "Eyes Closed" : "Eyes Open"));
+
+        return 1;
     }
 
     private static int checkCombatStatus(CommandContext<ServerCommandSource> context) {

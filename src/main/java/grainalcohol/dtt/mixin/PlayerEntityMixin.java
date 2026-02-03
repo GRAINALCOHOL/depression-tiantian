@@ -1,16 +1,17 @@
 package grainalcohol.dtt.mixin;
 
+import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.diary.dailystat.DailyStat;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
-import grainalcohol.dtt.init.DTTStatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.depression.mental.MentalStatus;
+import net.depression.server.Registry;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
     @Inject(method = "tick", at = @At("TAIL"))
-    public void tick(CallbackInfo ci) {
+    private void onTickTail(CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
         if (!(self instanceof ServerPlayerEntity serverPlayerEntity)) {
             return;
@@ -34,18 +35,39 @@ public class PlayerEntityMixin {
     }
 
     @Inject(method = "eatFood", at = @At("RETURN"))
-    public void onEatFoodReturn(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+    private void onEatFoodReturn(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         PlayerEntity self = (PlayerEntity) (Object) this;
         if (self.getWorld().isClient()) {
             return;
         }
         DailyStatManager.getTodayDailyStat(self.getUuid()).setHasAte(true);
-        self.sendMessage(Text.literal("food " + stack.getItem() + " has eaten"));
         // 删除了吃东西回情绪的功能，原版就有
     }
 
+    @Inject(
+            method = "applyDamage",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/player/PlayerEntity;addExhaustion(F)V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void easierCombatStateAboutDamageTaken(DamageSource source, float amount, CallbackInfo ci) {
+        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easierCombatState) {
+            // 未开启功能
+            return;
+        }
+
+        PlayerEntity self = (PlayerEntity) (Object) this;
+        MentalStatus mentalStatus = Registry.mentalStatus.get(self.getUuid());
+        // depression这里写的是 mentalStatus.emotionValue <= 2.0
+        if (mentalStatus.emotionValue > 2.0) {
+            mentalStatus.combatCountdown = 10;
+        }
+    }
+
     @Inject(method = "increaseStat(Lnet/minecraft/stat/Stat;I)V", at = @At("HEAD"))
-    public void increaseDailyStat(Stat<?> stat, int amount, CallbackInfo ci) {
+    private void increaseDailyStat(Stat<?> stat, int amount, CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
 
         if (self.getWorld().isClient()) {
@@ -74,7 +96,7 @@ public class PlayerEntityMixin {
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    public void readDailyStatFromNbt(NbtCompound nbt, CallbackInfo ci) {
+    private void readDailyStatFromNbt(NbtCompound nbt, CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
 
         if (self.getWorld().isClient()) {
@@ -103,7 +125,7 @@ public class PlayerEntityMixin {
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
-    public void writeDailyStatToNbt(NbtCompound nbt, CallbackInfo ci) {
+    private void writeDailyStatToNbt(NbtCompound nbt, CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
 
         if (self.getWorld().isClient()) {

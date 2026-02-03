@@ -30,6 +30,9 @@ public class ClientMentalIllnessMixin {
         // 根据配置文件设置延迟时间
         int delayTicks = DTTConfig.getInstance().getClientConfig().closeEyeDelayTicks;
         if (MinecraftClient.getInstance().world != null) {
+            if (delayTicks <= 0) {
+                delayTicks = 60;
+            }
             instance.startCloseEyeTime = MinecraftClient.getInstance().world.getTime() + delayTicks;
         }
     }

@@ -7,11 +7,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface PTSDEvent {
     /**
-     * PTSD发作事件
+     * PTSD发作事件，该事件可以被取消
      * @see PTSDTriggeredEvent#onPTSDTriggered(ServerPlayerEntity, int, double)
      */
     Event<PTSDTriggeredEvent> PTSD_TRIGGERED_EVENT = EventFactory.createEventResult();
 
+    /**
+     * PTSD幻觉触发事件，该事件可以被取消
+     * @see PTSDPhotismEvent#onPTSDPhotismTriggered(ServerPlayerEntity, String) 
+     */
+    Event<PTSDPhotismEvent> PTSD_PHOTISM_EVENT = EventFactory.createEventResult();
+    
     @FunctionalInterface
     interface PTSDTriggeredEvent {
         /**
@@ -19,5 +25,13 @@ public interface PTSDEvent {
          * @param distance 触发PTSD的实体与玩家之间的距离，单位为方块（米）。
          */
         EventResult onPTSDTriggered(ServerPlayerEntity player, int onsetLevel, double distance);
+    }
+    
+    @FunctionalInterface
+    interface PTSDPhotismEvent {
+        /**
+         * @param photismId 触发幻觉的ID。
+         */
+        EventResult onPTSDPhotismTriggered(ServerPlayerEntity player, String photismId);
     }
 }

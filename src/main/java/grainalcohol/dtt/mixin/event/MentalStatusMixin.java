@@ -1,6 +1,6 @@
 package grainalcohol.dtt.mixin.event;
 
-import grainalcohol.dtt.api.event.DepressionCombatStateEvent;
+import grainalcohol.dtt.api.event.EmotionEvent;
 import grainalcohol.dtt.api.event.MentalHealthEvent;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.mental.MentalIllnessStatus;
@@ -69,12 +69,12 @@ public class MentalStatusMixin {
 
         if (!dtt$lastTickIsInCombatState && currentIsInCombatState) {
             // 进入战斗状态
-            DepressionCombatStateEvent.ENTER_COMBAT_STATE_EVENT.invoker().onEnterCombatState(player);
+            EmotionEvent.ENTER_COMBAT_STATE_EVENT.invoker().onEnterCombatState(player);
         }
 
         if (dtt$lastTickIsInCombatState && !currentIsInCombatState) {
             // 退出战斗状态
-            DepressionCombatStateEvent.EXIT_COMBAT_STATE_EVENT.invoker().onExitCombatState(player);
+            EmotionEvent.EXIT_COMBAT_STATE_EVENT.invoker().onExitCombatState(player);
         }
 
         dtt$lastTickIsInCombatState = currentIsInCombatState;

@@ -30,11 +30,6 @@ public interface MentalIllnessEvent {
      * @see InsomniaEvent#onInsomniaHappened(ServerPlayerEntity)
      */
     Event<InsomniaEvent> INSOMNIA_EVENT = EventFactory.createLoop();
-    /**
-     * 精神疲劳触发事件
-     * @see MentalFatigueEvent#onMentalFatigueTriggered(ServerPlayerEntity)
-     */
-    Event<MentalFatigueEvent> MENTAL_FATIGUE_EVENT = EventFactory.createLoop();
 
     @FunctionalInterface
     interface MentalIllnessChanged {
@@ -54,10 +49,5 @@ public interface MentalIllnessEvent {
     @FunctionalInterface
     interface InsomniaEvent {
         void onInsomniaHappened(ServerPlayerEntity player);
-    }
-
-    @FunctionalInterface
-    interface MentalFatigueEvent {
-        void onMentalFatigueTriggered(ServerPlayerEntity player);
     }
 }

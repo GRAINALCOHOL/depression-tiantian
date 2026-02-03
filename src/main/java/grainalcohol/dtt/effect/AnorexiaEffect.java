@@ -5,6 +5,6 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 
 public class AnorexiaEffect extends StatusEffect {
     public AnorexiaEffect() {
-        super(StatusEffectCategory.HARMFUL, 0xFFC0CB);
+        super(StatusEffectCategory.HARMFUL, 0x776650);
     }
 }

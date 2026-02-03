@@ -1,6 +1,6 @@
 package grainalcohol.dtt.mixin.event;
 
-import grainalcohol.dtt.api.event.DepressionCombatStateEvent;
+import grainalcohol.dtt.api.event.EmotionEvent;
 import net.depression.server.Registry;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DepressionRegistryMixin {
     @Inject(method = "eventAddPlayer", at = @At("TAIL"))
     private static void onEnterZenState(ServerBossBar event, ServerPlayerEntity player, CallbackInfo ci) {
-        DepressionCombatStateEvent.ENTER_ZEN_STATE_EVENT.invoker().onEnterZenState(event, player);
+        EmotionEvent.ENTER_ZEN_STATE_EVENT.invoker().onEnterZenState(event, player);
     }
 
     @Inject(method = "eventRemovePlayer", at = @At("TAIL"))
     private static void onExitZenState(ServerBossBar event, ServerPlayerEntity player, CallbackInfo ci) {
-        DepressionCombatStateEvent.EXIT_ZEN_STATE_EVENT.invoker().onExitZenState(event, player);
+        EmotionEvent.EXIT_ZEN_STATE_EVENT.invoker().onExitZenState(event, player);
     }
 }

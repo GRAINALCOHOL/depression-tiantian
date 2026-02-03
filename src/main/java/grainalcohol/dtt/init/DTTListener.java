@@ -5,14 +5,13 @@ import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
-import grainalcohol.dtt.network.PlayerLookDirectionPacket;
 import net.minecraft.block.DeadBushBlock;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 public class DTTListener {
     public static void archEventInit() {
@@ -39,23 +38,40 @@ public class DTTListener {
     }
     public static void dttEventInit() {
         MentalIllnessEvent.MENTAL_HEALTH_CHANGED_EVENT.register((player, lastTickStatus, currentStatus) -> {
-            if (currentStatus.isSickerThan(lastTickStatus) && currentStatus.isSeverelyIll()) {
-                // 患病达到严重程度
-                DailyStatManager.getTodayDailyStat(player.getUuid()).setHasWorsened(true);
+            // 患病情况恶化
+            if (currentStatus.isSickerThan(lastTickStatus)) {
+                if (currentStatus.isSeverelyIll()) {
+                    // 恶化到严重程度
+                    DailyStatManager.getTodayDailyStat(player.getUuid()).setHasWorsened(true);
+                }
             }
 
-            if (currentStatus.isHealthierThan(lastTickStatus) && lastTickStatus.isSeverelyIll()) {
-                // 患病好转到非严重程度
-                DailyStatManager.getTodayDailyStat(player.getUuid()).setHasCured(true);
+            // 患病情况好转
+            if (currentStatus.isHealthierThan(lastTickStatus)) {
+                if (lastTickStatus.isSeverelyIll()) {
+                    // 恢复到非严重程度
+                    DailyStatManager.getTodayDailyStat(player.getUuid()).setHasCured(true);
+                }
+
+                if (currentStatus.isHealthy() && player.hasStatusEffect(DTTStatusEffect.ANOREXIA)) {
+                    // 恢复到健康状态时移除厌食状态效果
+                    player.removeStatusEffect(DTTStatusEffect.ANOREXIA);
+                }
             }
         });
+    }
+    public static void dttAPIEventInit() {
         MentalIllnessEvent.CLOSE_EYES_EVENT.register((player, causedBySleepinessStatusEffect) -> {
             DTTMod.LOGGER.info("close eyes event triggered");
-            DTTNetwork.CHANNEL.sendToPlayer(player, new PlayerLookDirectionPacket(true));
+            if (player instanceof EyesStatusFlagController controller) {
+                controller.dtt$setIsEyesClosedFlag(true);
+            }
         });
         MentalIllnessEvent.OPEN_EYES_EVENT.register(player -> {
             DTTMod.LOGGER.info("open eyes event triggered");
-            DTTNetwork.CHANNEL.sendToPlayer(player, new PlayerLookDirectionPacket(false));
+            if (player instanceof EyesStatusFlagController controller) {
+                controller.dtt$setIsEyesClosedFlag(false);
+            }
         });
     }
 }

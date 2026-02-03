@@ -4,40 +4,85 @@ import grainalcohol.dtt.diary.DiaryContentHandler;
 import grainalcohol.dtt.diary.DiaryParagraph;
 import grainalcohol.dtt.diary.feeling.FeelingProducer;
 import grainalcohol.dtt.diary.topic.TopicWeightCalculator;
+import grainalcohol.dtt.mixin.PlayerEntityMixin;
+import grainalcohol.dtt.mixin.client.MouseMixin;
 import grainalcohol.dtt.mixin.modification.ClientTickEventListenerMixin;
 import grainalcohol.dtt.mixin.modification.MentalHealthScaleItemMixin;
+import grainalcohol.dtt.mixin.modification.PlayerEventListenerMixin;
+import grainalcohol.dtt.mixin.modification.VillageAdditionsMixin;
 
 import java.util.Set;
 
 public class ServerConfig {
     public VillagerConfig villagerConfig = new VillagerConfig();
     public DiaryConfig diaryConfig = new DiaryConfig();
+    public CombatConfig combatConfig = new CombatConfig();
     public CommonConfig commonConfig = new CommonConfig();
     public ItemConfig itemConfig = new ItemConfig();
 
     public static class VillagerConfig {
+        /**
+         * 默认true，启用后心理医生（下简称村民）的商品价格会随供需关系浮动
+         * @see VillageAdditionsMixin
+         */
         public boolean enablePriceFloating = true;
 
+        /**
+         * 村民售卖精神健康量表的所需等级
+         * 精神健康量表的基础价格
+         * 精神健康量表的最大库存量
+         * @see VillageAdditionsMixin
+         */
         public int lowestLevelOfMentalHealthScale = 1;
         public int basePriceOfMentalHealthScale = 6;
         public int maxUsesOfMentalHealthScale = 8;
 
+        /**
+         * 村民售卖轻度抗抑郁药片的所需等级
+         * 轻度抗抑郁药片的基础价格
+         * 轻度抗抑郁药片的最大库存量
+         * @see VillageAdditionsMixin
+         */
         public int lowestLevelOfMildDepressionTablet = 1;
         public int basePriceOfMildDepressionTablet = 20;
         public int maxUsesOfMildDepressionTablet = 10;
 
+        /**
+         * 村民售卖安眠药片的所需等级
+         * 安眠药片的基础价格
+         * 安眠药片的最大库存量
+         * @see VillageAdditionsMixin
+         */
         public int lowestLevelOfInsomniaTablet = 2;
         public int basePriceOfInsomniaTablet = 30;
         public int maxUsesOfInsomniaTablet = 10;
 
+        /**
+         * 村民售卖中度抗抑郁药片的所需等级
+         * 中度抗抑郁药片的基础价格
+         * 中度抗抑郁药片的最大库存量
+         * @see VillageAdditionsMixin
+         */
         public int lowestLevelOfModerateDepressionTablet = 2;
         public int basePriceOfModerateDepressionTablet = 30;
         public int maxUsesOfModerateDepressionTablet = 10;
 
+        /**
+         * 村民售卖重度抗抑郁胶囊的所需等级
+         * 重度抗抑郁胶囊的基础价格
+         * 重度抗抑郁胶囊的最大库存量
+         * @see VillageAdditionsMixin
+         */
         public int lowestLevelOfMDDCapsule = 3;
         public int basePriceOfMDDCapsule = 40;
         public int maxUsesOfMDDCapsule = 10;
 
+        /**
+         * 村民售卖抗躁狂药片的所需等级
+         * 抗躁狂药片的基础价格
+         * 抗躁狂药片的最大库存量
+         * @see VillageAdditionsMixin
+         */
         public int lowestLevelOfManiaTablet = 3;
         public int basePriceOfManiaTablet = 40;
         public int maxUsesOfManiaTablet = 10;
@@ -91,6 +136,20 @@ public class ServerConfig {
         public boolean makeMentalHealthScalesDisposable = true;
     }
 
+    public static class CombatConfig {
+        /**
+         * 默认false，启用后战斗状态下不会因为病情或困意闭眼/打盹
+         */
+        public boolean saferCombat = false;
+
+        /**
+         * 默认false，启用后无论情绪值如何，攻击或受击都将进入战斗状态
+         * @see PlayerEventListenerMixin
+         * @see PlayerEntityMixin
+         */
+        public boolean easierCombatState = false;
+    }
+
     public static class CommonConfig {
         /**
          * 默认false，启用后禁用精神特质选择界面
@@ -99,9 +158,10 @@ public class ServerConfig {
         public boolean disableMentalTraitSelectScreen = false;
 
         /**
-         * 默认false，启用后战斗状态下不会因为病情或困意闭眼/打盹
+         * 默认true，启用后战斗状态下如果处于紧张性木僵状态则强制固定视角方向
+         * @see MouseMixin
          */
-        public boolean saferCombat = false;
+        public boolean shouldFixedFaceDirectionWhenCatatonicStupor = true;
 
         /**
          * 默认5，战斗状态下被阻止闭眼的最大次数，超过后强制闭眼/打盹一次，设置为-1则不限制闭眼次数

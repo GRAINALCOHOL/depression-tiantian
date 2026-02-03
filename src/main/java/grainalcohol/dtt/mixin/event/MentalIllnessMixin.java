@@ -3,6 +3,7 @@ package grainalcohol.dtt.mixin.event;
 import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.config.DTTConfig;
 import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
@@ -45,7 +46,7 @@ public class MentalIllnessMixin {
     )
     private void onCloseEyesRedirectAndEvent(ServerPlayerEntity serverPlayerEntity, @Local(name = "isSleepy") boolean isSleepy) {
         // 非战斗状态下正常闭眼
-        if (!(mentalStatus.combatCountdown > 0 && DTTConfig.getInstance().getServerConfig().commonConfig.saferCombat)) {
+        if (!(mentalStatus.combatCountdown > 0 && DTTConfig.getInstance().getServerConfig().combatConfig.saferCombat)) {
             closeEyes(serverPlayerEntity, isSleepy);
             return;
         }
@@ -91,6 +92,6 @@ public class MentalIllnessMixin {
             )
     )
     private void onMentalFatigueTriggered(CallbackInfo ci) {
-        MentalIllnessEvent.MENTAL_FATIGUE_EVENT.invoker().onMentalFatigueTriggered(player);
+        SymptomEvent.MENTAL_FATIGUE_EVENT.invoker().onMentalFatigueTriggered(player);
     }
 }

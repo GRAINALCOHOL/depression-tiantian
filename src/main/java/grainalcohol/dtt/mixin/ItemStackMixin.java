@@ -1,10 +1,18 @@
 package grainalcohol.dtt.mixin;
 
+import dev.architectury.event.EventResult;
+import grainalcohol.dtt.api.event.SymptomEvent;
+import grainalcohol.dtt.api.internal.AnorexiaController;
 import grainalcohol.dtt.init.DTTStatusEffect;
+import grainalcohol.dtt.mental.MentalHealthStatus;
+import grainalcohol.dtt.mental.MentalStatusHelper;
+import net.depression.mental.MentalStatus;
+import net.depression.server.Registry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -43,7 +51,30 @@ public class ItemStackMixin {
                     anorexiaStatusEffect.shouldShowParticles(),
                     anorexiaStatusEffect.shouldShowIcon()
             ));
+        } else {
+            // 没有厌食时，随机触发厌食症
+            MentalStatus mentalStatus = Registry.mentalStatus.get(user.getUuid());
+            boolean shouldTriggerAnorexia = MentalStatusHelper.shouldTriggerAnorexia(mentalStatus);
 
+            // 且饥饿值大于4
+            if (user.getHungerManager().getFoodLevel() < 4) {
+                shouldTriggerAnorexia = false;
+            }
+
+            if (shouldTriggerAnorexia && user instanceof ServerPlayerEntity serverUser) {
+                EventResult eventResult = SymptomEvent.ANOREXIA_TRIGGERED.invoker().onAnorexiaTriggered(serverUser, MentalHealthStatus.from(mentalStatus));
+
+                if (eventResult.isPresent() && eventResult.isFalse()) {
+                    // false
+                    shouldTriggerAnorexia = false;
+                }
+            }
+
+            // true & default
+            // 设置打断进食标志
+            if (user instanceof AnorexiaController controller) {
+                controller.dtt$setShouldInterruptEating(shouldTriggerAnorexia);
+            }
         }
     }
 }

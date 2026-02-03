@@ -5,7 +5,7 @@ import dev.architectury.event.EventFactory;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public interface DepressionCombatStateEvent {
+public interface EmotionEvent {
     /**
      * 玩家进入战斗状态事件
      * @see EnterCombatState#onEnterCombatState(ServerPlayerEntity)

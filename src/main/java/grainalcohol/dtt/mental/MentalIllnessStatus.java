@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 医学诊断，或者俗称“患精神疾病情况”，根据医学定义分类，仅表示玩家患病情况。<br>
+ * 推荐使用depression的{@linkplain net.depression.mental.MentalIllness#mentalHealthId mentalHealthId}字段获取对应的枚举值。<br>
  * 无法区分患双相时的抑郁相和躁狂相，如果需要区分请查看{@link MentalHealthStatus}。<br>
  * <br>
  * 包括健康、轻度抑郁、中度抑郁、重度抑郁障碍和双相情感障碍。<br>
@@ -135,5 +136,9 @@ public enum MentalIllnessStatus {
 
     public boolean isSeverelyIll() {
         return this.getSeverity().isSeverelyIll();
+    }
+
+    public boolean isHealthy() {
+        return this == HEALTHY;
     }
 }

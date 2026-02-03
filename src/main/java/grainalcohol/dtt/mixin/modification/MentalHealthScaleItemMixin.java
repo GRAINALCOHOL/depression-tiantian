@@ -3,7 +3,7 @@ package grainalcohol.dtt.mixin.modification;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.mental.MentalHealthHelper;
+import grainalcohol.dtt.mental.MentalStatusHelper;
 import grainalcohol.dtt.mental.MentalHealthStatus;
 import grainalcohol.dtt.mental.MentalIllnessStatus;
 import net.depression.client.ClientMentalStatus;
@@ -64,7 +64,7 @@ public class MentalHealthScaleItemMixin {
             player.sendMessage(
                     Text.translatable(
                             "message.dtt.mental_health_scale.mental_health_index",
-                            String.format("%.2f", MentalHealthHelper.getMentalHealthRate(mentalStatus.mentalHealthValue) * 10) // 这可能是暂时的？
+                            String.format("%.2f", MentalStatusHelper.getMentalHealthRate(mentalStatus.mentalHealthValue) * 10) // 这可能是暂时的？
                     ).formatted(Formatting.UNDERLINE)
                     // 悬停时显示详细数据
                     .styled(style -> style.withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable(
@@ -92,7 +92,7 @@ public class MentalHealthScaleItemMixin {
             player.sendMessage(
                     Text.translatable(
                             "message.dtt.mental_health_scale.assessment",
-                            MentalHealthHelper.getAssessmentText(MentalHealthStatus.from(mentalStatus))
+                            MentalStatusHelper.getAssessmentText(MentalHealthStatus.from(mentalStatus))
                     ).formatted(Formatting.UNDERLINE)
                     // 悬停时显示患病情况
                     .styled(style -> style.withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable(

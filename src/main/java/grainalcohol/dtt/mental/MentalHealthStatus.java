@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 当前发作相，或者俗称“精神健康状态”，根据当前的表现分类，而不是患病情况。<br>
+ * 推荐使用depression的{@linkplain MentalStatus}或Player对象获取对应的枚举值。<br>
  * 患病情况请查看{@link MentalIllnessStatus}。<br>
  * <br>
  * 其中重度抑郁和（患双相时的）抑郁相同属于重度抑郁状态（MAJOR_DEPRESSION）。<br>
