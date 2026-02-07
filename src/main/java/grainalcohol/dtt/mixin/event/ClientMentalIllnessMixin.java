@@ -1,5 +1,7 @@
 package grainalcohol.dtt.mixin.event;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.init.DTTNetwork;
 import grainalcohol.dtt.network.OpenEyesEventPacket;
@@ -11,14 +13,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientMentalIllness.class)
 public class ClientMentalIllnessMixin {
     @Shadow public boolean isCloseEye;
 
-    @Redirect(
+    @WrapOperation(
             method = "receiveCloseEyePacket",
             at = @At(
                     value = "FIELD",
@@ -26,14 +27,14 @@ public class ClientMentalIllnessMixin {
                     opcode = Opcodes.PUTFIELD
             )
     )
-    private void redirectSetStartCloseEyeTime(ClientMentalIllness instance, long originValue) {
+    private void onSetStartCloseEyeTime(ClientMentalIllness instance, long originValue, Operation<Void> original) {
         // 根据配置文件设置延迟时间
-        int delayTicks = DTTConfig.getInstance().getClientConfig().closeEyeDelayTicks;
+        int delayTicks = DTTConfig.getInstance().getClientConfig().close_eye_delay_ticks;
         if (MinecraftClient.getInstance().world != null) {
             if (delayTicks <= 0) {
                 delayTicks = 60;
             }
-            instance.startCloseEyeTime = MinecraftClient.getInstance().world.getTime() + delayTicks;
+            original.call(instance, MinecraftClient.getInstance().world.getTime() + delayTicks);
         }
     }
 

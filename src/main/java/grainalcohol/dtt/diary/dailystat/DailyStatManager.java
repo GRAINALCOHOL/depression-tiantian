@@ -1,7 +1,6 @@
 package grainalcohol.dtt.diary.dailystat;
 
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.util.MathUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -10,7 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DailyStatManager {
-    private static final double EMAFactor = MathHelper.clamp(DTTConfig.getInstance().getServerConfig().diaryConfig.EMAFactor, 0.0, 1.0);
+    private static final double EMAFactor = MathHelper.clamp(DTTConfig.getInstance().getServerConfig().diaryConfig.ema_factor, 0.0, 1.0);
 
     private static final Map<UUID, DailyStat> dailyStat = new ConcurrentHashMap<>();
     private static final Map<UUID, DailyStat> yesterdayDailyStat = new ConcurrentHashMap<>();

@@ -6,6 +6,7 @@ import dev.architectury.event.EventResult;
 import grainalcohol.dtt.mental.MentalHealthStatus;
 import grainalcohol.dtt.mixin.ItemStackMixin;
 import grainalcohol.dtt.mixin.LivingEntityMixin;
+import net.depression.effect.SleepinessEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface SymptomEvent {
@@ -21,10 +22,36 @@ public interface SymptomEvent {
     Event<InterruptEatingEvent> INTERRUPT_EATING = EventFactory.createEventResult();
     /**
      * 精神疲劳触发事件
+     * @see grainalcohol.dtt.mixin.event.MentalIllnessMixin
      * @see MentalFatigueEvent#onMentalFatigueTriggered(ServerPlayerEntity)
      */
-    Event<MentalFatigueEvent> MENTAL_FATIGUE_EVENT = EventFactory.createLoop();
+    Event<MentalFatigueEvent> MENTAL_FATIGUE_EVENT = EventFactory.createEventResult();
 
+    /**
+     * 闭眼事件，{@code causedBySleepinessStatusEffect}指本次闭眼是否由困倦状态效果触发
+     * 客户端的视觉效果会在触发后延迟开始
+     * @see grainalcohol.dtt.mixin.event.MentalIllnessMixin
+     * @see CloseEyesEvent#onCloseEyes(ServerPlayerEntity, boolean)
+     * @see SleepinessEffect 困倦状态效果
+     */
+    Event<CloseEyesEvent> CLOSE_EYES_EVENT = EventFactory.createEventResult();
+    /**
+     * 简化的闭眼事件，不区分闭眼原因，提供给不关心闭眼原因的功能
+     * @see grainalcohol.dtt.mixin.event.CloseEysPacketMixin
+     */
+    Event<SimpleCloseEyesEvent> SIMPLE_CLOSE_EYES_EVENT = EventFactory.createEventResult();
+    /**
+     * 睁眼事件
+     * @see grainalcohol.dtt.network.OpenEyesEventPacket
+     * @see OpenEyesEvent#onOpenEyes(ServerPlayerEntity)
+     */
+    Event<OpenEyesEvent> OPEN_EYES_EVENT = EventFactory.createLoop();
+    /**
+     * 失眠事件，指玩家因失眠而无法入睡
+     * @see grainalcohol.dtt.mixin.event.MentalIllnessMixin
+     * @see InsomniaEvent#onInsomniaHappened(ServerPlayerEntity)
+     */
+    Event<InsomniaEvent> INSOMNIA_EVENT = EventFactory.createLoop();
 
     @FunctionalInterface
     interface AnorexiaTriggeredEvent {
@@ -38,6 +65,26 @@ public interface SymptomEvent {
 
     @FunctionalInterface
     interface MentalFatigueEvent {
-        void onMentalFatigueTriggered(ServerPlayerEntity player);
+        EventResult onMentalFatigueTriggered(ServerPlayerEntity player);
+    }
+
+    @FunctionalInterface
+    interface CloseEyesEvent {
+        EventResult onCloseEyes(ServerPlayerEntity player, boolean causedBySleepinessStatusEffect);
+    }
+
+    @FunctionalInterface
+    interface SimpleCloseEyesEvent {
+        EventResult onCloseEyes(ServerPlayerEntity player);
+    }
+
+    @FunctionalInterface
+    interface OpenEyesEvent {
+        void onOpenEyes(ServerPlayerEntity player);
+    }
+
+    @FunctionalInterface
+    interface InsomniaEvent {
+        void onInsomniaHappened(ServerPlayerEntity player);
     }
 }

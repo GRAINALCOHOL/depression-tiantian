@@ -8,6 +8,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
+// TODO：不要用null表示话题不应该被应用了，考虑使用一个布尔值来表示话题无效
+// TODO：另外我想用Builder模式
 public class Topic {
     private final String name;
     private double weight; // 决定这个话题会不会被采纳，权重太低会被后续处理自动剔除

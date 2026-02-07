@@ -25,7 +25,7 @@ public class PlayerEventListenerMixin {
             )
     )
     private static void beforeTrigMentalFatigue(PlayerEntity player, World level, Entity entity, Hand hand, EntityHitResult entityHitResult, CallbackInfoReturnable<EventResult> cir, @Local(name = "mentalStatus")MentalStatus mentalStatus) {
-        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easierCombatState) {
+        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easier_combat_state) {
             return;
         }
 

@@ -1,29 +1,27 @@
 package grainalcohol.dtt.mixin.event;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import grainalcohol.dtt.DTTMod;
-import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.architectury.event.EventResult;
 import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.config.DTTConfig;
 import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
-import net.depression.network.CloseEyePacket;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MentalIllness.class)
 public class MentalIllnessMixin {
-    @Unique private int dtt$preventedCloseEyeCount = 0;
-
     @Shadow @Final private MentalStatus mentalStatus;
     @Shadow private ServerPlayerEntity player;
+    @Shadow public int mentalHealthId;
+    @Shadow public boolean isMania;
 
     @Inject(
             method = "tick",
@@ -34,64 +32,65 @@ public class MentalIllnessMixin {
             )
     )
     private void onInsomniaTriggered(CallbackInfo ci) {
-        MentalIllnessEvent.INSOMNIA_EVENT.invoker().onInsomniaHappened(player);
+        SymptomEvent.INSOMNIA_EVENT.invoker().onInsomniaHappened(player);
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "tick",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/depression/network/CloseEyePacket;sendToPlayer(Lnet/minecraft/server/network/ServerPlayerEntity;)V"
             )
     )
-    private void onCloseEyesRedirectAndEvent(ServerPlayerEntity serverPlayerEntity, @Local(name = "isSleepy") boolean isSleepy) {
-        // 非战斗状态下正常闭眼
-        if (!(mentalStatus.combatCountdown > 0 && DTTConfig.getInstance().getServerConfig().combatConfig.saferCombat)) {
-            closeEyes(serverPlayerEntity, isSleepy);
+    private void wrapCloseEyes(ServerPlayerEntity serverPlayerEntity, Operation<Void> original) {
+        boolean saferCombat = DTTConfig.getInstance().getServerConfig().combatConfig.safer_combat;
+        if (saferCombat && mentalStatus.combatCountdown > 0) {
+            // 战斗状态下如果saferCombat配置为true则不会闭眼
             return;
         }
 
-        int maxCount = DTTConfig.getInstance().getServerConfig().commonConfig.maximumPreventCloseEyesCount;
-        if (maxCount <= -1 || dtt$preventedCloseEyeCount < maxCount) {
-            // 设置为-1则无限制阻止闭眼
-            // 处于战斗状态并且saferCombat配置为true则不会闭眼
-            DTTMod.LOGGER.info("{} tried to close eyes during combat, but was prevented by the saferCombat setting.", serverPlayerEntity.getName().getString());
-            dtt$preventedCloseEyeCount++;
-        } else {
-            // 阻止太多次闭眼后强制闭眼
-            closeEyes(serverPlayerEntity, isSleepy);
-            DTTMod.LOGGER.info("{} has been prevented from closing eyes too many times.", serverPlayerEntity.getName().getString());
-            dtt$preventedCloseEyeCount = 0;
-        }
-    }
-
-    @Unique
-    private void closeEyes(ServerPlayerEntity serverPlayerEntity, boolean isSleepy) {
         MentalIllness self = (MentalIllness) (Object) this;
-        CloseEyePacket.sendToPlayer(serverPlayerEntity);
         // 触发闭眼事件
         boolean causedByMentalIllness = self.mentalHealthId >= 3 && !self.isMania;
-        // 即使depression设计为短路与，这里获取到的isSleepy变量也不会因为短路与而失效
-        // 所以必须处理两者都为true的情况，但由于短路与的特性，causedBySleepinessStatusEffect为false
-        if (!causedByMentalIllness && isSleepy) {
-            // 由困倦状态效果触发闭眼
-            MentalIllnessEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(serverPlayerEntity, true);
+        // 外部被mentalHealthId >= 3 && !isMania || isSleepy包围
+        // 所以causedByMentalIllness和isSleepy肯定有一个为true
+        // 两个都为true时优先说触发原因是精神疾病，即传入false
+        // causedByMentalIllness为false时说明是Sleepiness状态效果触发的闭眼，此时传入true
+        EventResult eventResult =  SymptomEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(serverPlayerEntity, !causedByMentalIllness);
+        if (eventResult.isPresent() && eventResult.isFalse()) {
+            // false
+            return;
         }
-        if ((causedByMentalIllness && !isSleepy) || (causedByMentalIllness && isSleepy)) {
-            // 由精神疾病触发闭眼
-            MentalIllnessEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(serverPlayerEntity, false);
-        }
+        // true & default
+        original.call(serverPlayerEntity);
     }
 
-    @Inject(
+    @Inject(method = "trigMentalFatigue", at = @At(value = "HEAD"), cancellable = true)
+    private void onMentalFatigueTriggered(CallbackInfo ci) {
+        EventResult eventResult = SymptomEvent.MENTAL_FATIGUE_EVENT.invoker().onMentalFatigueTriggered(this.player);
+        if (eventResult.isPresent() && eventResult.isFalse()) {
+            // false
+            ci.cancel();
+        }
+        // true & default
+    }
+
+    @WrapOperation(
             method = "trigMentalFatigue",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/depression/network/ActionbarHintPacket;sendMentalFatiguePacket(Lnet/minecraft/server/network/ServerPlayerEntity;)V",
-                    shift = At.Shift.AFTER
+                    target = "Lnet/minecraft/entity/effect/StatusEffectInstance;getAmplifier()I"
             )
     )
-    private void onMentalFatigueTriggered(CallbackInfo ci) {
-        SymptomEvent.MENTAL_FATIGUE_EVENT.invoker().onMentalFatigueTriggered(player);
+    private int wrapMentalFatigueAmplifier(StatusEffectInstance instance, Operation<Integer> original) {
+        // 没法改局部变量啊，重写太不优雅了，只能改这个（
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.mental_fatigue_trigger_chance_fixer) {
+            if (mentalHealthId == 4 && isMania) {
+                // 躁狂状态不触发精神疲劳，即使持有抗抑郁状态效果
+                return -1;
+            }
+            return (original.call(instance) + 1) * 2 - 1; // 使抗抑郁状态效果的触发加成翻倍
+        }
+        return original.call(instance);
     }
 }

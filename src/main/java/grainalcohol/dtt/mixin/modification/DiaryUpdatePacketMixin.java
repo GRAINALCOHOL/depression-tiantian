@@ -1,4 +1,4 @@
-package grainalcohol.dtt.mixin;
+package grainalcohol.dtt.mixin.modification;
 
 import dev.architectury.networking.NetworkManager;
 import grainalcohol.dtt.config.DTTConfig;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DiaryUpdatePacketMixin {
     @Inject(method = "sendToPlayer", at = @At("HEAD"), cancellable = true)
     private static void sendToPlayer(ServerPlayerEntity player, CallbackInfo ci) {
-        if (!DTTConfig.getInstance().getServerConfig().diaryConfig.useEnhancedDiaryGenerator) {
+        if (!DTTConfig.getInstance().getServerConfig().diaryConfig.use_enhanced_diary_generator) {
             return;
         }
 

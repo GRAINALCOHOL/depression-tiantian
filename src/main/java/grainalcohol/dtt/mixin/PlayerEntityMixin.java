@@ -10,8 +10,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,17 +23,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin {
+public abstract class PlayerEntityMixin {
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTickTail(CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
         if (!(self instanceof ServerPlayerEntity serverPlayerEntity)) {
             return;
         }
-
-        if (self.getWorld().getTimeOfDay() % 24000 == 0) {  //每天0时更新统计数据
+        ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
+        if (serverWorld.getTimeOfDay() % 24000 == 0) {
+            // 每天0时更新统计数据
             DailyStatManager.updateDailyStat(serverPlayerEntity);
         }
+//        if (serverWorld.hasRain(serverPlayerEntity.getBlockPos())) {
+//            // 淋到雨时
+//            DailyStatManager.getTodayDailyStat(serverPlayerEntity.getUuid()).setHasRained(true);
+//        }
     }
 
     @Inject(method = "eatFood", at = @At("RETURN"))
@@ -53,7 +60,7 @@ public class PlayerEntityMixin {
             )
     )
     private void easierCombatStateAboutDamageTaken(DamageSource source, float amount, CallbackInfo ci) {
-        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easierCombatState) {
+        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easier_combat_state) {
             // 未开启功能
             return;
         }

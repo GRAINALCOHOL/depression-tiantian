@@ -13,7 +13,6 @@ import grainalcohol.dtt.mental.MentalHealthStatus;
 import grainalcohol.dtt.util.MathUtil;
 import grainalcohol.dtt.util.StringUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +62,7 @@ public class DiaryContentHandler {
             // 因抑郁情绪拒绝写日记
             return generateTranslationKey(DiaryParagraph.NO_DIARY);
         }
-        int variantCount = DTTConfig.getInstance().getServerConfig().diaryConfig.diaryTranslationKeyVariantCount;
+        int variantCount = DTTConfig.getInstance().getServerConfig().diaryConfig.diary_translation_key_variant_count;
 
         String mentalHealthChangeKey = "";
         if (isHasCured()) {
@@ -151,7 +150,7 @@ public class DiaryContentHandler {
      * @return 生成的translationKey，生成失败返回空字符串
      */
     public String generateTranslationKey(DiaryParagraph paragraph, boolean enableWarp) {
-        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.makeDiarySlightlyMorePositive;
+        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.slightly_more_positive_diary;
         String result = switch (paragraph) {
             case MANIC_INSERTION -> composeTranslationKey(
                     // 躁狂额外内容与感受相关
@@ -227,41 +226,11 @@ public class DiaryContentHandler {
     }
 
     /**
-     * 在指定的变体数量内随机选取一个已定义的变体translationKey，若无则返回原始translationKey，自动处理重复情况，所有变体全部用过的话就返回原始translationKey<br>
-     * <br>
-     * 举例：translationKey = "diary.dmm.healthy.warm"，variantCount = 3<br>
-     * 则会尝试查找以下translationKey：<br>
-     * diary.dmm.healthy.warm.1<br>
-     * diary.dmm.healthy.warm.2<br>
-     * 若其中有定义的变体，则随机返回一个（包含原始translationKey），若无则返回原始的translationKey（即"diary.dmm.healthy.warm"）<br>
-     * <br>
-     * 注意：变体取值范围为[1, variantCount)
-     * @see #getUsedTranslationKeys()
-     * @param translationKey 原始translationKey
-     * @param variantCount 变体数量
-     * @return 随机选取的变体translationKey或原始translationKey
+     * 在指定的变体数量内随机选取一个已定义的变体translationKey
+     * @see StringUtil#findTranslationKeyVariant(String, int, Random, Collection)
      */
     public String findRandomVariant(String translationKey, int variantCount) {
-        List<String> candidateKeys = new ArrayList<>();
-        for (int i = 1; i < variantCount; i++) {
-            // 在 [1, variantCount) 内选取的整数作为后缀的额外键值
-            String tempKey = translationKey + "." + i;
-            Text translated = Text.translatable(tempKey);
-            if (!translated.getString().equals(tempKey) && !getUsedTranslationKeys().contains(tempKey)) {
-                // 翻译结果与原始键值不同说明有定义
-                // 未被使用过即可添加到候选列表
-                candidateKeys.add(tempKey);
-            }
-        }
-        if (!getUsedTranslationKeys().contains(translationKey)) {
-            candidateKeys.add(translationKey);
-        }
-        if (candidateKeys.isEmpty()) {
-            return translationKey;
-        }
-        String resultKey = candidateKeys.get(RANDOM.nextInt(candidateKeys.size()));
-        getUsedTranslationKeys().add(resultKey);
-        return resultKey;
+        return StringUtil.findTranslationKeyVariant(translationKey, variantCount, RANDOM, getUsedTranslationKeys());
     }
 
     public TopicProducer getTopicProducer() {

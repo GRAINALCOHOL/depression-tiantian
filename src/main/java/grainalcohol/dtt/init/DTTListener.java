@@ -5,6 +5,7 @@ import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
 import net.minecraft.block.DeadBushBlock;
@@ -61,13 +62,14 @@ public class DTTListener {
         });
     }
     public static void dttAPIEventInit() {
-        MentalIllnessEvent.CLOSE_EYES_EVENT.register((player, causedBySleepinessStatusEffect) -> {
+        SymptomEvent.CLOSE_EYES_EVENT.register((player, causedBySleepinessStatusEffect) -> {
             DTTMod.LOGGER.info("close eyes event triggered");
             if (player instanceof EyesStatusFlagController controller) {
                 controller.dtt$setIsEyesClosedFlag(true);
             }
+            return EventResult.pass();
         });
-        MentalIllnessEvent.OPEN_EYES_EVENT.register(player -> {
+        SymptomEvent.OPEN_EYES_EVENT.register(player -> {
             DTTMod.LOGGER.info("open eyes event triggered");
             if (player instanceof EyesStatusFlagController controller) {
                 controller.dtt$setIsEyesClosedFlag(false);

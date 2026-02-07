@@ -25,7 +25,7 @@ public abstract class MentalStatusMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void clearPTSDData(CallbackInfo ci) {
-        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList;
+        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list;
         MiscUtil.cleanMap(PTSD, blacklist::contains);
         MiscUtil.cleanMap(PTSDTimeBuffer, blacklist::contains);
         MiscUtil.cleanMap(PTSDValueBuffer, blacklist::contains);
@@ -37,7 +37,7 @@ public abstract class MentalStatusMixin {
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list.contains(id)) {
             DTTMod.LOGGER.info("Blocked mental health value hurt by damage source but string: {}", id);
             mentalHurt(amount);
             ci.cancel();
@@ -49,7 +49,7 @@ public abstract class MentalStatusMixin {
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list.contains(id)) {
             DTTMod.LOGGER.info("Blocked trigger ptsd from hurt by damage type source but string: {}", id);
             ci.cancel();
         }

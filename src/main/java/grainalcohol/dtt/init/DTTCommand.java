@@ -3,6 +3,7 @@ package grainalcohol.dtt.init;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.mental.MentalHealthStatus;
 import net.depression.client.ClientMentalIllness;
 import net.depression.client.ClientMentalStatus;
@@ -85,7 +86,7 @@ public class DTTCommand {
         }
 
         CloseEyePacket.sendToPlayer(player);
-        MentalIllnessEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(player, false);
+        SymptomEvent.CLOSE_EYES_EVENT.invoker().onCloseEyes(player, false);
         return 1;
     }
 }

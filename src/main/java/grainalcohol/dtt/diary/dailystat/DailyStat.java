@@ -6,6 +6,7 @@ import grainalcohol.dtt.mixin.PlayerEntityMixin;
 import grainalcohol.dtt.mixin.RaidMixin;
 import net.minecraft.nbt.NbtCompound;
 
+// TODO：可以顺便尝试一下策略模式，用一个Map管理内容
 public class DailyStat {
     public static final String DAILY_STAT_NBT_KEY = "DTTDailyStat";
     public static final String TODAY_DAILY_STAT_NBT_KEY = "Today";
@@ -13,6 +14,20 @@ public class DailyStat {
     public static final String MOVING_AVERAGE_DAILY_STAT_NBT_KEY = "MovingAverage";
 
     //essential
+    /**
+     * 今天是否下过雨<br>
+     * 触发检查时机是：
+     * <ul>
+     *     <li>维度开始或停止下雨时</li>
+     *     <li>玩家切换维度时</li>
+     *     <li>玩家睡醒时</li>
+     *     <li>玩家淋到雨时（待定）</li>
+     * </ul>
+     * @see grainalcohol.dtt.mixin.ServerWorldMixin
+     * @see PlayerEntityMixin
+     * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
+     */
+    private boolean hasRained;
     /**
      * 宠物繁殖
      * @see AnimalEntityMixin
@@ -32,13 +47,12 @@ public class DailyStat {
     private int monsterKilled;
     /**
      * 以下都是通过Mixin注入PlayerEntity的increaseStat方法进行统计的
-     * @see PlayerEntityMixin#increaseDailyStat
+     * @see PlayerEntityMixin
      */
     private int distanceMoved;// 行走距离
     private int damageTaken; // 受到伤害
     private int tradedCount; // 交易次数
     private int brewedCount; // 酿造次数
-
 
     /**
      * 栽培盆栽，但不包括枯死的灌木
@@ -48,7 +62,7 @@ public class DailyStat {
 
     /**
      * 吃东西
-     * @see PlayerEntityMixin#onEatFood
+     * @see PlayerEntityMixin
      */
     private boolean hasAte;
     /**
@@ -80,6 +94,7 @@ public class DailyStat {
         this.damageTaken = 0;
         this.tradedCount = 0;
         this.brewedCount = 0;
+        this.hasRained = false;
         this.hasFlowerPotted = false;
         this.hasRaidWon = false;
         this.hasRaidFailed = false;
@@ -97,6 +112,7 @@ public class DailyStat {
             int damageTaken,
             int tradedCount,
             int brewedCount,
+            boolean hasRained,
             boolean hasFlowerPotted,
             boolean hasRaidWon,
             boolean hasRaidFailed,
@@ -112,6 +128,7 @@ public class DailyStat {
         this.damageTaken = damageTaken;
         this.tradedCount = tradedCount;
         this.brewedCount = brewedCount;
+        this.hasRained = hasRained;
         this.hasFlowerPotted = hasFlowerPotted;
         this.hasRaidWon = hasRaidWon;
         this.hasRaidFailed = hasRaidFailed;
@@ -129,6 +146,7 @@ public class DailyStat {
         this.damageTaken = dailyStat.getDamageTaken();
         this.tradedCount = dailyStat.getTradedCount();
         this.brewedCount = dailyStat.getBrewedCount();
+        this.hasRained = dailyStat.isHasRained();
         this.hasFlowerPotted = dailyStat.isHasFlowerPotted();
         this.hasRaidWon = dailyStat.isHasRaidWon();
         this.hasRaidFailed = dailyStat.isHasRaidFailed();
@@ -146,6 +164,7 @@ public class DailyStat {
         setDamageTaken(getDamageTaken() + other.getDamageTaken());
         setTradedCount(getTradedCount() + other.getTradedCount());
         setBrewedCount(getBrewedCount() + other.getBrewedCount());
+        setHasRained(isHasRained() || other.isHasRained());
         setHasFlowerPotted(isHasFlowerPotted() || other.isHasFlowerPotted());
         setHasRaidWon(isHasRaidWon() || other.isHasRaidWon());
         setHasRaidFailed(isHasRaidFailed() || other.isHasRaidFailed());
@@ -187,6 +206,14 @@ public class DailyStat {
     }
 
     // setter & getter
+    public boolean isHasRained() {
+        return hasRained;
+    }
+
+    public void setHasRained(boolean hasRained) {
+        this.hasRained = hasRained;
+    }
+
     public int getMonsterKilled() {
         return monsterKilled;
     }
@@ -305,6 +332,7 @@ public class DailyStat {
         nbt.putInt("damageTaken", getDamageTaken());
         nbt.putInt("tradedCount", getTradedCount());
         nbt.putInt("brewedCount", getBrewedCount());
+        nbt.putBoolean("isHasRained", isHasRained());
         nbt.putBoolean("isHasFlowerPotted", isHasFlowerPotted());
         nbt.putBoolean("isHasRaidWon", isHasRaidWon());
         nbt.putBoolean("isHasRaidFailed", isHasRaidFailed());
@@ -322,6 +350,7 @@ public class DailyStat {
         setDamageTaken(nbt.getInt("damageTaken"));
         setTradedCount(nbt.getInt("tradedCount"));
         setBrewedCount(nbt.getInt("brewedCount"));
+        setHasRained(nbt.getBoolean("isHasRained"));
         setHasFlowerPotted(nbt.getBoolean("isHasFlowerPotted"));
         setHasRaidWon(nbt.getBoolean("isHasRaidWon"));
         setHasRaidFailed(nbt.getBoolean("isHasRaidFailed"));

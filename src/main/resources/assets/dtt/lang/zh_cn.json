@@ -438,6 +438,18 @@
   "diary.dtt.manic_insertion.failed": "躁狂插入内容，失败的感受",
 
   // 游戏文本
+  "message.dtt.diary_unwritten": "日落后才能看今天的日记哦",
+
+  "message.dtt.mental_fatigue": "好累，不想动……",
+  "message.dtt.mental_fatigue.1": "精神疲劳提示文案1",
+  "message.dtt.mental_fatigue.2": "精神疲劳提示文案2",
+  "message.dtt.mental_fatigue.3": "精神疲劳提示文案3",
+
+  "message.dtt.close_eyes": "好…累…啊……",
+  "message.dtt.close_eyes.1": "闭眼提示文案1",
+  "message.dtt.close_eyes.2": "闭眼提示文案2",
+  "message.dtt.close_eyes.3": "闭眼提示文案3",
+
   "message.dtt.mental_health_scale.mental_health_index": "心理健康指数：%s",
   "text.dtt.mental_health_scale.mental_health_index.hover": "精神健康值：%s\n情绪值：%s",
   "message.dtt.mental_health_scale.assessment": "心理评估结果：%s",

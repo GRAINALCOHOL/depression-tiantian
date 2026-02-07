@@ -20,8 +20,8 @@ public class ClientTickEventListenerMixin {
                     opcode = Opcodes.GETSTATIC
             )
     )
-    private static boolean modifyMentalTraitSelected(Operation<Boolean> original) {
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.disableMentalTraitSelectScreen) {
+    private static boolean disableMentalTraitSelectedScreen(Operation<Boolean> original) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.disable_mental_trait_select_screen) {
             MentalTraitPacket.sendToServer(MentalStatus.DEFAULT_MENTAL_TRAIT == null ? "normal" : MentalStatus.DEFAULT_MENTAL_TRAIT);
             return true;
         }

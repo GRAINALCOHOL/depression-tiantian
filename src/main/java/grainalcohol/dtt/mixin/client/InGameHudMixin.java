@@ -1,17 +1,18 @@
 package grainalcohol.dtt.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.depression.client.DepressionClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
-    @Redirect(
+    @WrapOperation(
             method = "renderStatusBars",
             slice = @Slice(
                     from = @At(
@@ -31,13 +32,13 @@ public class InGameHudMixin {
                     ordinal = 1
             )
     )
-    private void redirectFullHungerValueTextures(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
+    private void redirectFullHungerValueTextures(DrawContext context, Identifier texture, int x, int y, int u, int v, int width, int height, Operation<Void> original) {
         if (DepressionClient.clientMentalStatus.mentalHealthId < 3) {
-            context.drawTexture(identifier, x, y, u, v, width, height);
+            original.call(context, texture, x, y, u, v, width, height);
         }
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "renderStatusBars",
             slice = @Slice(
                     from = @At(
@@ -57,9 +58,9 @@ public class InGameHudMixin {
                     ordinal = 2
             )
     )
-    private void redirectHalfHungerValueTextures(DrawContext context, Identifier identifier, int x, int y, int u, int v, int width, int height) {
+    private void redirectHalfHungerValueTextures(DrawContext context, Identifier texture, int x, int y, int u, int v, int width, int height, Operation<Void> original) {
         if (DepressionClient.clientMentalStatus.mentalHealthId < 3) {
-            context.drawTexture(identifier, x, y, u, v, width, height);
+            original.call(context, texture, x, y, u, v, width, height);
         }
     }
 }

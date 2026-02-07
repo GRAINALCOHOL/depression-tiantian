@@ -29,7 +29,7 @@ public class PTSDManagerMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void clearPTSDData(ServerPlayerEntity player, CallbackInfo ci) {
-        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList;
+        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list;
         MiscUtil.cleanMap(this.PTSD, blacklist::contains);
         MiscUtil.cleanMap(this.contactValue, blacklist::contains);
         MiscUtil.cleanMap(this.remainingValue, blacklist::contains);
@@ -43,7 +43,7 @@ public class PTSDManagerMixin {
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list.contains(id)) {
             DTTMod.LOGGER.info("Blocked PTSD trigger from damage type or sound event mapping: {}", id);
             ci.cancel();
         }
@@ -58,7 +58,7 @@ public class PTSDManagerMixin {
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list.contains(id)) {
             DTTMod.LOGGER.info("Blocked PTSD trigger from entity: {}", id);
             ci.cancel();
         }

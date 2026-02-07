@@ -29,54 +29,54 @@ public class VillageAdditionsMixin {
     private static void afterRegisterPoi(CallbackInfo ci) {
         ServerConfig.VillagerConfig villagerConfig = DTTConfig.getInstance().getServerConfig().villagerConfig;
 
-        float priceMultiplier = villagerConfig.enablePriceFloating ? 1.0F : 0.0F;
+        float priceMultiplier = villagerConfig.enable_price_floating ? 1.0F : 0.0F;
 
         // mental health scale
         registerPsychologistTradeOffers(
-                villagerConfig.lowestLevelOfMentalHealthScale,
-                villagerConfig.basePriceOfMentalHealthScale,
+                villagerConfig.lowest_level_of_mental_health_scale,
+                villagerConfig.base_price_of_mental_health_scale,
                 new ItemStack(ModItems.MENTAL_HEALTH_SCALE.get(), 1),
-                villagerConfig.maxUsesOfMentalHealthScale,
+                villagerConfig.max_uses_of_mental_health_scale,
                 5, priceMultiplier
         );
         // mild depression tablet
         registerPsychologistTradeOffers(
-                villagerConfig.lowestLevelOfMildDepressionTablet,
-                villagerConfig.basePriceOfMildDepressionTablet,
+                villagerConfig.lowest_level_of_mild_depression_tablet,
+                villagerConfig.base_price_of_mild_depression_tablet,
                 new ItemStack(ModItems.MILD_DEPRESSION_TABLET.get(), 6),
-                villagerConfig.maxUsesOfMildDepressionTablet,
+                villagerConfig.max_uses_of_mild_depression_tablet,
                 5, priceMultiplier
         );
         // insomnia tablet
         registerPsychologistTradeOffers(
-                villagerConfig.lowestLevelOfInsomniaTablet,
-                villagerConfig.basePriceOfInsomniaTablet,
+                villagerConfig.lowest_level_of_insomnia_tablet,
+                villagerConfig.base_price_of_insomnia_tablet,
                 new ItemStack(ModItems.INSOMNIA_TABLET.get(), 6),
-                villagerConfig.maxUsesOfInsomniaTablet,
+                villagerConfig.max_uses_of_insomnia_tablet,
                 20, priceMultiplier
         );
         // moderate depression tablet
         registerPsychologistTradeOffers(
-                villagerConfig.lowestLevelOfModerateDepressionTablet,
-                villagerConfig.basePriceOfModerateDepressionTablet,
+                villagerConfig.lowest_level_of_moderate_depression_tablet,
+                villagerConfig.base_price_of_moderate_depression_tablet,
                 new ItemStack(ModItems.MODERATE_DEPRESSION_TABLET.get(), 6),
-                villagerConfig.maxUsesOfModerateDepressionTablet,
+                villagerConfig.max_uses_of_moderate_depression_tablet,
                 20, priceMultiplier
         );
         // MDD capsule
         registerPsychologistTradeOffers(
-                villagerConfig.lowestLevelOfMDDCapsule,
-                villagerConfig.basePriceOfMDDCapsule,
+                villagerConfig.lowest_level_of_mdd_capsule,
+                villagerConfig.base_price_of_mdd_capsule,
                 new ItemStack(ModItems.MDD_CAPSULE.get(), 6),
-                villagerConfig.maxUsesOfMDDCapsule,
+                villagerConfig.max_uses_of_mdd_capsule,
                 40, priceMultiplier
         );
         // mania tablet
         registerPsychologistTradeOffers(
-                villagerConfig.lowestLevelOfManiaTablet,
-                villagerConfig.basePriceOfManiaTablet,
+                villagerConfig.lowest_level_of_mania_tablet,
+                villagerConfig.base_price_of_mania_tablet,
                 new ItemStack(ModItems.MANIA_TABLET.get(), 6),
-                villagerConfig.maxUsesOfManiaTablet,
+                villagerConfig.max_uses_of_mania_tablet,
                 40, priceMultiplier
         );
 

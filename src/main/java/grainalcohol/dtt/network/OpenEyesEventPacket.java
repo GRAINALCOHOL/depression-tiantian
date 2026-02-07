@@ -1,6 +1,7 @@
 package grainalcohol.dtt.network;
 
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.event.SymptomEvent;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -16,7 +17,7 @@ public class OpenEyesEventPacket {
     // 应用
     public void apply(java.util.function.Supplier<dev.architectury.networking.NetworkManager.PacketContext> context) {
         if (context.get().getPlayer() instanceof ServerPlayerEntity serverPlayerEntity) {
-            MentalIllnessEvent.OPEN_EYES_EVENT.invoker().onOpenEyes(serverPlayerEntity);
+            SymptomEvent.OPEN_EYES_EVENT.invoker().onOpenEyes(serverPlayerEntity);
         }
     }
 }
