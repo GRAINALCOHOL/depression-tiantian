@@ -43,6 +43,11 @@ public class MentalIllnessMixin {
             )
     )
     private void wrapCloseEyes(ServerPlayerEntity serverPlayerEntity, Operation<Void> original) {
+        if (!this.player.isOnGround()) {
+            // 不在地面上不闭眼
+            return;
+        }
+
         boolean saferCombat = DTTConfig.getInstance().getServerConfig().combatConfig.safer_combat;
         if (saferCombat && mentalStatus.combatCountdown > 0) {
             // 战斗状态下如果saferCombat配置为true则不会闭眼

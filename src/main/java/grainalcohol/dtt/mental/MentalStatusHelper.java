@@ -7,7 +7,6 @@ import net.depression.client.ClientMentalIllness;
 import net.depression.client.DepressionClient;
 import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
-import net.depression.mental.PTSDManager;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;

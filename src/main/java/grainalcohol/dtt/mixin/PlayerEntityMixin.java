@@ -9,11 +9,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,23 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void onTickTail(CallbackInfo ci) {
-        PlayerEntity self = (PlayerEntity) (Object) this;
-        if (!(self instanceof ServerPlayerEntity serverPlayerEntity)) {
-            return;
-        }
-        ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
-        if (serverWorld.getTimeOfDay() % 24000 == 0) {
-            // 每天0时更新统计数据
-            DailyStatManager.updateDailyStat(serverPlayerEntity);
-        }
-//        if (serverWorld.hasRain(serverPlayerEntity.getBlockPos())) {
-//            // 淋到雨时
-//            DailyStatManager.getTodayDailyStat(serverPlayerEntity.getUuid()).setHasRained(true);
-//        }
-    }
-
     @Inject(method = "eatFood", at = @At("RETURN"))
     private void onEatFoodReturn(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         PlayerEntity self = (PlayerEntity) (Object) this;
@@ -48,7 +28,6 @@ public abstract class PlayerEntityMixin {
             return;
         }
         DailyStatManager.getTodayDailyStat(self.getUuid()).setHasAte(true);
-        // 删除了吃东西回情绪的功能，原版就有
     }
 
     @Inject(

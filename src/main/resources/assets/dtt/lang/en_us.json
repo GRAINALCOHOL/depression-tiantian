@@ -443,7 +443,18 @@
   "message.dtt.close_eyes.2": "闭眼提示文案2",
   "message.dtt.close_eyes.3": "闭眼提示文案3",
 
-  "message.dtt.mental_health_scale.mental_health_index": "心理健康指数：%s",
+  "message.dtt.in_rain": "（身体被雨水淋湿，使你感到XX）",
+  "message.dtt.in_rain.1": "淋雨提示文案1",
+  "message.dtt.in_rain.2": "淋雨提示文案2",
+  "message.dtt.in_rain.3": "淋雨提示文案3",
+
+  "message.dtt.respawn_point_reset": "（设置了重生点，让你感到很安全）",
+
+  "message.dtt.kill_entity_heal.positive": "（击杀 %s 让你感到一阵兴奋）",
+
+  "message.dtt.kill_entity_heal.negative": "（击杀 %s 让你感到一阵XX）",
+
+  "message.dtt.mental_health_scale.mental_health_index": "心理健康指数：%s / 100",
   "text.dtt.mental_health_scale.mental_health_index.hover": "精神健康值：%s\n情绪值：%s",
   "message.dtt.mental_health_scale.assessment": "心理评估结果：%s",
   "text.dtt.mental_health_scale.assessment.hover": "患病情况：%s",

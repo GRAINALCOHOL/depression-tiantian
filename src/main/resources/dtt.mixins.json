@@ -7,7 +7,9 @@
     "client.InGameHudMixin",
     "client.MouseMixin",
     "event.ClientMentalIllnessMixin",
+    "modification.ClientActionbarHintMixin",
     "modification.ClientMentalIllnessMixin",
+    "modification.ClientPTSDManagerMixin",
     "modification.ClientTickEventListenerMixin"
   ],
   "mixins": [
@@ -19,12 +21,12 @@
     "RaidMixin",
     "ServerPlayerEntityMixin",
     "ServerWorldMixin",
+    "accessor.BoredomMapAccessor",
     "event.CloseEysPacketMixin",
     "event.DepressionRegistryMixin",
     "event.MentalIllnessMixin",
     "event.MentalStatusMixin",
     "event.PTSDManagerMixin",
-    "modification.ClientActionbarHintMixin",
     "modification.DiaryItemMixin",
     "modification.DiaryUpdatePacketMixin",
     "modification.MentalHealthScaleItemMixin",

@@ -1,19 +1,28 @@
 package grainalcohol.dtt.mixin.modification;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.config.DTTConfig;
+import grainalcohol.dtt.config.ServerConfig;
+import grainalcohol.dtt.mock.MockMentalStatus;
 import grainalcohol.dtt.util.MiscUtil;
 import net.depression.mental.MentalStatus;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 @Mixin(MentalStatus.class)
 public abstract class MentalStatusMixin {
@@ -22,6 +31,82 @@ public abstract class MentalStatusMixin {
     @Shadow @Final private ConcurrentHashMap<String, Long> PTSDTimeBuffer;
     @Shadow @Final private ConcurrentHashMap<String, Double> PTSDValueBuffer;
     @Shadow @Final public HashSet<String> playerPTSDSet;
+    @Shadow public long tickCount;
+    @Shadow private ServerPlayerEntity player;
+    @Shadow public abstract double mentalHeal(double value);
+
+    @Unique private double dtt$maxNearbyHealAmount = 0;
+
+    @WrapOperation(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/ExecutorService;submit(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;"
+            )
+    )
+    private Future<?> wrapDetectNearbyHealBlockCalled(ExecutorService executor, Runnable runnable, Operation<Future<?>> original) {
+        if (this.tickCount % 100 == 0) {
+            // 每5秒
+            return original.call(executor, runnable);
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @WrapOperation(
+            method = "detectNearbyHealBlock",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/mental/MentalStatus;mentalHeal(Ljava/lang/String;D)D"
+            )
+    )
+    private double redirectDetectNearbyHealBlockMentalHeal(MentalStatus mentalStatus, String id, double value, Operation<Double> original) {
+        ServerConfig.NearbyBlockHealMode nearbyBlockHealMode = DTTConfig.getInstance().getServerConfig().commonConfig.nearby_block_heal_mode;
+        if (nearbyBlockHealMode.equals(ServerConfig.NearbyBlockHealMode.EVERYONE)) {
+            // everyone模式：应用所有方块
+            return original.call(mentalStatus, id, value);
+        }
+
+        if (value > dtt$maxNearbyHealAmount) {
+            // max_only模式：仅应用回复量最大的那一个
+            dtt$maxNearbyHealAmount = value;
+        }
+        MockMentalStatus mockMentalStatus = new MockMentalStatus(mentalStatus);
+        return mockMentalStatus.mockMentalHeal(id, value);
+    }
+
+    @Inject(
+            method = "detectNearbyHealBlock",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendNearbyBlockHealPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void onDetectNearbyHealBlockSendPacket(CallbackInfo ci, @Local(name = "maxHealName") Text maxHealName) {
+        ServerConfig.NearbyBlockHealMode nearbyBlockHealMode = DTTConfig.getInstance().getServerConfig().commonConfig.nearby_block_heal_mode;
+        if (nearbyBlockHealMode.equals(ServerConfig.NearbyBlockHealMode.MAX_ONLY)) {
+            this.mentalHeal(dtt$maxNearbyHealAmount);
+        }
+        dtt$maxNearbyHealAmount = 0;
+        // nothing模式：什么都不做
+    }
+
+    @Inject(method = "viewDetect", at = @At("HEAD"), cancellable = true)
+    private void onViewDetectHead(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        double distance = this.player.getPos().distanceTo(entity.getPos());
+        if (distance > DTTConfig.getInstance().getServerConfig().commonConfig.max_distance_to_trigger_ptsd_by_sight) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @ModifyConstant(
+            method = "mentalHeal(Ljava/lang/String;D)D",
+            constant = @Constant(doubleValue = 2.0)
+    )
+    private double modifyPTSDHealThreshold(double original) {
+        double boredomStrength = DTTConfig.getInstance().getServerConfig().commonConfig.boredom_strength;
+        return 1 / boredomStrength; // 原数据为2.0，即(1 / 0.5)
+    }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void clearPTSDData(CallbackInfo ci) {

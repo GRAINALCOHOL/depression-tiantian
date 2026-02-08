@@ -1,5 +1,6 @@
 package grainalcohol.dtt.config;
 
+import com.google.gson.annotations.SerializedName;
 import grainalcohol.dtt.diary.DiaryContentHandler;
 import grainalcohol.dtt.diary.DiaryParagraph;
 import grainalcohol.dtt.diary.feeling.FeelingProducer;
@@ -176,12 +177,32 @@ public class ServerConfig {
          * @see ClientTickEventListenerMixin
          */
         public boolean disable_mental_trait_select_screen = false;
-
         /**
          * 默认true，启用后使健康和躁狂状态的玩家不会触发精神疲劳，并使抗抑郁状态效果提供的额外触发概率翻倍
          * @see grainalcohol.dtt.mixin.event.MentalIllnessMixin
          */
         public boolean mental_fatigue_trigger_chance_fixer = true;
+        /**
+         * 默认20，单位为方块，当玩家可能通过看到某个实体触发PTSD时，如果玩家与该实体之间的距离超过这个值，则不会触发PTSD
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        public int max_distance_to_trigger_ptsd_by_sight = 20;
+        /**
+         * depression原版为0.5，默认1.6，无聊值对情绪值恢复的影响强度<br>
+         * 多次恢复的恢复原因相同时，值越大，递减的速度越快
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        public double boredom_strength = 1.6;
+        /**
+         * 默认max_only，决定附近那些方块能提供情绪值恢复<br>
+         * 可选值：
+         * <ul>
+         *     <li>everyone：应用附近所有方块</li>
+         *     <li>max_only：仅应用回复量最大的那一个</li>
+         *     <li>nothing：不回复</li>
+         * </ul>
+         */
+        public NearbyBlockHealMode nearby_block_heal_mode = NearbyBlockHealMode.MAX_ONLY;
 
         public String comment_for_black_list = "首先，我要在这屎山上拉一坨新的，没有人能阻止我！" +
                 "然后，如果你想阻止某些伤害类型触发PTSD，就把你需要的伤害类型的id的“不带命名空间前缀，使用首字母小写驼峰命名法”版本添加进去，而且大概率只能使用原版的伤害类型，" +
@@ -191,5 +212,14 @@ public class ServerConfig {
         public Set<String> universal_ptsd_black_list = Set.of(
                 "genericKill"
         );
+    }
+
+    public enum NearbyBlockHealMode {
+        @SerializedName("everyone")
+        EVERYONE,
+        @SerializedName("max_only")
+        MAX_ONLY,
+        @SerializedName("nothing")
+        NOTHING,
     }
 }

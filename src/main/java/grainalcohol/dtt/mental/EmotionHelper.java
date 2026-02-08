@@ -31,6 +31,34 @@ public class EmotionHelper {
         return MentalStatusHelper.getMentalStatus(serverPlayerEntity).emotionValue;
     }
 
+    public static void setEmotionValue(ServerPlayerEntity serverPlayerEntity, double value) {
+        MentalStatusHelper.getMentalStatus(serverPlayerEntity).emotionValue = value;
+    }
+
+    public static void addEmotionValue(ServerPlayerEntity serverPlayerEntity, double addition) {
+        MentalStatusHelper.getMentalStatus(serverPlayerEntity).emotionValue += addition;
+    }
+
+    public static void multiplyEmotionValue(ServerPlayerEntity serverPlayerEntity, double factor) {
+        MentalStatusHelper.getMentalStatus(serverPlayerEntity).emotionValue *= factor;
+    }
+
+    public static boolean isPositiveEmotion(ServerPlayerEntity serverPlayerEntity, boolean includeZero) {
+        return isPositiveEmotion(getEmotionValue(serverPlayerEntity), includeZero);
+    }
+
+    public static boolean isPositiveEmotion(double emotionValue, boolean includeZero) {
+        return includeZero ? emotionValue >= 0 : emotionValue > 0;
+    }
+
+    public static boolean isNegativeEmotion(ServerPlayerEntity serverPlayerEntity, boolean includeZero) {
+        return isNegativeEmotion(getEmotionValue(serverPlayerEntity), includeZero);
+    }
+
+    public static boolean isNegativeEmotion(double emotionValue, boolean includeZero) {
+        return includeZero ? emotionValue <= 0 : emotionValue < 0;
+    }
+
     /**
      * 判断玩家是否处于战斗状态<br>
      * 注：这不是通用的战斗状态判断，仅用于depression的战斗状态判断
@@ -48,6 +76,10 @@ public class EmotionHelper {
      */
     public static boolean isInZenState(ServerPlayerEntity serverPlayerEntity) {
         return !Registry.playerEventMap.get(serverPlayerEntity.getUuid()).isEmpty();
+    }
+
+    public static EmotionLevel getEmotionLevel(ServerPlayerEntity serverPlayerEntity) {
+        return getEmotionLevel(getEmotionValue(serverPlayerEntity));
     }
 
     /**
