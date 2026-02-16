@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+// TODO: 考虑昨日感受对今日的影响
 public class DiaryContentHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiaryContentHandler.class);
     private static final Random RANDOM = new Random();
@@ -81,10 +82,10 @@ public class DiaryContentHandler {
                         // 正文段落
                         + "\n    " + generateTranslationKey(DiaryParagraph.BODY_ESSENTIAL, variantCount) // 话题1，也就是天气话题（通常来说不会为空）
                         + (!(isHasCured() && isHasWorsened()) ? mentalHealthChangeKey : "") // 一天内同时出现康复与恶化则不记录
-                        + generateTranslationKey(DiaryParagraph.BODY_MAJOR_IMPACT, variantCount) // 话题2
+                        + generateTranslationKey(DiaryParagraph.BODY_ESSENTIAL, variantCount) // 话题2
                         + generateTranslationKey(DiaryParagraph.BODY_NORMAL, variantCount) // 通用文案
-                        + (shouldAppendContent() ? generateTranslationKey(DiaryParagraph.BODY_ESSENTIAL, variantCount) : "") // 根据健康状态随机决定，话题3
-                        + (shouldAppendContent() ? generateTranslationKey(DiaryParagraph.BODY_MAJOR_IMPACT, variantCount) : "") // 根据健康状态随机决定，话题4
+                        + generateTranslationKey(DiaryParagraph.BODY_MAJOR_IMPACT, variantCount) // 话题3
+//                        + (shouldAppendContent() ? generateTranslationKey(DiaryParagraph.BODY_MAJOR_IMPACT, variantCount) : "") // 根据健康状态随机决定，话题4
                         + (shouldAppendManicContent() ? manicInsertionKey : "") // 躁狂时额外的内容，相当于另外一段通用文案
 
                         // 结尾段落
