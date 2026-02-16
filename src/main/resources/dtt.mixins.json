@@ -27,10 +27,13 @@
     "event.MentalIllnessMixin",
     "event.MentalStatusMixin",
     "event.PTSDManagerMixin",
+    "modification.BlockEventListenerMixin",
     "modification.DiaryItemMixin",
     "modification.DiaryUpdatePacketMixin",
+    "modification.JukeboxBlockEntityMixinMixin",
     "modification.MentalHealthScaleItemMixin",
     "modification.MentalStatusMixin",
+    "modification.MobEntityMixinMixin",
     "modification.PlayerEventListenerMixin",
     "modification.PTSDManagerMixin",
     "modification.VillageAdditionsMixin"

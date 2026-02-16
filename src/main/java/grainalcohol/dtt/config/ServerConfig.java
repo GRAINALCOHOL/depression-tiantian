@@ -19,6 +19,54 @@ public class ServerConfig {
     public CombatConfig combatConfig = new CombatConfig();
     public CommonConfig commonConfig = new CommonConfig();
     public ItemConfig itemConfig = new ItemConfig();
+    public MentalHealConfig mentalHealConfig = new MentalHealConfig();
+
+    public static class MentalHealConfig {
+        /**
+         * depression原版为20，默认600，单位为tick，附近方块提供情绪值恢复的间隔时间
+         */
+        public int nearby_block_interval_ticks = 600;
+        /**
+         * depression原版为everyone，默认max_only，决定附近那些方块能提供情绪值恢复<br>
+         * 可选值：
+         * <ul>
+         *     <li>everyone：应用附近所有方块的总恢复量</li>
+         *     <li>max_only：仅应用回复量最大的那一个</li>
+         *     <li>nothing：不回复</li>
+         * </ul>
+         */
+        public NearbyMultipleBlocksHealMode nearby_block_mode = NearbyMultipleBlocksHealMode.MAX_ONLY;
+
+        /**
+         * depression原版为20，默认600，单位为tick，宠物恢复情绪值的间隔时间
+         */
+        public int nearby_pet_interval_ticks = 600;
+        /**
+         * depression原版为everyone，默认exist，决定附近那些宠物能提供情绪值恢复<br>
+         * 可选值：
+         * <ul>
+         *     <li>everyone：应用附近所有宠物的总恢复量</li>
+         *     <li>exist：只要附近存在宠物就提供固定的恢复</li>
+         *     <li>nothing：不回复</li>
+         * </ul>
+         */
+        public NearbyAnythingHealMode nearby_pet_mode = NearbyAnythingHealMode.EXIST;
+
+        /**
+         * depression原版为20，默认600，单位为tick，唱片机恢复情绪的间隔时间
+         */
+        public int nearby_jukebox_interval_ticks = 600;
+        /**
+         * depression原版为everyone，默认exist，决定附近那些唱片机能提供情绪值恢复<br>
+         * 可选值：
+         * <ul>
+         *     <li>everyone：应用附近所有唱片机的总恢复量</li>
+         *     <li>exist：只要附近存在唱片机就提供固定的恢复</li>
+         *     <li>nothing：不回复</li>
+         * </ul>
+         */
+        public NearbyAnythingHealMode nearby_jukebox_mode = NearbyAnythingHealMode.EXIST;
+    }
 
     /**
      * 村民相关配置
@@ -193,16 +241,6 @@ public class ServerConfig {
          * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
          */
         public double boredom_strength = 1.6;
-        /**
-         * 默认max_only，决定附近那些方块能提供情绪值恢复<br>
-         * 可选值：
-         * <ul>
-         *     <li>everyone：应用附近所有方块</li>
-         *     <li>max_only：仅应用回复量最大的那一个</li>
-         *     <li>nothing：不回复</li>
-         * </ul>
-         */
-        public NearbyBlockHealMode nearby_block_heal_mode = NearbyBlockHealMode.MAX_ONLY;
 
         public String comment_for_black_list = "首先，我要在这屎山上拉一坨新的，没有人能阻止我！" +
                 "然后，如果你想阻止某些伤害类型触发PTSD，就把你需要的伤害类型的id的“不带命名空间前缀，使用首字母小写驼峰命名法”版本添加进去，而且大概率只能使用原版的伤害类型，" +
@@ -214,11 +252,20 @@ public class ServerConfig {
         );
     }
 
-    public enum NearbyBlockHealMode {
+    public enum NearbyMultipleBlocksHealMode {
         @SerializedName("everyone")
         EVERYONE,
         @SerializedName("max_only")
         MAX_ONLY,
+        @SerializedName("nothing")
+        NOTHING,
+    }
+
+    public enum NearbyAnythingHealMode {
+        @SerializedName("everyone")
+        EVERYONE,
+        @SerializedName("exist")
+        EXIST,
         @SerializedName("nothing")
         NOTHING,
     }

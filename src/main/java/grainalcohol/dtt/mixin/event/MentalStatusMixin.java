@@ -1,9 +1,13 @@
 package grainalcohol.dtt.mixin.event;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.api.event.EmotionEvent;
 import grainalcohol.dtt.api.event.MentalHealthEvent;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.mental.MentalIllnessStatus;
+import grainalcohol.dtt.mental.PTSDHelper;
+import grainalcohol.dtt.mental.PTSDLevel;
 import net.depression.mental.MentalStatus;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,6 +25,54 @@ public class MentalStatusMixin {
     @Unique private MentalIllnessStatus dtt$lastTickMentalIllnessStatus = MentalIllnessStatus.HEALTHY;
     @Unique private boolean dtt$lastTickIsInCombatState = false;
     @Unique private boolean dtt$lastTickIsManicPhase = false;
+
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/EntityType;get(Ljava/lang/String;)Ljava/util/Optional;",
+                    ordinal = 0
+            )
+    )
+    private void PTSDFormEvent(ServerPlayerEntity player, CallbackInfo ci, @Local(name = "string") String PTSDId) {
+        // PTSD形成事件
+        PTSDEvent.PTSD_FORM_EVENT.invoker().onPTSDFormed(player, PTSDId, PTSDLevel.LATENT);
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/ConcurrentHashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void PTSDLevelChangedEvent(
+            ServerPlayerEntity player, CallbackInfo ci,
+            @Local(name = "string") String PTSDId,
+            @Local(name = "originValue") Double originValue,
+            @Local(name = "damage") Double damage
+    ) {
+        PTSDLevel lastLevel = PTSDHelper.getPTSDLevel(originValue);
+        PTSDLevel currentLevel = PTSDHelper.getPTSDLevel(originValue + damage);
+        if (lastLevel != currentLevel) {
+            // PTSD等级发生变化
+            PTSDEvent.PTSD_LEVEL_CHANGED_EVENT.invoker().onPTSDLevelChanged(this.player, PTSDId, lastLevel, currentLevel);
+        }
+    }
+
+    @Inject(
+            method = "removePTSD",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/ConcurrentHashMap;remove(Ljava/lang/Object;)Ljava/lang/Object;",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void PTSDDisperseEvent(String PTSDId, CallbackInfo ci) {
+        // PTSD消散事件
+        PTSDEvent.PTSD_DISPERSE_EVENT.invoker().onPTSDDisperse(this.player, PTSDId);
+    }
 
     @Inject(
             method = "tick",

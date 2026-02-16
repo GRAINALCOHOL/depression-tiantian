@@ -443,7 +443,7 @@
   "message.dtt.mental_fatigue": "好累，不想动……",
   "message.dtt.mental_fatigue.1": "（轻轻呼出一口浊气，你感到很累）",
   "message.dtt.mental_fatigue.2": "（倦意从全身各处涌入大脑）",
-  "message.dtt.mental_fatigue.3": "腿像灌了铅似的，抬都抬不动……",
+  "message.dtt.mental_fatigue.3": "腿好重，没力气了……",
 
   "message.dtt.close_eyes": "好…累…啊……",
   "message.dtt.close_eyes.1": "闭眼提示文案1",
@@ -452,14 +452,28 @@
 
   // 这个目前还不完善，也可以说是很危险
   "message.dtt.respawn_point_reset": "（设置了重生点，让你感到很安全）",
+  "message.dtt.respawn_point_reset.1": "设置重生点提示文案1",
+  "message.dtt.respawn_point_reset.2": "设置重生点提示文案2",
+  "message.dtt.respawn_point_reset.3": "设置重生点提示文案3",
+
+  "message.dtt.nearby_jukebox_heal": "（音乐的旋律让你感到放松）",
+  "message.dtt.nearby_jukebox_heal.1": "在活动的唱片机附近逗留提示文案1",
+  "message.dtt.nearby_jukebox_heal.2": "在活动的唱片机附近逗留提示文案2",
+  "message.dtt.nearby_jukebox_heal.3": "在活动的唱片机附近逗留提示文案3",
 
   "message.dtt.in_rain": "（身体被雨水淋湿，让你感到一阵寒冷）",
-  "message.dtt.in_rain.1": "（你的衣服湿漉漉地贴在身上，每一步都变得更冷了）",
+  "message.dtt.in_rain.1": "（衣服湿漉漉地贴在身上，每一步都变得更冷了）",
   "message.dtt.in_rain.2": "（冰冷的雨水带走体温，让你忍不住微微发抖）",
   "message.dtt.in_rain.3": "淋雨提示文案3",
 
   "message.dtt.kill_entity_heal.positive": "（击杀 %s 让你感到一阵兴奋）",
   "message.dtt.kill_entity_heal.negative": "（击杀 %s 让你感到一阵反胃）",
+
+  "message.dtt.ptsd_latent": "（%s 使你产生了0级 PTSD ）",
+  "message.dtt.ptsd_form": "（你对 %s 产生了 PTSD ）",
+  "message.dtt.ptsd_extreme": "（%s 使你产生了4级 PTSD）",
+  "message.dtt.ptsd_disperse": "（你对 %s 的 PTSD 消散了）",
+  "message.dtt.ptsd_remission": "（你对 %s 的 PTSD 正在逐渐减轻）",
 
   "message.dtt.mental_health_scale.mental_health_index": "心理健康指数：%s / 100",
   "text.dtt.mental_health_scale.mental_health_index.hover": "精神健康值：%s\n情绪值：%s",
@@ -492,6 +506,8 @@
   "mental.severity.dtt.moderate": "中度的",
   "mental.severity.dtt.severe": "严重的",
   "mental.severity.dtt.none": "未知的",
+
+  "message.dtt.pet": "宠物",
 
   // 游戏文本
   "stat.dtt.animal_tamed": "驯服动物次数",

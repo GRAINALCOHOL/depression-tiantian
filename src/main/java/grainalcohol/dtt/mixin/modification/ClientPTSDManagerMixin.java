@@ -18,7 +18,7 @@ public class ClientPTSDManagerMixin {
             )
     )
     private void wrapSetPitch(PlayerEntity player, float pitch, Operation<Void> original) {
-        if (!DTTConfig.getInstance().getClientConfig().disable_panting_visual_animation) {
+        if (DTTConfig.getInstance().getClientConfig().visualConfig.disable_panting_visual_animation) {
             return;
         }
         original.call(player, pitch);

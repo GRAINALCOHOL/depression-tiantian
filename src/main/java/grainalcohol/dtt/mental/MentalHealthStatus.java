@@ -170,7 +170,7 @@ public enum MentalHealthStatus {
                 }
             }
             case NONE -> {
-                LOGGER.warn("MentalIllnessStatus is NONE when trying to get MentalHealthStatus");
+                LOGGER.warn("MentalIllnessStatus is CLEAR when trying to get MentalHealthStatus");
                 yield MentalHealthStatus.NONE;
             }
         };
@@ -178,7 +178,7 @@ public enum MentalHealthStatus {
 
     public boolean isHealthierThan(MentalHealthStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is healthier when one is NONE");
+            LOGGER.error("Cannot compare which is healthier when one is CLEAR");
             return false;
         }
         return this.getSeverity().isHealthierThan(other.getSeverity());
@@ -186,7 +186,7 @@ public enum MentalHealthStatus {
 
     public boolean isSickerThan(MentalHealthStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is sicker when one is NONE");
+            LOGGER.error("Cannot compare which is sicker when one is CLEAR");
             return false;
         }
         return this.getSeverity().isSickerThan(other.getSeverity());

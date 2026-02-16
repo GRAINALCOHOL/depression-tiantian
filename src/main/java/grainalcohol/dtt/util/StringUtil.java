@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class StringUtil {
-    private static final Object LOCK = new Object();
+    private static final Random RANDOM = new Random();
     public static String warp(String str, String warper) {
         if (str == null || warper == null) return null;
         return warper + str + warper;
@@ -15,6 +15,10 @@ public class StringUtil {
 
     public static String warp(String str) {
         return warp(str, "'");
+    }
+
+    public static @NotNull String findTranslationKeyVariant(@NotNull String baseTranslationKey, int variantCount) {
+        return findTranslationKeyVariant(baseTranslationKey, variantCount, RANDOM);
     }
 
     public static @NotNull String findTranslationKeyVariant(@NotNull String baseTranslationKey, int variantCount, Random random) {

@@ -83,6 +83,35 @@ public class EmotionHelper {
     }
 
     /**
+     * 恢复情绪值，呃，如果你能从方法名中看出来这是恢复情绪的话那我也是服了，
+     * 不过depression就是这么写的，改名的话……总之不太好。
+     * @param serverPlayerEntity 需要恢复情绪的玩家
+     * @param reason 恢复的原因，用于无聊度对恢复量的衰减，以及这部分内容实在太乱，能填什么你自己看着来吧
+     * @param healAmount 基础恢复量，实际恢复量会根据无聊度衰减
+     */
+    public static void mentalHeal(ServerPlayerEntity serverPlayerEntity, String reason, double healAmount) {
+        MentalStatusHelper.getMentalStatus(serverPlayerEntity).mentalHeal(reason, healAmount);
+    }
+
+    /**
+     * 直接恢复情绪值，不经过无聊度衰减
+     * @param serverPlayerEntity 需要恢复情绪的玩家
+     * @param healAmount 恢复量，直接加到情绪值上，不经过无聊度衰减
+     */
+    public static void mentalHeal(ServerPlayerEntity serverPlayerEntity, double healAmount) {
+        MentalStatusHelper.getMentalStatus(serverPlayerEntity).mentalHeal(healAmount);
+    }
+
+    /**
+     * 直接降低情绪值，不存在无聊度衰减机制
+     * @param serverPlayerEntity 需要降低情绪的玩家
+     * @param hurtAmount 降低量
+     */
+    public static void mentalHurt(ServerPlayerEntity serverPlayerEntity, double hurtAmount) {
+        MentalStatusHelper.getMentalStatus(serverPlayerEntity).mentalHurt(hurtAmount);
+    }
+
+    /**
      * 根据情绪值获取对应的情绪等级。<br>
      * 虽然但是我还是想吐槽depression设计这里的取值范围时为什么不能让区间方向统一一点
      * @param emotionValue 情绪值

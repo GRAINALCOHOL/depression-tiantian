@@ -4,6 +4,9 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 用于描述患病状态或精神健康状态的严重程度
+ */
 public enum Severity {
     HEALTHY(0, "healthy"),
     MILD(1, "mild"),
@@ -45,7 +48,7 @@ public enum Severity {
 
     public boolean isHealthierThan(Severity other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is healthier when one is NONE");
+            LOGGER.error("Cannot compare which is healthier when one is CLEAR");
             return false;
         }
 
@@ -54,7 +57,7 @@ public enum Severity {
 
     public boolean isSickerThan(Severity other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is sicker when one is NONE");
+            LOGGER.error("Cannot compare which is sicker when one is CLEAR");
             return false;
         }
 

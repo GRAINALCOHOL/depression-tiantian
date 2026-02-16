@@ -19,13 +19,17 @@ public class MockMentalStatus {
     private int mentalHealthId;
     private final ConcurrentHashMap<String, Integer> boredom;
 
-    public MockMentalStatus(MentalStatus mentalStatus) {
+    private MockMentalStatus(MentalStatus mentalStatus) {
         this.boredom = new ConcurrentHashMap<>();
 
         this.emotionValue = mentalStatus.emotionValue;
         this.mentalHealthValue = mentalStatus.mentalHealthValue;
         this.mentalHealthId = mentalStatus.getMentalHealthId();
         this.boredom.putAll(((BoredomMapAccessor) mentalStatus).getBoredomMap());
+    }
+
+    public static MockMentalStatus copyOf(MentalStatus mentalStatus) {
+        return new MockMentalStatus(mentalStatus);
     }
 
     public double mockMentalHeal(double value) {

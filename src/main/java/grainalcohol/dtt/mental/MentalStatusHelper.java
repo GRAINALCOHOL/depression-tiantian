@@ -167,35 +167,6 @@ public class MentalStatusHelper {
         return MentalHealthStatus.from(serverPlayerEntity).isMania();
     }
 
-    /**
-     * 判断玩家是否对非玩家事物有PTSD<br>
-     * 如生物：僵尸、箭矢等<br>
-     * 如事件：摔落、火焰等<br>
-     * @param serverPlayerEntity 需要判断的玩家
-     * @return 玩家是否对非玩家事物有PTSD
-     */
-    public static boolean hasPTSDForEvent(ServerPlayerEntity serverPlayerEntity) {
-        return !getMentalStatus(serverPlayerEntity).PTSD.isEmpty();
-    }
-
-    /**
-     * 判断玩家是否对任意玩家有PTSD
-     * @param serverPlayerEntity 需要判断的玩家
-     * @return 玩家是否对其它玩家有PTSD
-     */
-    public static boolean hasPTSDForPlayer(ServerPlayerEntity serverPlayerEntity) {
-        return !getMentalStatus(serverPlayerEntity).playerPTSDSet.isEmpty();
-    }
-
-    /**
-     * 判断玩家是否对任何事物有PTSD
-     * @param serverPlayerEntity 需要判断的玩家
-     * @return 玩家是否对任何事物有PTSD
-     */
-    public static boolean hasPTSDForAnything(ServerPlayerEntity serverPlayerEntity) {
-        return hasPTSDForEvent(serverPlayerEntity) || hasPTSDForPlayer(serverPlayerEntity);
-    }
-
     public static boolean isSeverelyIll(MentalStatus mentalStatus) {
         return isSeverelyIll(mentalStatus.getMentalHealthId());
     }

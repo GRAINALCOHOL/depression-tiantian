@@ -448,7 +448,23 @@
   "message.dtt.in_rain.2": "淋雨提示文案2",
   "message.dtt.in_rain.3": "淋雨提示文案3",
 
+  "message.dtt.nearby_jukebox_heal": "（音乐的旋律让你感到放松）",
+  "message.dtt.nearby_jukebox_heal.1": "在活动的唱片机附近逗留提示文案1",
+  "message.dtt.nearby_jukebox_heal.2": "在活动的唱片机附近逗留提示文案2",
+  "message.dtt.nearby_jukebox_heal.3": "在活动的唱片机附近逗留提示文案3",
+
+  "message.dtt.ptsd_latent": "（%s 使你产生了0级 PTSD ）",
+  "message.dtt.ptsd_form": "（你对 %s 产生了 PTSD ）",
+  "message.dtt.ptsd_extreme": "（%s 使你产生了4级 PTSD）",
+  "message.dtt.ptsd_disperse": "（你对 %s 的 PTSD 消散了）",
+  "message.dtt.ptsd_remission": "（你对 %s 的 PTSD 正在逐渐减轻）",
+
+  "message.dtt.pet": "pet",
+
   "message.dtt.respawn_point_reset": "（设置了重生点，让你感到很安全）",
+  "message.dtt.respawn_point_reset.1": "",
+  "message.dtt.respawn_point_reset.2": "",
+  "message.dtt.respawn_point_reset.3": "",
 
   "message.dtt.kill_entity_heal.positive": "（击杀 %s 让你感到一阵兴奋）",
 

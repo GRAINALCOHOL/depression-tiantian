@@ -3,19 +3,23 @@ package grainalcohol.dtt.mixin.modification;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.architectury.networking.NetworkManager;
 import grainalcohol.dtt.config.ClientConfig;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.util.StringUtil;
 import net.depression.client.ClientActionbarHint;
 import net.depression.client.DepressionClient;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 
@@ -23,39 +27,60 @@ import java.util.Random;
 public class ClientActionbarHintMixin {
     @Unique private static final Random RANDOM = new Random();
 
+    @Inject(method = "receivePTSDFormPacket", at = @At("HEAD"), cancellable = true)
+    private void enhancedPTSDFormMessage(PacketByteBuf buf, NetworkManager.PacketContext packetContext, CallbackInfo ci) {
+        if (DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhanced_ptsd_form_message) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "receivePTSDDispersePacket", at = @At("HEAD"), cancellable = true)
+    private void enhancedPTSDDisperseMessage(PacketByteBuf buf, NetworkManager.PacketContext packetContext, CallbackInfo ci) {
+        if (DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhanced_ptsd_disperse_message) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "receivePTSDRemissionPacket", at = @At("HEAD"), cancellable = true)
+    private void enhancedPTSDRemissionMessage(PacketByteBuf buf, NetworkManager.PacketContext packetContext, CallbackInfo ci) {
+        if (DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhanced_ptsd_remission_message) {
+            ci.cancel();
+        }
+    }
+
     @ModifyConstant(method = "receiveFishHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyFishHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
 
     @ModifyConstant(method = "receiveFeedAnimalHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyFeedAnimalHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
 
     @ModifyConstant(method = "receivePetHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyPetHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
 
     @ModifyConstant(method = "receiveLootHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyLootHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
     
     @ModifyConstant(method = "receiveNearbyBlockHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyNearbyBlockHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
 
     @ModifyConstant(method = "receiveBreakBlockHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyBreakBlockHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
 
     @ModifyConstant(method = "receiveKillEntityHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyKillEntityHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.heal_message_interval_ticks);
     }
 
     @WrapOperation(
@@ -67,7 +92,7 @@ public class ClientActionbarHintMixin {
     )
     private void enhancedKillEntityHealMessage(InGameHud inGameHud, Text message, boolean tinted, Operation<Void> original, @Local(name = "id") Text entityId) {
         ClientConfig clientConfig = DTTConfig.getInstance().getClientConfig();
-        if (!clientConfig.enhanced_kill_entity_message) {
+        if (!clientConfig.messageDisplayConfig.enhanced_kill_entity_message) {
             original.call(inGameHud, message, tinted);
         } else {
             double emotionValue = DepressionClient.clientMentalStatus.emotionValue;
@@ -85,11 +110,11 @@ public class ClientActionbarHintMixin {
     )
     private MutableText mentalFatigueMessageVariant(String originalKey, Operation<MutableText> original) {
         // TODO: 使文案能够根据精神健康状态不同而不同
-        int variantCount = DTTConfig.getInstance().getClientConfig().mental_fatigue_message_variant_count;
+        int variantCount = DTTConfig.getInstance().getClientConfig().messageVariantConfig.mental_fatigue_message_variant_count;
         if (variantCount > 0) {
             return original.call(StringUtil.findTranslationKeyVariant(
-                    "message.dtt.mental_fatigue", variantCount, RANDOM)
-            );
+                    "message.dtt.mental_fatigue", variantCount, RANDOM
+            ));
         }
         return original.call(originalKey);
     }

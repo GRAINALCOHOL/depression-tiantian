@@ -2,8 +2,8 @@ package grainalcohol.dtt.mixin.modification;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.DTTMod;
+import grainalcohol.dtt.api.internal.BlockBreakMentalHealCooldownController;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.config.ServerConfig;
 import grainalcohol.dtt.mock.MockMentalStatus;
@@ -11,7 +11,6 @@ import grainalcohol.dtt.util.MiscUtil;
 import net.depression.mental.MentalStatus;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,7 +24,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 @Mixin(MentalStatus.class)
-public abstract class MentalStatusMixin {
+public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownController {
+    @Unique private int dtt$blockBreakHealCooldownTicks = 0;
+    @Unique private double dtt$maxNearbyHealAmount = 0;
+
     @Shadow public abstract void mentalHurt(double value);
     @Shadow @Final public ConcurrentHashMap<String, Double> PTSD;
     @Shadow @Final private ConcurrentHashMap<String, Long> PTSDTimeBuffer;
@@ -35,7 +37,24 @@ public abstract class MentalStatusMixin {
     @Shadow private ServerPlayerEntity player;
     @Shadow public abstract double mentalHeal(double value);
 
-    @Unique private double dtt$maxNearbyHealAmount = 0;
+    @Unique
+    @Override
+    public int dtt$getCooldownTicks() {
+        return this.dtt$blockBreakHealCooldownTicks;
+    }
+
+    @Unique
+    @Override
+    public void dtt$setCooldownTicks(int ticks) {
+        this.dtt$blockBreakHealCooldownTicks = ticks;
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void onTickTail(CallbackInfo ci) {
+        if (this.dtt$blockBreakHealCooldownTicks > 0) {
+            this.dtt$blockBreakHealCooldownTicks--;
+        }
+    }
 
     @WrapOperation(
             method = "tick",
@@ -45,8 +64,7 @@ public abstract class MentalStatusMixin {
             )
     )
     private Future<?> wrapDetectNearbyHealBlockCalled(ExecutorService executor, Runnable runnable, Operation<Future<?>> original) {
-        if (this.tickCount % 100 == 0) {
-            // 每5秒
+        if (this.tickCount % DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_block_interval_ticks == 0) {
             return original.call(executor, runnable);
         }
         return CompletableFuture.completedFuture(null);
@@ -60,8 +78,8 @@ public abstract class MentalStatusMixin {
             )
     )
     private double redirectDetectNearbyHealBlockMentalHeal(MentalStatus mentalStatus, String id, double value, Operation<Double> original) {
-        ServerConfig.NearbyBlockHealMode nearbyBlockHealMode = DTTConfig.getInstance().getServerConfig().commonConfig.nearby_block_heal_mode;
-        if (nearbyBlockHealMode.equals(ServerConfig.NearbyBlockHealMode.EVERYONE)) {
+        ServerConfig.NearbyMultipleBlocksHealMode nearbyMultipleBlocksHealMode = DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_block_mode;
+        if (nearbyMultipleBlocksHealMode.equals(ServerConfig.NearbyMultipleBlocksHealMode.EVERYONE)) {
             // everyone模式：应用所有方块
             return original.call(mentalStatus, id, value);
         }
@@ -70,7 +88,7 @@ public abstract class MentalStatusMixin {
             // max_only模式：仅应用回复量最大的那一个
             dtt$maxNearbyHealAmount = value;
         }
-        MockMentalStatus mockMentalStatus = new MockMentalStatus(mentalStatus);
+        MockMentalStatus mockMentalStatus = MockMentalStatus.copyOf(mentalStatus);
         return mockMentalStatus.mockMentalHeal(id, value);
     }
 
@@ -82,9 +100,9 @@ public abstract class MentalStatusMixin {
                     shift = At.Shift.AFTER
             )
     )
-    private void onDetectNearbyHealBlockSendPacket(CallbackInfo ci, @Local(name = "maxHealName") Text maxHealName) {
-        ServerConfig.NearbyBlockHealMode nearbyBlockHealMode = DTTConfig.getInstance().getServerConfig().commonConfig.nearby_block_heal_mode;
-        if (nearbyBlockHealMode.equals(ServerConfig.NearbyBlockHealMode.MAX_ONLY)) {
+    private void onDetectNearbyHealBlockSendPacket(CallbackInfo ci) {
+        ServerConfig.NearbyMultipleBlocksHealMode nearbyMultipleBlocksHealMode = DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_block_mode;
+        if (nearbyMultipleBlocksHealMode.equals(ServerConfig.NearbyMultipleBlocksHealMode.MAX_ONLY)) {
             this.mentalHeal(dtt$maxNearbyHealAmount);
         }
         dtt$maxNearbyHealAmount = 0;
