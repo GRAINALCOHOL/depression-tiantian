@@ -13,9 +13,9 @@ public class DTTStat {
     public static final Identifier ANIMAL_TAMED = DTTMod.id("animal_tamed");
     public static final Identifier RAID_LOSS = DTTMod.id("raid_loss");
 
-    private static void register(Identifier resourceLocation, StatFormatter formatter) {
-        Registry.register(Registries.CUSTOM_STAT, resourceLocation.getPath(), resourceLocation);
-        Stats.CUSTOM.getOrCreateStat(resourceLocation, formatter);
+    private static void register(Identifier identifier, StatFormatter formatter) {
+        Registry.register(Registries.CUSTOM_STAT, identifier.getPath(), identifier);
+        Stats.CUSTOM.getOrCreateStat(identifier, formatter);
     }
 
     public static void init() {

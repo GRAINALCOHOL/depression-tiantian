@@ -1,9 +1,23 @@
 package grainalcohol.dtt.diary.topic;
 
+import grainalcohol.dtt.diary.dailystat.DailyStat;
+import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+
+import java.util.UUID;
+import java.util.function.Function;
+
 public class TopicWeightCalculator {
     private static final double LOG_SCALE = 100.0; // 缩放因子
     private static final double MAX_WEIGHT_ROUND = 10.0;
     private static final double MIN_NORMALIZATION_VALUE = 10.0;
+
+    public static double calculateWeight(UUID playerUUID, Function<DailyStat, Integer> statExtractor) {
+        int todayValue = DailyStatManager.getTodayValue(playerUUID, statExtractor);
+        int yesterdayValue = DailyStatManager.getYesterdayValue(playerUUID, statExtractor);
+        int emaValue = DailyStatManager.getEMAValue(playerUUID, statExtractor);
+
+        return calculateWeight(todayValue, yesterdayValue, emaValue);
+    }
 
     /**
      * 计算话题权重

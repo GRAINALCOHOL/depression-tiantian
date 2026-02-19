@@ -1,14 +1,13 @@
-package grainalcohol.dtt.diary;
+package grainalcohol.dtt.diary.v2;
 
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.config.DTTConfig;
+import grainalcohol.dtt.diary.topic.v2.ContextAttribute;
 import grainalcohol.dtt.diary.dailystat.DailyStat;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
-import grainalcohol.dtt.diary.feeling.Feeling;
-import grainalcohol.dtt.diary.feeling.FeelingProducer;
-import grainalcohol.dtt.diary.topic.Topic;
-import grainalcohol.dtt.diary.topic.TopicProducer;
-import grainalcohol.dtt.diary.topic.TopicType;
+import grainalcohol.dtt.diary.feeling.v2.Feeling;
+import grainalcohol.dtt.diary.feeling.v2.FeelingProducer;
+import grainalcohol.dtt.diary.topic.v2.TopicProducer;
 import grainalcohol.dtt.mental.MentalHealthStatus;
 import grainalcohol.dtt.util.MathUtil;
 import grainalcohol.dtt.util.StringUtil;
@@ -18,33 +17,30 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-// TODO: 考虑昨日感受对今日的影响
-public class DiaryContentHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiaryContentHandler.class);
+public class DiaryContentProducer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiaryContentProducer.class);
     private static final Random RANDOM = new Random();
     private final MentalHealthStatus mentalHealthStatus;
+
     private final TopicProducer topicProducer;
+    private final FeelingProducer feelingProducer;
 
     private final Feeling feeling;
     private final boolean hasCured; // 康复
     private final boolean hasWorsened; // 恶化
 
-    private final Queue<Topic> essentialTopicQueue;
-    private final Queue<Topic> majorImpactTopicQueue;
-
     private final List<String> usedTranslationKeys;
 
-    public DiaryContentHandler(ServerPlayerEntity player) {
+    public DiaryContentProducer(ServerPlayerEntity player) {
         this.mentalHealthStatus = MentalHealthStatus.from(player);
-        this.topicProducer = new TopicProducer(player);
+        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.slightly_more_positive_diary;
+        this.topicProducer = new TopicProducer(player, makeDiarySlightlyMorePositive);
 
-        this.feeling = new FeelingProducer(getMentalHealthStatus(), getTopicProducer()).getResult();
+        this.feelingProducer = new FeelingProducer(getTopicProducer().getAllContextAttributes(), makeDiarySlightlyMorePositive);
+        this.feeling = feelingProducer.getFeeling();
 
         this.hasCured = DailyStatManager.getTodayResult(player.getUuid(), DailyStat::isHasCured);
         this.hasWorsened = DailyStatManager.getTodayResult(player.getUuid(), DailyStat::isHasWorsened);
-
-        this.essentialTopicQueue = new LinkedList<>(getTopicProducer().getTopicTypeList(TopicType.ESSENTIAL));
-        this.majorImpactTopicQueue = new LinkedList<>(getTopicProducer().getTopicTypeList(TopicType.MAJOR_IMPACT));
 
         this.usedTranslationKeys = new ArrayList<>();
     }
@@ -66,24 +62,24 @@ public class DiaryContentHandler {
 
         String mentalHealthChangeKey = "";
         if (isHasCured()) {
-            mentalHealthChangeKey = generateTranslationKey(DiaryParagraph.HAS_CURED, variantCount);
+            mentalHealthChangeKey = generateTranslationKey(DiaryParagraph.CURED, variantCount);
         }
         if (isHasWorsened()) {
-            mentalHealthChangeKey = generateTranslationKey(DiaryParagraph.HAS_WORSENED, variantCount);
+            mentalHealthChangeKey = generateTranslationKey(DiaryParagraph.WORSENED, variantCount);
         }
 
-        String manicInsertionKey = generateTranslationKey(DiaryParagraph.MANIC_INSERTION, variantCount);
+        String manicInsertionKey = generateTranslationKey(DiaryParagraph.MANIC_GENERAL, variantCount);
 
         return // 开头段落
                 "    " + generateTranslationKey(DiaryParagraph.OPENING, variantCount)
 
                         // 正文段落
-                        + "\n    " + generateTranslationKey(DiaryParagraph.BODY_ESSENTIAL, variantCount) // 话题1，也就是天气话题（通常来说不会为空）
+                        + "\n    " + generateTranslationKey(DiaryParagraph.WEATHER, variantCount) // 天气话题
                         + (!(isHasCured() && isHasWorsened()) ? mentalHealthChangeKey : "") // 一天内同时出现康复与恶化则不记录
-                        + generateTranslationKey(DiaryParagraph.BODY_ESSENTIAL, variantCount) // 话题2
-                        + "\n    " + generateTranslationKey(DiaryParagraph.BODY_NORMAL, variantCount) // 通用文案
-                        + generateTranslationKey(DiaryParagraph.BODY_MAJOR_IMPACT, variantCount) // 话题3
-                        + (shouldAppendManicContent() ? manicInsertionKey : "") // 躁狂时额外的内容，相当于另外一段通用文案
+                        + generateTranslationKey(DiaryParagraph.TOPIC, variantCount) // 话题1
+                        + "\n    " + generateTranslationKey(DiaryParagraph.GENERAL, variantCount) // 通用段落
+                        + generateTranslationKey(DiaryParagraph.TOPIC, variantCount) // 话题2
+                        + (shouldAppendManicContent() ? manicInsertionKey : "") // 躁狂额外通用段落
 
                         // 结尾段落
                         + "\n    " + generateTranslationKey(DiaryParagraph.CLOSING, variantCount);
@@ -118,7 +114,7 @@ public class DiaryContentHandler {
     }
 
     /**
-     * 生成指定段落的translationKey，{@link DiaryParagraph#BODY_ESSENTIAL}和{@link DiaryParagraph#BODY_MAJOR_IMPACT}会消费指定话题队列中的话题<br>
+     * 生成指定段落的translationKey，{@link DiaryParagraph#TOPIC}会消费指定话题队列中的话题
      * @param paragraph 指定的段落
      * @param variantCount 查找指定数量的变体
      * @see #findRandomVariant(String, int)
@@ -133,7 +129,7 @@ public class DiaryContentHandler {
     }
 
     /**
-     * 生成指定段落的translationKey，{@link DiaryParagraph#BODY_ESSENTIAL}和{@link DiaryParagraph#BODY_MAJOR_IMPACT}会消费指定话题队列中的话题<br>
+     * 生成指定段落的translationKey，{@link DiaryParagraph#TOPIC}会消费指定话题队列中的话题
      * @param paragraph 指定的段落
      * @return 生成的translationKey，会使用单引号包装，生成失败返回空字符串
      */
@@ -142,85 +138,77 @@ public class DiaryContentHandler {
     }
 
     /**
-     * 生成指定段落的translationKey，{@link DiaryParagraph#BODY_ESSENTIAL}和{@link DiaryParagraph#BODY_MAJOR_IMPACT}会消费指定话题队列中的话题<br>
+     * 生成指定段落的translationKey，{@link DiaryParagraph#TOPIC}会消费指定话题队列中的话题
      * @param paragraph 指定的段落
      * @param enableWarp 是否使用单引号包装首尾（原因是depression客户端以单引号为边界处理本地化）
      * @return 生成的translationKey，生成失败返回空字符串
      */
     public String generateTranslationKey(DiaryParagraph paragraph, boolean enableWarp) {
-        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.slightly_more_positive_diary;
         String result = switch (paragraph) {
-            case MANIC_INSERTION -> composeTranslationKey(
-                    // 躁狂额外内容与感受相关
+            case MANIC_GENERAL -> composeTranslationKey(
+                    // 躁狂额外段落仅与感受相关
                     getPrefixTranslationKey(),
-                    paragraph.getName(),
-                    getFeeling().getName()
+                    paragraph.getTranslationKey(),
+                    getFeeling().getTranslationKey()
             );
-            case NO_DIARY, HAS_CURED, HAS_WORSENED -> composeTranslationKey(
-                    // 这些段落与心理健康状态相关
+            case NO_DIARY, CURED, WORSENED -> composeTranslationKey(
+                    // 这些段落仅与心理健康状态相关
                     getPrefixTranslationKey(),
                     getMentalHealthStatus().getName(),
-                    paragraph.getName()
+                    paragraph.getTranslationKey()
             );
-            case OPENING, CLOSING, BODY_NORMAL -> composeTranslationKey(
+            case OPENING, CLOSING, GENERAL -> composeTranslationKey(
                     // 这些段落与心理健康状态和感受相关
                     getPrefixTranslationKey(),
                     getMentalHealthStatus().getName(),
-                    paragraph.getName(),
-                    getFeeling().getName()
+                    paragraph.getTranslationKey(),
+                    getFeeling().getTranslationKey()
             );
-            case BODY_ESSENTIAL -> {
-                if (getEssentialTopicQueue().isEmpty()) {
-                    LOGGER.warn("Essential topics queue is empty, returning empty string");
+            case TOPIC -> {
+                String topicTranslationKey = findTopicTranslationKey();
+                if (topicTranslationKey == null || topicTranslationKey.isEmpty()) {
                     yield "";
                 }
-
-                Topic topic = getEssentialTopicQueue().poll();
-                if (topic == null) {
-                    LOGGER.warn("Polled essential topic is null, returning empty string");
-                    yield "";
-                }
-                if (makeDiarySlightlyMorePositive && topic.isShouldExcludedDueToNegativity()) {
-                    LOGGER.info("Skipping essential topic '{}' due to negativity, polling next topic", topic.getName());
-                    yield generateTranslationKey(paragraph, enableWarp);
-                }
-                yield composeTranslationKey(
-                        // 重要话题段落与心理健康状态、话题内容和感受相关
-                        getPrefixTranslationKey(),
-                        getMentalHealthStatus().getName(),
-                        paragraph.getName(),
-                        topic.getName(),
-                        getFeeling().getName()
+                yield  composeTranslationKey(
+                    // 话题段落与心理健康状态、话题内容和感受相关
+                    getPrefixTranslationKey(),
+                    getMentalHealthStatus().getName(),
+                    paragraph.getTranslationKey(),
+                    topicTranslationKey,
+                    getFeeling().getTranslationKey()
                 );
             }
-            case BODY_MAJOR_IMPACT -> {
-                if (getMajorImpactTopicQueue().isEmpty()) {
-                    LOGGER.warn("Major impact topics queue is empty, returning empty string");
-                    yield "";
-                }
-
-                Topic topic = getMajorImpactTopicQueue().poll();
-                if (topic == null) {
-                    LOGGER.warn("Polled major impact topic is null, returning empty string");
-                    yield "";
-                }
-                if (makeDiarySlightlyMorePositive && topic.isShouldExcludedDueToNegativity()) {
-                    LOGGER.info("Skipping major impact topic '{}' due to negativity, polling next topic", topic.getName());
-                    yield generateTranslationKey(paragraph, enableWarp);
-                }
-                yield composeTranslationKey(
-                        // 重大影响话题段落与心理健康状态、话题内容和感受相关
-                        getPrefixTranslationKey(),
-                        getMentalHealthStatus().getName(),
-                        paragraph.getName(),
-                        topic.getName(),
-                        getFeeling().getName()
-                );
-            }
+            case WEATHER -> composeTranslationKey(
+                    // 天气话题与心理健康状态、话题内容和感受相关
+                    getPrefixTranslationKey(),
+                    getMentalHealthStatus().getName(),
+                    paragraph.getTranslationKey(),
+                    getTopicProducer().getWeatherTopicAttribute().getTranslationKey(),
+                    getFeeling().getTranslationKey()
+            );
         };
         if (result == null || result.isEmpty()) return "";
         if (!enableWarp) return result;
         return StringUtil.warp(result);
+    }
+
+    /**
+     * 从话题生产器中获取下一个话题的translationKey并返回。
+     * @see TopicProducer#pollNextEssential()
+     * @return 话题的translationKey，获取失败返回空字符串
+     */
+    private String findTopicTranslationKey() {
+        if (getTopicProducer().isEmpty()) {
+            LOGGER.debug("TopicProducer is empty when trying to find topic translation key.");
+            return "";
+        }
+        ContextAttribute contextAttribute = getTopicProducer().pollNextEssential();
+        if (contextAttribute == null) {
+            LOGGER.debug("Polled ContextAttribute is null when trying to find topic translation key.");
+            return "";
+        }
+
+        return contextAttribute.getTranslationKey();
     }
 
     /**
@@ -249,14 +237,6 @@ public class DiaryContentHandler {
 
     public MentalHealthStatus getMentalHealthStatus() {
         return mentalHealthStatus;
-    }
-
-    public Queue<Topic> getEssentialTopicQueue() {
-        return essentialTopicQueue;
-    }
-
-    public Queue<Topic> getMajorImpactTopicQueue() {
-        return majorImpactTopicQueue;
     }
 
     public List<String> getUsedTranslationKeys() {

@@ -1,9 +1,13 @@
 package grainalcohol.dtt.init;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.api.event.SymptomEvent;
+import grainalcohol.dtt.diary.dailystat.DailyStat;
+import grainalcohol.dtt.diary.dailystat.DailyStatManager;
 import grainalcohol.dtt.mental.MentalHealthStatus;
 import net.depression.client.ClientMentalIllness;
 import net.depression.client.ClientMentalStatus;
@@ -12,6 +16,7 @@ import net.depression.mental.MentalStatus;
 import net.depression.network.CloseEyePacket;
 import net.depression.server.Registry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -41,7 +46,36 @@ public class DTTCommand {
                         .then(literal("combat_status").executes(DTTCommand::checkCombatStatus))
                         .then(literal("is_close_eyes").executes(DTTCommand::checkIsCloseEyes))
                 )
+                .then(literal("daily_stat")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .then(literal("add")
+                                .then(CommandManager.argument("amount", IntegerArgumentType.integer())
+                                        .executes(context -> {
+                                            ServerCommandSource source = context.getSource();
+                                            int amount = IntegerArgumentType.getInteger(context.copyFor(source), "amount");
+                                            return addDailyStat(context, amount);
+                                }))
+
+                        )
+                )
         );
+    }
+
+    private static int addDailyStat(CommandContext<ServerCommandSource> context, int amount) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+        DailyStat dailyStat = DailyStatManager.getTodayDailyStat(player.getUuid());
+
+        player.sendMessage(Text.literal("Before amount is" + dailyStat.getMonsterKilled()));
+
+        dailyStat.increaseMonsterKilled(amount);
+
+        player.sendMessage(Text.literal("Added monster killed daily stat by:" + amount));
+        player.sendMessage(Text.literal("Current amount is" + dailyStat.getMonsterKilled()));
+
+        return 1;
     }
 
     private static int checkIsCloseEyes(CommandContext<ServerCommandSource> context) {

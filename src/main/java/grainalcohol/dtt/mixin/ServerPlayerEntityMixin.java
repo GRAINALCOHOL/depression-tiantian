@@ -6,6 +6,7 @@ import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.config.ServerConfig;
 import grainalcohol.dtt.diary.dailystat.DailyStat;
 import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.topic.v2.TopicManager;
 import grainalcohol.dtt.mental.EmotionHelper;
 import grainalcohol.dtt.mental.MentalStatusHelper;
 import grainalcohol.dtt.util.NearbyMentalHealHelper;
@@ -233,6 +234,32 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
     private void onWriteCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 
+        this.dtt$hasSendInRainMessage = nbt.getBoolean("dtt$hasCheckInRain");
+        this.dtt$hasSendResetSpawnPointMessage = nbt.getBoolean("dtt$hasResetSpawnPoint");
+
+        NbtCompound dailyStatNbt = new NbtCompound();
+
+        NbtCompound todayNbtCompound = new NbtCompound();
+        DailyStatManager.getTodayDailyStat(self.getUuid()).writeToNbt(todayNbtCompound);
+        dailyStatNbt.put(DailyStat.TODAY_DAILY_STAT_NBT_KEY, todayNbtCompound);
+
+        NbtCompound yesterdayNbtCompound = new NbtCompound();
+        DailyStatManager.getYesterdayDailyStat(self.getUuid()).writeToNbt(yesterdayNbtCompound);
+        dailyStatNbt.put(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY, yesterdayNbtCompound);
+
+        NbtCompound movingAverageNbtCompound = new NbtCompound();
+        DailyStatManager.getMovingAverageDailyStat(self.getUuid()).writeToNbt(movingAverageNbtCompound);
+        dailyStatNbt.put(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY, movingAverageNbtCompound);
+
+        nbt.put(DailyStat.DAILY_STAT_NBT_KEY, dailyStatNbt);
+
+        TopicManager.writeToNbt(self.getUuid(), nbt);
+    }
+
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    private void onReadCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
+        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+
         nbt.putBoolean("dtt$hasCheckInRain", this.dtt$hasSendInRainMessage);
         nbt.putBoolean("dtt$hasResetSpawnPoint", this.dtt$hasSendResetSpawnPointMessage);
 
@@ -255,29 +282,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
                 DailyStatManager.setMovingAverageDailyStat(self.getUuid(), movingAverageStat);
             }
         }
-    }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    private void onReadCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
-        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-
-        this.dtt$hasSendInRainMessage = nbt.getBoolean("dtt$hasCheckInRain");
-        this.dtt$hasSendResetSpawnPointMessage = nbt.getBoolean("dtt$hasResetSpawnPoint");
-
-        NbtCompound dailyStatNbt = new NbtCompound();
-
-        NbtCompound todayNbtCompound = new NbtCompound();
-        DailyStatManager.getTodayDailyStat(self.getUuid()).writeToNbt(todayNbtCompound);
-        dailyStatNbt.put(DailyStat.TODAY_DAILY_STAT_NBT_KEY, todayNbtCompound);
-
-        NbtCompound yesterdayNbtCompound = new NbtCompound();
-        DailyStatManager.getYesterdayDailyStat(self.getUuid()).writeToNbt(yesterdayNbtCompound);
-        dailyStatNbt.put(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY, yesterdayNbtCompound);
-
-        NbtCompound movingAverageNbtCompound = new NbtCompound();
-        DailyStatManager.getMovingAverageDailyStat(self.getUuid()).writeToNbt(movingAverageNbtCompound);
-        dailyStatNbt.put(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY, movingAverageNbtCompound);
-
-        nbt.put(DailyStat.DAILY_STAT_NBT_KEY, dailyStatNbt);
+        TopicManager.readFromNbt(self.getUuid(), nbt);
     }
 }
