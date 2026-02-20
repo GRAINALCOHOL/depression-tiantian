@@ -1,6 +1,7 @@
 package grainalcohol.dtt.mixin;
 
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
+import grainalcohol.dtt.init.DTTDailyStat;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.raid.Raid;
@@ -35,7 +36,9 @@ public abstract class RaidMixin {
         if (!dtt$raidHasLostYet && raid.hasLost()) {
             dtt$raidHasLostYet = true;
             List<ServerPlayerEntity> players = serverWorld.getPlayers(isInRaidDistance());
-            players.forEach(player -> DailyStatManager.getTodayDailyStat(player.getUuid()).setHasRaidFailed(true));
+            players.forEach(player -> DailyStatManager.getTodayStat(player.getUuid())
+                    .setTrueStat(DTTDailyStat.RAID_FAILED)
+            );
         }
     }
 }

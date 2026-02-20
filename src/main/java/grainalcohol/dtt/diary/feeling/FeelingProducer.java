@@ -52,7 +52,7 @@ public class FeelingProducer {
                 continue;
             }
 
-            if (DTTConfig.getInstance().getServerConfig().diaryConfig.slightly_more_positive_diary && negativeScore > positiveScore) {
+            if (DTTConfig.getInstance().getServerConfig().diaryConfig.gentle_mode && negativeScore > positiveScore) {
                 // 使日记稍微积极一点点
                 negativeScore *= 0.8;
             }

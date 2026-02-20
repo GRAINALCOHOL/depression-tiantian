@@ -5,8 +5,9 @@ import grainalcohol.dtt.api.internal.PendingMessageQueueController;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.config.ServerConfig;
 import grainalcohol.dtt.diary.dailystat.DailyStat;
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.diary.topic.v2.TopicManager;
+import grainalcohol.dtt.init.DTTDailyStat;
 import grainalcohol.dtt.mental.EmotionHelper;
 import grainalcohol.dtt.mental.MentalStatusHelper;
 import grainalcohol.dtt.util.NearbyMentalHealHelper;
@@ -14,6 +15,7 @@ import grainalcohol.dtt.util.StringUtil;
 import net.depression.mental.MentalStatus;
 import net.depression.network.ActionbarHintPacket;
 import net.minecraft.block.entity.JukeboxBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
@@ -157,7 +159,8 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         ServerWorld serverWorld = self.getServerWorld();
         if (serverWorld.getTimeOfDay() % 24000 == 0) {
             // 每天0时更新统计数据
-            DailyStatManager.updateDailyStat(self);
+            double EMA_Factor = DTTConfig.getInstance().getServerConfig().diaryConfig.ema_factor;
+            DailyStatManager.updateDailyStat(self.getUuid(), EMA_Factor);
         }
         if (serverWorld.getTimeOfDay() % 12000 == 0) {
             // 每天更新两次标记
@@ -177,23 +180,27 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
     )
     private void increaseDailyStat(Stat<?> stat, int amount, CallbackInfo ci) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+        if (stat.getType() == Stats.KILLED && stat.getValue().equals(EntityType.ENDER_DRAGON)) {
+            DailyStatManager.getTodayStat(self.getUuid()).setTrueStat(DTTDailyStat.ENDER_DRAGON_KILLED);
+        }
+
         if (stat.getType() == Stats.CUSTOM) {
             Identifier statId = (Identifier) stat.getValue();
 
             if (statId.equals(Stats.WALK_ONE_CM)) {
-                DailyStatManager.getTodayDailyStat(self.getUuid()).increaseDistanceMoved(amount);
+                DailyStatManager.getTodayStat(self.getUuid()).increaseNumberStat(DTTDailyStat.DISTANCE_MOVED, amount);
             }
             if (statId.equals(Stats.TRADED_WITH_VILLAGER)) {
-                DailyStatManager.getTodayDailyStat(self.getUuid()).increaseTradedCount(amount);
+                DailyStatManager.getTodayStat(self.getUuid()).increaseNumberStat(DTTDailyStat.TRADED_COUNT, amount);
             }
             if (statId.equals(Stats.POT_FLOWER)) {
-                DailyStatManager.getTodayDailyStat(self.getUuid()).setHasFlowerPotted(true);
+                DailyStatManager.getTodayStat(self.getUuid()).setTrueStat(DTTDailyStat.FLOWER_POTTED);
             }
             if (statId.equals(Stats.RAID_WIN)) {
-                DailyStatManager.getTodayDailyStat(self.getUuid()).setHasRaidWon(true);
+                DailyStatManager.getTodayStat(self.getUuid()).setTrueStat(DTTDailyStat.RAID_WON);
             }
             if (statId.equals(Stats.DAMAGE_TAKEN)) {
-                DailyStatManager.getTodayDailyStat(self.getUuid()).increaseDamageTaken(amount);
+                DailyStatManager.getTodayStat(self.getUuid()).increaseNumberStat(DTTDailyStat.DAMAGE_TAKEN, amount);
             }
         }
     }
@@ -211,7 +218,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         ServerWorld newWorld = self.getServerWorld();
         if (newWorld.getDimension().hasSkyLight() && newWorld.isRaining()) {
             // 切换维度时
-            DailyStatManager.getTodayDailyStat(self.getUuid()).setHasRained(true);
+            DailyStatManager.getTodayStat(self.getUuid()).setTrueStat(DTTDailyStat.RAINED);
         }
     }
 
@@ -226,7 +233,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
 
         if (serverWorld.getDimension().hasSkyLight() && serverWorld.isRaining()) {
             // 睡醒时
-            DailyStatManager.getTodayDailyStat(self.getUuid()).setHasRained(true);
+            DailyStatManager.getTodayStat(self.getUuid()).setTrueStat(DTTDailyStat.RAINED);
         }
     }
 
@@ -237,21 +244,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         this.dtt$hasSendInRainMessage = nbt.getBoolean("dtt$hasCheckInRain");
         this.dtt$hasSendResetSpawnPointMessage = nbt.getBoolean("dtt$hasResetSpawnPoint");
 
-        NbtCompound dailyStatNbt = new NbtCompound();
-
-        NbtCompound todayNbtCompound = new NbtCompound();
-        DailyStatManager.getTodayDailyStat(self.getUuid()).writeToNbt(todayNbtCompound);
-        dailyStatNbt.put(DailyStat.TODAY_DAILY_STAT_NBT_KEY, todayNbtCompound);
-
-        NbtCompound yesterdayNbtCompound = new NbtCompound();
-        DailyStatManager.getYesterdayDailyStat(self.getUuid()).writeToNbt(yesterdayNbtCompound);
-        dailyStatNbt.put(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY, yesterdayNbtCompound);
-
-        NbtCompound movingAverageNbtCompound = new NbtCompound();
-        DailyStatManager.getMovingAverageDailyStat(self.getUuid()).writeToNbt(movingAverageNbtCompound);
-        dailyStatNbt.put(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY, movingAverageNbtCompound);
-
-        nbt.put(DailyStat.DAILY_STAT_NBT_KEY, dailyStatNbt);
+        DailyStatManager.writeToNbt(self.getUuid(), nbt);
 
         TopicManager.writeToNbt(self.getUuid(), nbt);
     }
@@ -263,25 +256,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         nbt.putBoolean("dtt$hasCheckInRain", this.dtt$hasSendInRainMessage);
         nbt.putBoolean("dtt$hasResetSpawnPoint", this.dtt$hasSendResetSpawnPointMessage);
 
-        if (nbt.contains(DailyStat.DAILY_STAT_NBT_KEY)) {
-            NbtCompound dailyStatNbt = nbt.getCompound(DailyStat.DAILY_STAT_NBT_KEY);
-
-            if (dailyStatNbt.contains(DailyStat.TODAY_DAILY_STAT_NBT_KEY)) {
-                DailyStat todayStat = new DailyStat();
-                todayStat.readFromNbt(dailyStatNbt.getCompound(DailyStat.TODAY_DAILY_STAT_NBT_KEY));
-                DailyStatManager.setTodayDailyStat(self.getUuid(), todayStat);
-            }
-            if (dailyStatNbt.contains(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY)) {
-                DailyStat yesterdayStat = new DailyStat();
-                yesterdayStat.readFromNbt(dailyStatNbt.getCompound(DailyStat.YESTERDAY_DAILY_STAT_NBT_KEY));
-                DailyStatManager.setYesterdayDailyStat(self.getUuid(), yesterdayStat);
-            }
-            if (dailyStatNbt.contains(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY)) {
-                DailyStat movingAverageStat = new DailyStat();
-                movingAverageStat.readFromNbt(dailyStatNbt.getCompound(DailyStat.MOVING_AVERAGE_DAILY_STAT_NBT_KEY));
-                DailyStatManager.setMovingAverageDailyStat(self.getUuid(), movingAverageStat);
-            }
-        }
+        DailyStatManager.readFromNbt(self.getUuid(), nbt);
 
         TopicManager.readFromNbt(self.getUuid(), nbt);
     }

@@ -1,7 +1,7 @@
 package grainalcohol.dtt.diary.topic;
 
-import grainalcohol.dtt.diary.dailystat.DailyStat;
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatKey;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -11,10 +11,18 @@ public class TopicWeightCalculator {
     private static final double MAX_WEIGHT_ROUND = 10.0;
     private static final double MIN_NORMALIZATION_VALUE = 10.0;
 
-    public static double calculateWeight(UUID playerUUID, Function<DailyStat, Integer> statExtractor) {
-        int todayValue = DailyStatManager.getTodayValue(playerUUID, statExtractor);
-        int yesterdayValue = DailyStatManager.getYesterdayValue(playerUUID, statExtractor);
-        int emaValue = DailyStatManager.getEMAValue(playerUUID, statExtractor);
+    public static double calculateWeight(UUID playerId, DailyStatKey<Integer> dailyStatKey) {
+        int todayValue = DailyStatManager.getTodayStat(playerId).getNumberStat(dailyStatKey);
+        int yesterdayValue = DailyStatManager.getYesterdayStat(playerId).getNumberStat(dailyStatKey);
+        int emaValue = DailyStatManager.getEMAStat(playerId).getNumberStat(dailyStatKey);
+
+        return calculateWeight(todayValue, yesterdayValue, emaValue);
+    }
+
+    public static double calculateWeight(UUID playerUUID, Function<grainalcohol.dtt.diary.dailystat.DailyStat, Integer> statExtractor) {
+        int todayValue = grainalcohol.dtt.diary.dailystat.DailyStatManager.getTodayValue(playerUUID, statExtractor);
+        int yesterdayValue = grainalcohol.dtt.diary.dailystat.DailyStatManager.getYesterdayValue(playerUUID, statExtractor);
+        int emaValue = grainalcohol.dtt.diary.dailystat.DailyStatManager.getEMAValue(playerUUID, statExtractor);
 
         return calculateWeight(todayValue, yesterdayValue, emaValue);
     }

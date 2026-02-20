@@ -33,10 +33,10 @@ public class DiaryContentProducer {
 
     public DiaryContentProducer(ServerPlayerEntity player) {
         this.mentalHealthStatus = MentalHealthStatus.from(player);
-        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.slightly_more_positive_diary;
-        this.topicProducer = new TopicProducer(player, makeDiarySlightlyMorePositive);
+        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diaryConfig.gentle_mode;
+        this.topicProducer = new TopicProducer(player, gentleMode);
 
-        this.feelingProducer = new FeelingProducer(getTopicProducer().getAllContextAttributes(), makeDiarySlightlyMorePositive);
+        this.feelingProducer = new FeelingProducer(getTopicProducer().getAllContextAttributes(), gentleMode);
         this.feeling = feelingProducer.getFeeling();
 
         this.hasCured = DailyStatManager.getTodayResult(player.getUuid(), DailyStat::isHasCured);

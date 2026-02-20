@@ -59,19 +59,18 @@ public class DailyStat {
      * @see DTTListener
      */
     private boolean hasFlowerPotted;
-
     /**
      * 吃东西
      * @see PlayerEntityMixin
      */
     private boolean hasAte;
+
+    // essential
     /**
      * 死亡
      * @see DTTListener
      */
     private boolean hasDead;
-
-    // major impact
     /**
      * 袭击事件获胜
      * @see PlayerEntityMixin

@@ -9,6 +9,6 @@ public abstract class EssentialTopic extends Topic {
 
      @Override
     public double getDefaultWeight() {
-        return 10.0;
+        return 8.0;
     }
 }

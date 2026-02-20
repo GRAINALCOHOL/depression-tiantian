@@ -1,6 +1,7 @@
 package grainalcohol.dtt.mixin;
 
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
+import grainalcohol.dtt.init.DTTDailyStat;
 import grainalcohol.dtt.init.DTTStat;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -25,8 +26,9 @@ public class AnimalEntityMixin {
                 // 从父母中尝试获取玩家信息
         ).ifPresent(
                 (player) -> {
+                    // 繁殖宠物
                     player.incrementStat(DTTStat.PET_BRED);
-                    DailyStatManager.getTodayDailyStat(player.getUuid()).setHasPetBred(true);
+                    DailyStatManager.getTodayStat(player.getUuid()).setTrueStat(DTTDailyStat.PET_BRED);
                 }
         );
     }

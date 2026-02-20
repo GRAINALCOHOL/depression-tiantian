@@ -31,9 +31,7 @@ public class ContextAttribute {
     }
 
     public Builder toBuilder() {
-        return Builder.builder(this.translationKey, this.sourceTopicIdentifier)
-                .weight(this.weight)
-                .feelingCompatibility(this.feelingCompatibilityMap);
+        return new Builder(this);
     }
 
     public ContextAttribute copy() {
@@ -67,6 +65,14 @@ public class ContextAttribute {
         private Map<Feeling, Double> feelingCompatibilityMap = new HashMap<>();
         private Identifier sourceTopicIdentifier;
 
+        private Builder(ContextAttribute contextAttribute) {
+            this.translationKey = contextAttribute.translationKey;
+            this.weight = contextAttribute.weight;
+            this.extremeNegativity = contextAttribute.extremeNegativity;
+            this.feelingCompatibilityMap = new HashMap<>(contextAttribute.feelingCompatibilityMap);
+            this.sourceTopicIdentifier = contextAttribute.sourceTopicIdentifier;
+        }
+
         private Builder() {
             for (Feeling feeling : Feeling.values()) {
                 feelingCompatibilityMap.put(feeling, 0.0);
@@ -75,6 +81,10 @@ public class ContextAttribute {
 
         public static Builder builder(String translationKey, Identifier sourceTopicIdentifier) {
             return new Builder().translationKey(translationKey).sourceTopicIdentifier(sourceTopicIdentifier);
+        }
+
+        public static Builder builder(Identifier sourceTopicIdentifier) {
+            return new Builder().sourceTopicIdentifier(sourceTopicIdentifier);
         }
 
         public Builder sourceTopicIdentifier(Identifier sourceTopicIdentifier) {
@@ -92,8 +102,8 @@ public class ContextAttribute {
             return this;
         }
 
-        public Builder extremeNegativity(boolean extremeNegativity) {
-            this.extremeNegativity = extremeNegativity;
+        public Builder extremeNegativity() {
+            this.extremeNegativity = true;
             return this;
         }
 

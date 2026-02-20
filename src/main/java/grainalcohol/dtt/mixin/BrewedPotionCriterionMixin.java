@@ -1,6 +1,7 @@
 package grainalcohol.dtt.mixin;
 
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
+import grainalcohol.dtt.init.DTTDailyStat;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
@@ -17,6 +18,6 @@ public class BrewedPotionCriterionMixin {
         if (player == null || potion == null || potion.getEffects().isEmpty() || potion.equals(Potions.WATER) || potion.equals(Potions.EMPTY)) {
             return;
         }
-        DailyStatManager.getTodayDailyStat(player.getUuid()).increaseBrewedCount(1);
+        DailyStatManager.getTodayStat(player.getUuid()).incrementNumberStat(DTTDailyStat.POTION_BREWED);
     }
 }

@@ -2,7 +2,8 @@ package grainalcohol.dtt.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
+import grainalcohol.dtt.init.DTTDailyStat;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.level.ServerWorldProperties;
@@ -23,7 +24,7 @@ public class ServerWorldMixin {
         if (!properties.isRaining() && isRaining || properties.isRaining() && !isRaining) {
             // 开始或停止下雨
             ServerWorld serverWorld = (ServerWorld) (Object) this;
-            updateDailyStat(serverWorld);
+            updateHasRained(serverWorld);
         }
         original.call(properties, isRaining);
     }
@@ -39,19 +40,19 @@ public class ServerWorldMixin {
         if (properties.isThundering() != isThundering) {
             // 开始或停止雷暴
             ServerWorld serverWorld = (ServerWorld) (Object) this;
-            updateDailyStat(serverWorld);
+            updateHasRained(serverWorld);
         }
         original.call(properties, isThundering);
     }
 
     @Unique
-    private static void updateDailyStat(ServerWorld serverWorld) {
+    private static void updateHasRained(ServerWorld serverWorld) {
         if (18000 < serverWorld.getTimeOfDay() && serverWorld.getTimeOfDay() < 22000) {
             // 0点后到日出前的变化不记录
             return;
         }
         for (ServerPlayerEntity player : serverWorld.getPlayers(player -> player.getServerWorld().getDimension().hasSkyLight())) {
-            DailyStatManager.getTodayDailyStat(player.getUuid()).setHasRained(true);
+            DailyStatManager.getTodayStat(player.getUuid()).setTrueStat(DTTDailyStat.RAINED);
         }
     }
 }

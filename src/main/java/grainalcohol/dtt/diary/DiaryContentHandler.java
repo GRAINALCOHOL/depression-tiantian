@@ -148,7 +148,7 @@ public class DiaryContentHandler {
      * @return 生成的translationKey，生成失败返回空字符串
      */
     public String generateTranslationKey(DiaryParagraph paragraph, boolean enableWarp) {
-        boolean makeDiarySlightlyMorePositive = DTTConfig.getInstance().getServerConfig().diaryConfig.slightly_more_positive_diary;
+        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diaryConfig.gentle_mode;
         String result = switch (paragraph) {
             case MANIC_INSERTION -> composeTranslationKey(
                     // 躁狂额外内容与感受相关
@@ -180,7 +180,7 @@ public class DiaryContentHandler {
                     LOGGER.warn("Polled essential topic is null, returning empty string");
                     yield "";
                 }
-                if (makeDiarySlightlyMorePositive && topic.isShouldExcludedDueToNegativity()) {
+                if (gentleMode && topic.isShouldExcludedDueToNegativity()) {
                     LOGGER.info("Skipping essential topic '{}' due to negativity, polling next topic", topic.getName());
                     yield generateTranslationKey(paragraph, enableWarp);
                 }
@@ -204,7 +204,7 @@ public class DiaryContentHandler {
                     LOGGER.warn("Polled major impact topic is null, returning empty string");
                     yield "";
                 }
-                if (makeDiarySlightlyMorePositive && topic.isShouldExcludedDueToNegativity()) {
+                if (gentleMode && topic.isShouldExcludedDueToNegativity()) {
                     LOGGER.info("Skipping major impact topic '{}' due to negativity, polling next topic", topic.getName());
                     yield generateTranslationKey(paragraph, enableWarp);
                 }

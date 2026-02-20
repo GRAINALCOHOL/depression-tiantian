@@ -1,7 +1,8 @@
 package grainalcohol.dtt.mixin;
 
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
+import grainalcohol.dtt.init.DTTDailyStat;
 import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,10 +20,9 @@ public abstract class PlayerEntityMixin {
     @Inject(method = "eatFood", at = @At("RETURN"))
     private void onEatFoodReturn(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         PlayerEntity self = (PlayerEntity) (Object) this;
-        if (self.getWorld().isClient()) {
-            return;
-        }
-        DailyStatManager.getTodayDailyStat(self.getUuid()).setHasAte(true);
+        if (self.getWorld().isClient()) return;
+
+        DailyStatManager.getTodayStat(self.getUuid()).setTrueStat(DTTDailyStat.ATE);
     }
 
     @Inject(
@@ -34,10 +34,8 @@ public abstract class PlayerEntityMixin {
             )
     )
     private void easierCombatStateAboutDamageTaken(DamageSource source, float amount, CallbackInfo ci) {
-        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easier_combat_state) {
-            // 未开启功能
-            return;
-        }
+        // 未开启功能
+        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easier_combat_state) return;
 
         PlayerEntity self = (PlayerEntity) (Object) this;
         MentalStatus mentalStatus = Registry.mentalStatus.get(self.getUuid());

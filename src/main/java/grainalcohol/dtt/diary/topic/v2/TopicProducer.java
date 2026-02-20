@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class TopicProducer {
     private final Logger LOGGER = LoggerFactory.getLogger(TopicProducer.class);
-    private final boolean makeDiarySlightlyMorePositive;
+    private final boolean gentleMode;
     private final ServerPlayerEntity player;
     private final List<EssentialTopic> historicalEssentialTopics;
 
@@ -23,11 +23,11 @@ public class TopicProducer {
     private final ContextAttribute WEATHER_TOPIC_ATTRIBUTE;
     private final Queue<ContextAttribute> essentialContextAttributes = new ArrayDeque<>();
 
-    public TopicProducer(ServerPlayerEntity player, boolean makeDiarySlightlyMorePositive) {
-        this.makeDiarySlightlyMorePositive = makeDiarySlightlyMorePositive;
+    public TopicProducer(ServerPlayerEntity player, boolean gentleMode) {
+        this.gentleMode = gentleMode;
         this.player = player;
         this.historicalEssentialTopics = TopicManager.getHistoricalTopics(player.getUuid());
-        ContextAttribute weatherAttribute = DTTTopic.WEATHER_TOPIC.getAttribute(player)
+        ContextAttribute weatherAttribute = DTTTopic.WEATHER_TOPIC.getAttribute(player, gentleMode)
                 .orElseThrow(() -> new IllegalStateException("Weather topic context attribute not found for player " + player.getName()));
         this.allContextAttributes.add(weatherAttribute);
         this.WEATHER_TOPIC_ATTRIBUTE = weatherAttribute;
@@ -39,7 +39,7 @@ public class TopicProducer {
         // stat topics
         // 不去重，不剔除，用于总结感受关键词
         DTTRegistries.STAT_TOPIC_REGISTRY.stream()
-                .map(statTopic -> statTopic.getAttribute(player))
+                .map(statTopic -> statTopic.getAttribute(player, gentleMode))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(allContextAttributes::add);
@@ -48,7 +48,7 @@ public class TopicProducer {
         // 用于日记生成，剔除与昨天重复和极端负面的（根据配置）
         List<ContextAttribute> allEssentialTopics = DTTRegistries.ESSENTIAL_TOPIC_REGISTRY.stream()
                 .filter(essentialTopic -> !shouldExcludeDueToRepetitive(essentialTopic))
-                .map(essentialTopic -> essentialTopic.getAttribute(player))
+                .map(essentialTopic -> essentialTopic.getAttribute(player, gentleMode))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(contextAttribute -> !shouldExcludeDueToNegativity(contextAttribute))
@@ -83,7 +83,7 @@ public class TopicProducer {
      * @return true表示应该剔除，false表示不应该剔除
      */
     private boolean shouldExcludeDueToNegativity(ContextAttribute contextAttribute) {
-        return makeDiarySlightlyMorePositive && contextAttribute.isExtremeNegativity();
+        return gentleMode && contextAttribute.isExtremeNegativity();
     }
 
     /**

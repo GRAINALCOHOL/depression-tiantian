@@ -4,14 +4,13 @@ import grainalcohol.dtt.diary.topic.v2.ContextAttribute;
 
 import java.util.*;
 
-// TODO：验证此类能否正常工作
 public class FeelingProducer {
-    private final boolean makeDiarySlightlyMorePositive;
+    private final boolean gentleMode;
     private final List<ContextAttribute> allContextAttributes;
     private final List<FeelingScore> feelingScoresList = new ArrayList<>();
 
-    public FeelingProducer(List<ContextAttribute> allContextAttributes, boolean makeDiarySlightlyMorePositive) {
-        this.makeDiarySlightlyMorePositive = makeDiarySlightlyMorePositive;
+    public FeelingProducer(List<ContextAttribute> allContextAttributes, boolean gentleMode) {
+        this.gentleMode = gentleMode;
         this.allContextAttributes = allContextAttributes;
 
         for (Feeling feeling : Feeling.values()) {
@@ -28,7 +27,7 @@ public class FeelingProducer {
             double compatibility = contextAttribute.getFeelingCompatibility(feeling);
 
             totalScore += weight * compatibility;
-            if (makeDiarySlightlyMorePositive && feeling.isNegative()) {
+            if (gentleMode && feeling.isNegative()) {
                 // 如果配置了让日记稍微更积极一些，适当降低负面感受的分数
                 totalScore -= totalScore * 0.15;
             }

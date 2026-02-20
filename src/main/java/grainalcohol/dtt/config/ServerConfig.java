@@ -177,7 +177,7 @@ public class ServerConfig {
          * @see FeelingProducer
          * @see DiaryContentHandler#generateTranslationKey(DiaryParagraph, boolean)
          */
-        public boolean slightly_more_positive_diary = false;
+        public boolean gentle_mode = false;
 
         /**
          * 默认0.5，指数移动平均（EMA）因子，范围0.0到1.0

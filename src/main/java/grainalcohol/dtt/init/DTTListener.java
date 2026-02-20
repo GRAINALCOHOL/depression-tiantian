@@ -2,7 +2,6 @@ package grainalcohol.dtt.init;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
-import dev.architectury.event.events.common.InteractionEvent;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.api.event.PTSDEvent;
@@ -10,11 +9,10 @@ import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.api.internal.PendingMessageQueueController;
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.diary.dailystat.DailyStatManager;
+import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.mental.PTSDLevel;
-import net.minecraft.block.DeadBushBlock;
-import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -22,23 +20,28 @@ import net.minecraft.text.Text;
 public class DTTListener {
     public static void archEventInit() {
         EntityEvent.LIVING_DEATH.register((entity, source) -> {
-            if (entity instanceof Monster && source.getAttacker() instanceof ServerPlayerEntity player) {
-                player.incrementStat(DTTStat.MONSTER_KILLED);
-                DailyStatManager.getTodayDailyStat(player.getUuid()).increaseMonsterKilled(1);
+            // 宠物死亡
+            if (entity instanceof TameableEntity tameable
+                    && tameable.isTamed()
+                    && tameable.getOwner() instanceof ServerPlayerEntity owner
+            ) {
+                DailyStatManager.getTodayStat(owner.getUuid()).setTrueStat(DTTDailyStat.PET_DIED);
             }
+            // 击杀怪物
+            if (entity instanceof Monster
+                    && source.getAttacker() instanceof ServerPlayerEntity player
+            ) {
+                player.incrementStat(DTTStat.MONSTER_KILLED);
+                DailyStatManager.getTodayStat(player.getUuid()).incrementNumberStat(DTTDailyStat.MONSTER_KILLED);
+            }
+            // 玩家死亡
             if (entity instanceof PlayerEntity player) {
-                DailyStatManager.getTodayDailyStat(player.getUuid()).setHasDead(true);
+                DailyStatManager.getTodayStat(player.getUuid()).setTrueStat(DTTDailyStat.DIED);
             }
             return EventResult.pass();
         });
         EntityEvent.ANIMAL_TAME.register(((animalEntity, playerEntity) -> {
             playerEntity.incrementStat(DTTStat.ANIMAL_TAMED);
-            return EventResult.pass();
-        }));
-        InteractionEvent.RIGHT_CLICK_BLOCK.register(((player, hand, pos, face) -> {
-            if (player.getWorld().getBlockState(pos).getBlock() instanceof FlowerPotBlock flowerPotBlock && !(flowerPotBlock.getContent() instanceof DeadBushBlock)) {
-                DailyStatManager.getTodayDailyStat(player.getUuid()).setHasFlowerPotted(true);
-            }
             return EventResult.pass();
         }));
     }
@@ -48,7 +51,7 @@ public class DTTListener {
             if (currentStatus.isSickerThan(lastTickStatus)) {
                 if (currentStatus.isSeverelyIll()) {
                     // 恶化到严重程度
-                    DailyStatManager.getTodayDailyStat(player.getUuid()).setHasWorsened(true);
+                    DailyStatManager.getTodayStat(player.getUuid()).setTrueStat(DTTDailyStat.CURED);
                 }
             }
 
@@ -56,7 +59,7 @@ public class DTTListener {
             if (currentStatus.isHealthierThan(lastTickStatus)) {
                 if (lastTickStatus.isSeverelyIll()) {
                     // 恢复到非严重程度
-                    DailyStatManager.getTodayDailyStat(player.getUuid()).setHasCured(true);
+                    DailyStatManager.getTodayStat(player.getUuid()).setTrueStat(DTTDailyStat.WORSENED);
                 }
 
                 if (currentStatus.isHealthy() && player.hasStatusEffect(DTTStatusEffect.ANOREXIA)) {
