@@ -2,6 +2,8 @@ package grainalcohol.dtt.diary.dailystat.v2;
 
 import net.minecraft.util.Identifier;
 
+import java.util.Objects;
+
 public class DailyStatKey<T> {
     private final Identifier identifier;
     private final Class<T> type;
@@ -30,5 +32,17 @@ public class DailyStatKey<T> {
     @Override
     public String toString() {
         return getIdentifier().toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DailyStatKey<?> that = (DailyStatKey<?>) o;
+        return Objects.equals(getIdentifier(), that.getIdentifier()) && Objects.equals(getType(), that.getType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIdentifier(), getType());
     }
 }

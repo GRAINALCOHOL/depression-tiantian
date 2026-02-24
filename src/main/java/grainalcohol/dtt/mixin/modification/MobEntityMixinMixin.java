@@ -23,7 +23,7 @@ public class MobEntityMixinMixin {
             constant = @Constant(intValue = 20)
     )
     private int modifyPetMentalHealInterval(int original) {
-        return DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_pet_interval_ticks;
+        return DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_pet_interval_ticks;
     }
 
     @TargetHandler(
@@ -36,7 +36,7 @@ public class MobEntityMixinMixin {
             cancellable = true
     )
     private void onTickHead(CallbackInfo originalCi, CallbackInfo ci) {
-        if (DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_pet_mode != ServerConfig.NearbyAnythingHealMode.EVERYONE) {
+        if (DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_pet_mode != ServerConfig.NearbyAnythingHealMode.EVERYONE) {
             ci.cancel();
         }
     }

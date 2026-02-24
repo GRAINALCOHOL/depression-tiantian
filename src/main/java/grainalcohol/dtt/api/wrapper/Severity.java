@@ -1,5 +1,6 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.wrapper;
 
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,10 @@ public enum Severity {
             }
         }
         return NONE;
+    }
+
+    public static Severity from(ServerPlayerEntity player) {
+        return from(MentalIllnessStatus.from(player));
     }
 
     public Text getDisplayText() {

@@ -1,4 +1,4 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.wrapper;
 
 import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
@@ -116,6 +116,10 @@ public enum MentalIllnessStatus {
             }
         }
         return NONE;
+    }
+
+    public boolean isPatient() {
+        return this != HEALTHY && this != NONE;
     }
 
     public Text getDisplayText() {

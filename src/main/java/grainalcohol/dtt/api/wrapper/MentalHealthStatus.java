@@ -1,6 +1,5 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.wrapper;
 
-import net.depression.client.ClientMentalIllness;
 import net.depression.client.ClientMentalStatus;
 import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
@@ -197,7 +196,7 @@ public enum MentalHealthStatus {
     }
 
     public boolean isSick() {
-        return (this != HEALTHY);
+        return (this != HEALTHY && this != NONE);
     }
 
     public boolean isHealthy() {

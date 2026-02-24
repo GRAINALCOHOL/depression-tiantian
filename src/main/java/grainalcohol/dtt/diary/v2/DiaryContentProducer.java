@@ -8,7 +8,7 @@ import grainalcohol.dtt.diary.dailystat.DailyStatManager;
 import grainalcohol.dtt.diary.feeling.v2.Feeling;
 import grainalcohol.dtt.diary.feeling.v2.FeelingProducer;
 import grainalcohol.dtt.diary.topic.v2.TopicProducer;
-import grainalcohol.dtt.mental.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
 import grainalcohol.dtt.util.MathUtil;
 import grainalcohol.dtt.util.StringUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,7 +33,7 @@ public class DiaryContentProducer {
 
     public DiaryContentProducer(ServerPlayerEntity player) {
         this.mentalHealthStatus = MentalHealthStatus.from(player);
-        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diaryConfig.gentle_mode;
+        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diary_config.gentle_mode;
         this.topicProducer = new TopicProducer(player, gentleMode);
 
         this.feelingProducer = new FeelingProducer(getTopicProducer().getAllContextAttributes(), gentleMode);
@@ -58,7 +58,7 @@ public class DiaryContentProducer {
             // 因抑郁情绪拒绝写日记
             return generateTranslationKey(DiaryParagraph.NO_DIARY);
         }
-        int variantCount = DTTConfig.getInstance().getServerConfig().diaryConfig.diary_translation_key_variant_count;
+        int variantCount = DTTConfig.getInstance().getServerConfig().diary_config.diary_translation_key_variant_count;
 
         String mentalHealthChangeKey = "";
         if (isHasCured()) {

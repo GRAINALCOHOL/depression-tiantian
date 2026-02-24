@@ -64,7 +64,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
             )
     )
     private Future<?> wrapDetectNearbyHealBlockCalled(ExecutorService executor, Runnable runnable, Operation<Future<?>> original) {
-        if (this.tickCount % DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_block_interval_ticks == 0) {
+        if (this.tickCount % DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_block_interval_ticks == 0) {
             return original.call(executor, runnable);
         }
         return CompletableFuture.completedFuture(null);
@@ -78,7 +78,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
             )
     )
     private double redirectDetectNearbyHealBlockMentalHeal(MentalStatus mentalStatus, String id, double value, Operation<Double> original) {
-        ServerConfig.NearbyMultipleBlocksHealMode nearbyMultipleBlocksHealMode = DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_block_mode;
+        ServerConfig.NearbyMultipleBlocksHealMode nearbyMultipleBlocksHealMode = DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_block_mode;
         if (nearbyMultipleBlocksHealMode.equals(ServerConfig.NearbyMultipleBlocksHealMode.EVERYONE)) {
             // everyone模式：应用所有方块
             return original.call(mentalStatus, id, value);
@@ -101,7 +101,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
             )
     )
     private void onDetectNearbyHealBlockSendPacket(CallbackInfo ci) {
-        ServerConfig.NearbyMultipleBlocksHealMode nearbyMultipleBlocksHealMode = DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearby_block_mode;
+        ServerConfig.NearbyMultipleBlocksHealMode nearbyMultipleBlocksHealMode = DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_block_mode;
         if (nearbyMultipleBlocksHealMode.equals(ServerConfig.NearbyMultipleBlocksHealMode.MAX_ONLY)) {
             this.mentalHeal(dtt$maxNearbyHealAmount);
         }
@@ -112,7 +112,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
     @Inject(method = "viewDetect", at = @At("HEAD"), cancellable = true)
     private void onViewDetectHead(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         double distance = this.player.getPos().distanceTo(entity.getPos());
-        if (distance > DTTConfig.getInstance().getServerConfig().commonConfig.max_distance_to_trigger_ptsd_by_sight) {
+        if (distance > DTTConfig.getInstance().getServerConfig().common_config.max_distance_to_trigger_ptsd_by_sight) {
             cir.setReturnValue(false);
         }
     }
@@ -122,13 +122,13 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
             constant = @Constant(doubleValue = 2.0)
     )
     private double modifyPTSDHealThreshold(double original) {
-        double boredomStrength = DTTConfig.getInstance().getServerConfig().commonConfig.boredom_strength;
+        double boredomStrength = DTTConfig.getInstance().getServerConfig().common_config.boredom_strength;
         return 1 / boredomStrength; // 原数据为2.0，即(1 / 0.5)
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void clearPTSDData(CallbackInfo ci) {
-        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list;
+        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().common_config.universal_ptsd_black_list;
         MiscUtil.cleanMap(PTSD, blacklist::contains);
         MiscUtil.cleanMap(PTSDTimeBuffer, blacklist::contains);
         MiscUtil.cleanMap(PTSDValueBuffer, blacklist::contains);
@@ -140,7 +140,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().common_config.universal_ptsd_black_list.contains(id)) {
             DTTMod.LOGGER.info("Blocked mental health value hurt by damage source but string: {}", id);
             mentalHurt(amount);
             ci.cancel();
@@ -152,7 +152,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universal_ptsd_black_list.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().common_config.universal_ptsd_black_list.contains(id)) {
             DTTMod.LOGGER.info("Blocked trigger ptsd from hurt by damage type source but string: {}", id);
             ci.cancel();
         }

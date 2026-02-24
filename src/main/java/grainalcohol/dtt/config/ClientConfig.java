@@ -4,9 +4,9 @@ import grainalcohol.dtt.mixin.event.ClientMentalIllnessMixin;
 import grainalcohol.dtt.mixin.modification.ClientActionbarHintMixin;
 
 public class ClientConfig {
-    public MessageVariantConfig messageVariantConfig = new MessageVariantConfig();
-    public MessageDisplayConfig messageDisplayConfig = new MessageDisplayConfig();
-    public VisualConfig visualConfig = new VisualConfig();
+    public MessageVariantConfig message_variant_config = new MessageVariantConfig();
+    public MessageDisplayConfig message_display_config = new MessageDisplayConfig();
+    public VisualConfig visual_config = new VisualConfig();
 
     /**
      * 文案变体相关配置，用于增加提示文案的多样性，避免过于单调和重复
@@ -42,11 +42,11 @@ public class ClientConfig {
         /**
          * 默认true，是否启用增强的PTSD形成提示消息
          */
-        public boolean enhanced_ptsd_form_message = true;
+        public boolean enhanced_ptsd_formation_message = true;
         /**
          * 默认true，是否启用增强的PTSD消散提示消息
          */
-        public boolean enhanced_ptsd_disperse_message = true;
+        public boolean enhanced_ptsd_dispersal_message = true;
         /**
          * 默认true，是否启用增强的PTSD缓解提示消息
          */

@@ -40,6 +40,8 @@
 
 另外其实还有一个原因，虽然原版模组显然不是面向整合包的，但保不齐哪天就有人想要做一个这样的整合包了呢？
 
+本模组对日记系统做了系统性重构，可以更容易地添加或修改其中的内容，如果你想要这么做，请查看[WIKI页面](https://github.com/GRAINALCOHOL/depression-tiantian/wiki)
+
 ## 💭 FAQ
 
 Q: 其它 Minecraft 版本？
@@ -48,6 +50,10 @@ A: 目前没有这样的打算，但鼓励第三方移植。
 Q: Forge/neoForge/Quilt 版本？
 A: 目前没有这样的打算，但鼓励第三方移植。
 
-## ℹ️ 其它
+## ℹ️ 其它 & 鸣谢
+
+Depression作者：[Block-137]()。
+
+文案贡献者：[泡芙Orz]()、[实名者李天昊]()、[ki_ecao]()。
 
 模组名字来源于一首音乐：[TIAN TIAN](https://music.163.com/song?id=2707332868)。

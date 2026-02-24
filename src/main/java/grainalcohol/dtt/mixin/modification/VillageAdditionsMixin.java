@@ -27,7 +27,7 @@ public class VillageAdditionsMixin {
             cancellable = true
     )
     private static void afterRegisterPoi(CallbackInfo ci) {
-        ServerConfig.VillagerConfig villagerConfig = DTTConfig.getInstance().getServerConfig().villagerConfig;
+        ServerConfig.VillagerConfig villagerConfig = DTTConfig.getInstance().getServerConfig().villager_config;
 
         float priceMultiplier = villagerConfig.enable_price_floating ? 1.0F : 0.0F;
 

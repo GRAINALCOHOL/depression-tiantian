@@ -29,7 +29,7 @@ public class ClientMentalIllnessMixin {
     )
     private void onSetStartCloseEyeTime(ClientMentalIllness instance, long originValue, Operation<Void> original) {
         // 根据配置文件设置延迟时间
-        int delayTicks = DTTConfig.getInstance().getClientConfig().visualConfig.close_eye_delay_ticks;
+        int delayTicks = DTTConfig.getInstance().getClientConfig().visual_config.close_eye_delay_ticks;
         if (MinecraftClient.getInstance().world != null) {
             if (delayTicks <= 0) {
                 delayTicks = 60;

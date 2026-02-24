@@ -3,7 +3,7 @@ package grainalcohol.dtt.api.event;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;
-import grainalcohol.dtt.mental.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
 import grainalcohol.dtt.mixin.ItemStackMixin;
 import grainalcohol.dtt.mixin.LivingEntityMixin;
 import net.depression.effect.SleepinessEffect;

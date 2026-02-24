@@ -1,5 +1,6 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.helper;
 
+import grainalcohol.dtt.api.wrapper.EmotionLevel;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 

@@ -1,6 +1,6 @@
 package grainalcohol.dtt.mixin.client;
 
-import grainalcohol.dtt.mental.MentalIllnessStatus;
+import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
 import net.depression.client.DepressionClient;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.render.GameRenderer;

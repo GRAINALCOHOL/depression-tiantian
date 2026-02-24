@@ -1,4 +1,4 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.wrapper;
 
 public enum EmotionLevel {
     HIGH_UNDEFINED("high_undefined", 8),

@@ -4,7 +4,7 @@ import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.diary.topic.Topic;
 import grainalcohol.dtt.diary.topic.TopicProducer;
 import grainalcohol.dtt.diary.topic.TopicType;
-import grainalcohol.dtt.mental.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -52,7 +52,7 @@ public class FeelingProducer {
                 continue;
             }
 
-            if (DTTConfig.getInstance().getServerConfig().diaryConfig.gentle_mode && negativeScore > positiveScore) {
+            if (DTTConfig.getInstance().getServerConfig().diary_config.gentle_mode && negativeScore > positiveScore) {
                 // 使日记稍微积极一点点
                 negativeScore *= 0.8;
             }

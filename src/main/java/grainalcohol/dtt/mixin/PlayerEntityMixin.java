@@ -35,7 +35,7 @@ public abstract class PlayerEntityMixin {
     )
     private void easierCombatStateAboutDamageTaken(DamageSource source, float amount, CallbackInfo ci) {
         // 未开启功能
-        if (!DTTConfig.getInstance().getServerConfig().combatConfig.easier_combat_state) return;
+        if (!DTTConfig.getInstance().getServerConfig().combat_config.easier_combat_state) return;
 
         PlayerEntity self = (PlayerEntity) (Object) this;
         MentalStatus mentalStatus = Registry.mentalStatus.get(self.getUuid());

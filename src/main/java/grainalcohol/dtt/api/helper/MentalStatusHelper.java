@@ -1,7 +1,9 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.helper;
 
 import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.init.DTTStatusEffect;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
 import grainalcohol.dtt.util.MathUtil;
 import net.depression.client.ClientMentalIllness;
 import net.depression.client.DepressionClient;

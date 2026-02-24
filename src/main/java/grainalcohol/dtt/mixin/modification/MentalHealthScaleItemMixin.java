@@ -3,9 +3,9 @@ package grainalcohol.dtt.mixin.modification;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.mental.MentalStatusHelper;
-import grainalcohol.dtt.mental.MentalHealthStatus;
-import grainalcohol.dtt.mental.MentalIllnessStatus;
+import grainalcohol.dtt.api.helper.MentalStatusHelper;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
 import net.depression.client.ClientMentalStatus;
 import net.depression.item.MentalHealthScaleItem;
 import net.minecraft.entity.player.ItemCooldownManager;
@@ -27,7 +27,7 @@ public class MentalHealthScaleItemMixin {
     @WrapWithCondition(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V"))
     private boolean shouldApplyCooldown(ItemCooldownManager instance, Item item, int duration){
         // true表示禁用，所以取反
-        return !DTTConfig.getInstance().getServerConfig().itemConfig.disable_mental_health_scale_cooldown;
+        return !DTTConfig.getInstance().getServerConfig().item_config.disable_mental_health_scale_cooldown;
     }
 
     @Redirect(
@@ -40,7 +40,7 @@ public class MentalHealthScaleItemMixin {
     )
     private TypedActionResult<ItemStack> itemDecrement(Item instance, World world, PlayerEntity player, Hand interactionHand) {
         ItemStack itemStack = player.getStackInHand(interactionHand);
-        if (DTTConfig.getInstance().getServerConfig().itemConfig.disposable_mental_health_scale) {
+        if (DTTConfig.getInstance().getServerConfig().item_config.disposable_mental_health_scale) {
             if (!player.isCreative()) {
                 itemStack.decrement(1);
             }
@@ -59,7 +59,7 @@ public class MentalHealthScaleItemMixin {
             )
     )
     private boolean enhancedFirstMessage(PlayerEntity player, Text message, @Local(name = "mentalStatus") ClientMentalStatus mentalStatus) {
-        if (DTTConfig.getInstance().getServerConfig().itemConfig.enhanced_mental_health_scale_action) {
+        if (DTTConfig.getInstance().getServerConfig().item_config.enhanced_mental_health_scale_action) {
             // 心理健康指数
             player.sendMessage(
                     Text.translatable(
@@ -87,7 +87,7 @@ public class MentalHealthScaleItemMixin {
             )
     )
     private boolean enhancedSecondMessage(PlayerEntity player, Text message, @Local(name = "mentalStatus") ClientMentalStatus mentalStatus) {
-        if (DTTConfig.getInstance().getServerConfig().itemConfig.enhanced_mental_health_scale_action) {
+        if (DTTConfig.getInstance().getServerConfig().item_config.enhanced_mental_health_scale_action) {
             // 心理评估结果
             player.sendMessage(
                     Text.translatable(

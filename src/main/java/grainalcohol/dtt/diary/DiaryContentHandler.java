@@ -9,7 +9,7 @@ import grainalcohol.dtt.diary.feeling.FeelingProducer;
 import grainalcohol.dtt.diary.topic.Topic;
 import grainalcohol.dtt.diary.topic.TopicProducer;
 import grainalcohol.dtt.diary.topic.TopicType;
-import grainalcohol.dtt.mental.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
 import grainalcohol.dtt.util.MathUtil;
 import grainalcohol.dtt.util.StringUtil;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -62,7 +62,7 @@ public class DiaryContentHandler {
             // 因抑郁情绪拒绝写日记
             return generateTranslationKey(DiaryParagraph.NO_DIARY);
         }
-        int variantCount = DTTConfig.getInstance().getServerConfig().diaryConfig.diary_translation_key_variant_count;
+        int variantCount = DTTConfig.getInstance().getServerConfig().diary_config.diary_translation_key_variant_count;
 
         String mentalHealthChangeKey = "";
         if (isHasCured()) {
@@ -148,7 +148,7 @@ public class DiaryContentHandler {
      * @return 生成的translationKey，生成失败返回空字符串
      */
     public String generateTranslationKey(DiaryParagraph paragraph, boolean enableWarp) {
-        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diaryConfig.gentle_mode;
+        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diary_config.gentle_mode;
         String result = switch (paragraph) {
             case MANIC_INSERTION -> composeTranslationKey(
                     // 躁狂额外内容与感受相关

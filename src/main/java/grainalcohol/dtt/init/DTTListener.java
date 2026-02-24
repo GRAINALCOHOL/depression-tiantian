@@ -10,7 +10,7 @@ import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.api.internal.PendingMessageQueueController;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
-import grainalcohol.dtt.mental.PTSDLevel;
+import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -99,7 +99,7 @@ public class DTTListener {
     }
 
     private static void sendPTSDFormMessage(PlayerEntity player, String ptsdId, PTSDLevel currentLevel) {
-        if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhanced_ptsd_form_message) {
+        if (!DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_formation_message) {
             return;
         }
         // PTSD等级提升至0级
@@ -123,7 +123,7 @@ public class DTTListener {
     }
 
     private static void sendPTSDDisperseMessage(PlayerEntity player, String ptsdId, PTSDLevel currentLevel) {
-        if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhanced_ptsd_disperse_message) {
+        if (!DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_dispersal_message) {
             return;
         }
         // PTSD等级降低至0级
@@ -135,7 +135,7 @@ public class DTTListener {
     }
 
     private static void sendPTSDRemissionMessage(PlayerEntity player, String ptsdId) {
-        if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhanced_ptsd_remission_message) {
+        if (!DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_remission_message) {
             return;
         }
         ((PendingMessageQueueController) player).dtt$addPendingMessage(Text.translatable(

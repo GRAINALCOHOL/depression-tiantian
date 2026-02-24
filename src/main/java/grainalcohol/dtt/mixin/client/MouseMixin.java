@@ -1,7 +1,7 @@
 package grainalcohol.dtt.mixin.client;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import grainalcohol.dtt.mental.MentalIllnessStatus;
+import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
 import net.depression.client.ClientMentalStatus;
 import net.depression.client.DepressionClient;
 import net.minecraft.client.Mouse;

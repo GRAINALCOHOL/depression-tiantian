@@ -4,12 +4,11 @@ import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.api.internal.PendingMessageQueueController;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.config.ServerConfig;
-import grainalcohol.dtt.diary.dailystat.DailyStat;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.diary.topic.v2.TopicManager;
 import grainalcohol.dtt.init.DTTDailyStat;
-import grainalcohol.dtt.mental.EmotionHelper;
-import grainalcohol.dtt.mental.MentalStatusHelper;
+import grainalcohol.dtt.api.helper.EmotionHelper;
+import grainalcohol.dtt.api.helper.MentalStatusHelper;
 import grainalcohol.dtt.util.NearbyMentalHealHelper;
 import grainalcohol.dtt.util.StringUtil;
 import net.depression.mental.MentalStatus;
@@ -120,7 +119,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
             dtt$hasSendInRainMessage = true;
         }
 
-        ServerConfig.MentalHealConfig mentalHealConfig = DTTConfig.getInstance().getServerConfig().mentalHealConfig;
+        ServerConfig.MentalHealConfig mentalHealConfig = DTTConfig.getInstance().getServerConfig().mental_heal_config;
         MentalStatus mentalStatus = MentalStatusHelper.getMentalStatus(self);
         // 宠物恢复情绪
         if (mentalHealConfig.nearby_pet_mode == ServerConfig.NearbyAnythingHealMode.EXIST) {
@@ -159,7 +158,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         ServerWorld serverWorld = self.getServerWorld();
         if (serverWorld.getTimeOfDay() % 24000 == 0) {
             // 每天0时更新统计数据
-            double EMA_Factor = DTTConfig.getInstance().getServerConfig().diaryConfig.ema_factor;
+            double EMA_Factor = DTTConfig.getInstance().getServerConfig().diary_config.ema_factor;
             DailyStatManager.updateDailyStat(self.getUuid(), EMA_Factor);
         }
         if (serverWorld.getTimeOfDay() % 12000 == 0) {

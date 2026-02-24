@@ -1,5 +1,6 @@
-package grainalcohol.dtt.mental;
+package grainalcohol.dtt.api.helper;
 
+import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class PTSDHelper {

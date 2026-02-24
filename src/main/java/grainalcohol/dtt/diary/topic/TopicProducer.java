@@ -1,6 +1,6 @@
 package grainalcohol.dtt.diary.topic;
 
-import grainalcohol.dtt.mental.MentalHealthStatus;
+import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 

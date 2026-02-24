@@ -2,7 +2,7 @@ package grainalcohol.dtt.api.event;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import grainalcohol.dtt.mental.MentalIllnessStatus;
+import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface MentalIllnessEvent {

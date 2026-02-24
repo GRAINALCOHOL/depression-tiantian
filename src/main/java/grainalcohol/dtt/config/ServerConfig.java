@@ -14,12 +14,12 @@ import grainalcohol.dtt.mixin.modification.VillageAdditionsMixin;
 import java.util.Set;
 
 public class ServerConfig {
-    public VillagerConfig villagerConfig = new VillagerConfig();
-    public DiaryConfig diaryConfig = new DiaryConfig();
-    public CombatConfig combatConfig = new CombatConfig();
-    public CommonConfig commonConfig = new CommonConfig();
-    public ItemConfig itemConfig = new ItemConfig();
-    public MentalHealConfig mentalHealConfig = new MentalHealConfig();
+    public VillagerConfig villager_config = new VillagerConfig();
+    public DiaryConfig diary_config = new DiaryConfig();
+    public CombatConfig combat_config = new CombatConfig();
+    public CommonConfig common_config = new CommonConfig();
+    public ItemConfig item_config = new ItemConfig();
+    public MentalHealConfig mental_heal_config = new MentalHealConfig();
 
     public static class MentalHealConfig {
         /**

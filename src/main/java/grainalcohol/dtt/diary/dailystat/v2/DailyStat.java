@@ -3,27 +3,27 @@ package grainalcohol.dtt.diary.dailystat.v2;
 import grainalcohol.dtt.registry.DTTRegistries;
 import net.minecraft.nbt.NbtCompound;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DailyStat {
     private final Map<DailyStatKey<Integer>, Integer> NUMBER_STATS_MAP;
     private final Map<DailyStatKey<Boolean>, Boolean> BOOLEAN_STATS_MAP;
 
     public DailyStat() {
-        NUMBER_STATS_MAP = new HashMap<>();
+        NUMBER_STATS_MAP = new ConcurrentHashMap<>();
         for (var statKey : DTTRegistries.NUMBER_STAT_KEY_REGISTRY) {
             NUMBER_STATS_MAP.put(statKey, 0);
         }
-        BOOLEAN_STATS_MAP = new HashMap<>();
+        BOOLEAN_STATS_MAP = new ConcurrentHashMap<>();
         for (var statKey : DTTRegistries.BOOLEAN_STAT_KEY_REGISTRY) {
             BOOLEAN_STATS_MAP.put(statKey, false);
         }
     }
 
     public DailyStat(DailyStat other) {
-        this.NUMBER_STATS_MAP = new HashMap<>(other.NUMBER_STATS_MAP);
-        this.BOOLEAN_STATS_MAP = new HashMap<>(other.BOOLEAN_STATS_MAP);
+        this.NUMBER_STATS_MAP = new ConcurrentHashMap<>(other.NUMBER_STATS_MAP);
+        this.BOOLEAN_STATS_MAP = new ConcurrentHashMap<>(other.BOOLEAN_STATS_MAP);
     }
 
     public Map<DailyStatKey<Integer>, Integer> getNumberStatMap() {
