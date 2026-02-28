@@ -29,58 +29,58 @@ public class ClientActionbarHintMixin {
 
     @Inject(method = "receivePTSDFormPacket", at = @At("HEAD"), cancellable = true)
     private void enhancedPTSDFormMessage(PacketByteBuf buf, NetworkManager.PacketContext packetContext, CallbackInfo ci) {
-        if (DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_formation_message) {
+        if (DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDFormationMessage) {
             ci.cancel();
         }
     }
 
     @Inject(method = "receivePTSDDispersePacket", at = @At("HEAD"), cancellable = true)
     private void enhancedPTSDDisperseMessage(PacketByteBuf buf, NetworkManager.PacketContext packetContext, CallbackInfo ci) {
-        if (DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_dispersal_message) {
+        if (DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDDispersalMessage) {
             ci.cancel();
         }
     }
 
     @Inject(method = "receivePTSDRemissionPacket", at = @At("HEAD"), cancellable = true)
     private void enhancedPTSDRemissionMessage(PacketByteBuf buf, NetworkManager.PacketContext packetContext, CallbackInfo ci) {
-        if (DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_remission_message) {
+        if (DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDRemissionMessage) {
             ci.cancel();
         }
     }
 
     @ModifyConstant(method = "receiveFishHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyFishHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
 
     @ModifyConstant(method = "receiveFeedAnimalHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyFeedAnimalHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
 
     @ModifyConstant(method = "receivePetHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyPetHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
 
     @ModifyConstant(method = "receiveLootHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyLootHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
     
     @ModifyConstant(method = "receiveNearbyBlockHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyNearbyBlockHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
 
     @ModifyConstant(method = "receiveBreakBlockHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyBreakBlockHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
 
     @ModifyConstant(method = "receiveKillEntityHealPacket", constant = @Constant(longValue = 1200L))
     private long modifyKillEntityHealMessageInterval(long original) {
-        return Math.max(1200, DTTConfig.getInstance().getClientConfig().message_display_config.heal_message_interval_ticks);
+        return Math.max(1200, DTTConfig.getInstance().getClientConfig().messageDisplayConfig.healMessageIntervalTicks);
     }
 
     @WrapOperation(
@@ -92,7 +92,7 @@ public class ClientActionbarHintMixin {
     )
     private void enhancedKillEntityHealMessage(InGameHud inGameHud, Text message, boolean tinted, Operation<Void> original, @Local(name = "id") Text entityId) {
         ClientConfig clientConfig = DTTConfig.getInstance().getClientConfig();
-        if (!clientConfig.message_display_config.enhanced_kill_entity_message) {
+        if (!clientConfig.messageDisplayConfig.enhancedKillEntityMessage) {
             original.call(inGameHud, message, tinted);
         } else {
             double emotionValue = DepressionClient.clientMentalStatus.emotionValue;
@@ -110,7 +110,7 @@ public class ClientActionbarHintMixin {
     )
     private MutableText mentalFatigueMessageVariant(String originalKey, Operation<MutableText> original) {
         // TODO: 使文案能够根据精神健康状态不同而不同
-        int variantCount = DTTConfig.getInstance().getClientConfig().message_variant_config.mental_fatigue_message_variant_count;
+        int variantCount = DTTConfig.getInstance().getClientConfig().messageVariantConfig.mentalFatigueMessageVariantCount;
         if (variantCount > 0) {
             return original.call(StringUtil.findTranslationKeyVariant(
                     "message.dtt.mental_fatigue", variantCount, RANDOM

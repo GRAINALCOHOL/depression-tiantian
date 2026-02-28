@@ -25,7 +25,7 @@ public class JukeboxBlockEntityMixinMixin {
             constant = @Constant(longValue = 20L)
     )
     private long modifyJukeboxMentalHealInterval(long constant) {
-        return DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_jukebox_interval_ticks;
+        return DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearbyJukeboxIntervalTicks;
     }
 
     @TargetHandler(
@@ -37,7 +37,7 @@ public class JukeboxBlockEntityMixinMixin {
             at = @At("HEAD")
     )
     private void injectJukeboxTick(World level, BlockPos blockPos, BlockState blockState, CallbackInfo originalCi, CallbackInfo ci) {
-        if (DTTConfig.getInstance().getServerConfig().mental_heal_config.nearby_jukebox_mode != ServerConfig.NearbyAnythingHealMode.EVERYONE) {
+        if (DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearbyJukeboxMode != ServerConfig.NearbyAnythingHealMode.EVERYONE) {
             ci.cancel();
         }
     }

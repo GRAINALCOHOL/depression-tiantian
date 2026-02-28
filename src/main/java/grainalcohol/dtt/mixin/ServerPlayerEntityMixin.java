@@ -119,12 +119,12 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
             dtt$hasSendInRainMessage = true;
         }
 
-        ServerConfig.MentalHealConfig mentalHealConfig = DTTConfig.getInstance().getServerConfig().mental_heal_config;
+        ServerConfig.MentalHealConfig mentalHealConfig = DTTConfig.getInstance().getServerConfig().mentalHealConfig;
         MentalStatus mentalStatus = MentalStatusHelper.getMentalStatus(self);
         // 宠物恢复情绪
-        if (mentalHealConfig.nearby_pet_mode == ServerConfig.NearbyAnythingHealMode.EXIST) {
+        if (mentalHealConfig.nearbyPetMode == ServerConfig.NearbyAnythingHealMode.EXIST) {
             // exist模式
-            if (self.age % mentalHealConfig.nearby_pet_interval_ticks == 0
+            if (self.age % mentalHealConfig.nearbyPetIntervalTicks == 0
                     && NearbyMentalHealHelper.isPetNearby(self, 4)) {
                 // 每隔一段时间，并且附近存在宠物时
                 double healValue = mentalStatus.mentalHeal("pet", 1.5);
@@ -135,10 +135,10 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
             }
         }
         // 唱片机恢复情绪
-        if (mentalHealConfig.nearby_jukebox_mode == ServerConfig.NearbyAnythingHealMode.EXIST) {
+        if (mentalHealConfig.nearbyJukeboxMode == ServerConfig.NearbyAnythingHealMode.EXIST) {
             // exist模式
             JukeboxBlockEntity nearestPlayingJukebox = NearbyMentalHealHelper.findNearestPlayingJukeboxEntity(self, 4);
-            if (self.age % mentalHealConfig.nearby_jukebox_interval_ticks == 0 && nearestPlayingJukebox != null) {
+            if (self.age % mentalHealConfig.nearbyJukeboxIntervalTicks == 0 && nearestPlayingJukebox != null) {
                 // 每隔一段时间，并且附近存在正在播放的唱片机时
                 Identifier recordItemId = Registries.ITEM.getId(nearestPlayingJukebox.getStack().getItem());
                 double healValue = mentalStatus.mentalHeal(recordItemId.toString(), 1.0);
@@ -158,7 +158,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         ServerWorld serverWorld = self.getServerWorld();
         if (serverWorld.getTimeOfDay() % 24000 == 0) {
             // 每天0时更新统计数据
-            double EMA_Factor = DTTConfig.getInstance().getServerConfig().diary_config.ema_factor;
+            double EMA_Factor = DTTConfig.getInstance().getServerConfig().diaryConfig.EMAFactor;
             DailyStatManager.updateDailyStat(self.getUuid(), EMA_Factor);
         }
         if (serverWorld.getTimeOfDay() % 12000 == 0) {

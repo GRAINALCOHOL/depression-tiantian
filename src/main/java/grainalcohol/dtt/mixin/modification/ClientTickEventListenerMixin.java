@@ -21,7 +21,7 @@ public class ClientTickEventListenerMixin {
             )
     )
     private static boolean disableMentalTraitSelectedScreen(Operation<Boolean> original) {
-        if (DTTConfig.getInstance().getServerConfig().common_config.disable_mental_trait_select_screen) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.disableMentalTraitSelectScreen) {
             MentalTraitPacket.sendToServer(MentalStatus.DEFAULT_MENTAL_TRAIT == null ? "normal" : MentalStatus.DEFAULT_MENTAL_TRAIT);
             return true;
         }

@@ -33,7 +33,7 @@ public class DiaryContentProducer {
 
     public DiaryContentProducer(ServerPlayerEntity player) {
         this.mentalHealthStatus = MentalHealthStatus.from(player);
-        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diary_config.gentle_mode;
+        boolean gentleMode = DTTConfig.getInstance().getServerConfig().diaryConfig.gentleMode;
         this.topicProducer = new TopicProducer(player, gentleMode);
 
         this.feelingProducer = new FeelingProducer(getTopicProducer().getAllContextAttributes(), gentleMode);
@@ -58,7 +58,7 @@ public class DiaryContentProducer {
             // 因抑郁情绪拒绝写日记
             return generateTranslationKey(DiaryParagraph.NO_DIARY);
         }
-        int variantCount = DTTConfig.getInstance().getServerConfig().diary_config.diary_translation_key_variant_count;
+        int variantCount = DTTConfig.getInstance().getServerConfig().diaryConfig.diaryTranslationKeyVariantCount;
 
         String mentalHealthChangeKey = "";
         if (isHasCured()) {

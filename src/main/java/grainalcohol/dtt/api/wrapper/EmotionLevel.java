@@ -1,5 +1,9 @@
 package grainalcohol.dtt.api.wrapper;
 
+import grainalcohol.dtt.api.helper.EmotionHelper;
+import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
+
 public enum EmotionLevel {
     HIGH_UNDEFINED("high_undefined", 8),
     EXCITED("excited", 7),
@@ -18,6 +22,22 @@ public enum EmotionLevel {
     EmotionLevel(String name, int level) {
         this.name = name;
         this.level = level;
+    }
+
+    public static EmotionLevel from(ServerPlayerEntity player) {
+        return EmotionHelper.getEmotionLevel(player);
+    }
+
+    public static @Nullable EmotionLevel from(int level) {
+        if (level >= HIGH_UNDEFINED.getLevel()) return HIGH_UNDEFINED;
+        if (level <= LOW_UNDEFINED.getLevel()) return LOW_UNDEFINED;
+
+        for (EmotionLevel emotionLevel : values()) {
+            if (emotionLevel.level == level) {
+                return emotionLevel;
+            }
+        }
+        return null;
     }
 
     public String getName() {

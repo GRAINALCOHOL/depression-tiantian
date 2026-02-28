@@ -25,24 +25,38 @@ public enum Severity {
     private final int level;
     private final String name;
 
+    /**
+     * 根据精神健康状态解析严重程度
+     * @param mentalHealthStatus 需要解析的精神健康状态
+     * @return 精神健康状态对应的严重程度
+     */
     public static Severity from(MentalHealthStatus mentalHealthStatus) {
-        for (Severity severity : Severity.values()) {
-            if (severity == mentalHealthStatus.getSeverity()) {
-                return severity;
-            }
-        }
-        return NONE;
+        return mentalHealthStatus.getSeverity();
     }
 
+    /**
+     * 根据患病状态解析严重程度
+     * @param mentalIllnessStatus 需要解析的患病状态
+     * @return 患病状态对应的严重程度
+     */
     public static Severity from(MentalIllnessStatus mentalIllnessStatus) {
-        for (Severity severity : Severity.values()) {
-            if (severity == mentalIllnessStatus.getSeverity()) {
-                return severity;
-            }
-        }
-        return NONE;
+        return mentalIllnessStatus.getSeverity();
     }
 
+    /**
+     * 根据PTSD等级解析严重程度
+     * @param ptsdLevel 需要解析的PTSD等级
+     * @return PTSD等级对应的严重程度
+     */
+    public static Severity from(PTSDLevel ptsdLevel) {
+        return ptsdLevel.getSeverity();
+    }
+
+    /**
+     * 默认根据玩家的患病状态解析严重程度
+     * @param player 需要解析的玩家
+     * @return 玩家的患病状态对应的严重程度
+     */
     public static Severity from(ServerPlayerEntity player) {
         return from(MentalIllnessStatus.from(player));
     }
@@ -53,7 +67,7 @@ public enum Severity {
 
     public boolean isHealthierThan(Severity other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is healthier when one is CLEAR");
+            LOGGER.error("Cannot compare which is healthier when one is NONE");
             return false;
         }
 
@@ -62,7 +76,7 @@ public enum Severity {
 
     public boolean isSickerThan(Severity other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is sicker when one is CLEAR");
+            LOGGER.error("Cannot compare which is sicker when one is NONE");
             return false;
         }
 

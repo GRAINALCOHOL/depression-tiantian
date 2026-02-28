@@ -99,7 +99,7 @@ public class DTTListener {
     }
 
     private static void sendPTSDFormMessage(PlayerEntity player, String ptsdId, PTSDLevel currentLevel) {
-        if (!DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_formation_message) {
+        if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDFormationMessage) {
             return;
         }
         // PTSD等级提升至0级
@@ -123,7 +123,7 @@ public class DTTListener {
     }
 
     private static void sendPTSDDisperseMessage(PlayerEntity player, String ptsdId, PTSDLevel currentLevel) {
-        if (!DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_dispersal_message) {
+        if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDDispersalMessage) {
             return;
         }
         // PTSD等级降低至0级
@@ -135,7 +135,7 @@ public class DTTListener {
     }
 
     private static void sendPTSDRemissionMessage(PlayerEntity player, String ptsdId) {
-        if (!DTTConfig.getInstance().getClientConfig().message_display_config.enhanced_ptsd_remission_message) {
+        if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDRemissionMessage) {
             return;
         }
         ((PendingMessageQueueController) player).dtt$addPendingMessage(Text.translatable(

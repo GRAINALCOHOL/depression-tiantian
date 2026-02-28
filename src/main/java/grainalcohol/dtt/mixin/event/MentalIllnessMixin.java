@@ -48,7 +48,7 @@ public class MentalIllnessMixin {
             return;
         }
 
-        boolean saferCombat = DTTConfig.getInstance().getServerConfig().combat_config.safer_combat;
+        boolean saferCombat = DTTConfig.getInstance().getServerConfig().combatConfig.saferCombat;
         if (saferCombat && mentalStatus.combatCountdown > 0) {
             // 战斗状态下如果saferCombat配置为true则不会闭眼
             return;
@@ -89,7 +89,7 @@ public class MentalIllnessMixin {
     )
     private int wrapMentalFatigueAmplifier(StatusEffectInstance instance, Operation<Integer> original) {
         // 没法改局部变量啊，重写太不优雅了，只能改这个（
-        if (DTTConfig.getInstance().getServerConfig().common_config.mental_fatigue_trigger_chance_fixer) {
+        if (DTTConfig.getInstance().getServerConfig().commonConfig.mentalFatigueTriggerChanceFixer) {
             if (mentalHealthId == 4 && isMania) {
                 // 躁狂状态不触发精神疲劳，即使持有抗抑郁状态效果
                 return -1;

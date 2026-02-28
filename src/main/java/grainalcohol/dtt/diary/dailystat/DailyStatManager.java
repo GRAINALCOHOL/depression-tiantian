@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class DailyStatManager {
-    private static final double EMAFactor = MathHelper.clamp(DTTConfig.getInstance().getServerConfig().diary_config.ema_factor, 0.0, 1.0);
+    private static final double EMAFactor = MathHelper.clamp(DTTConfig.getInstance().getServerConfig().diaryConfig.EMAFactor, 0.0, 1.0);
 
     private static final Map<UUID, DailyStat> dailyStat = new ConcurrentHashMap<>();
     private static final Map<UUID, DailyStat> yesterdayDailyStat = new ConcurrentHashMap<>();

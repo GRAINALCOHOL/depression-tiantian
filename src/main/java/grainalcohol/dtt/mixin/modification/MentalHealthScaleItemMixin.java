@@ -27,7 +27,7 @@ public class MentalHealthScaleItemMixin {
     @WrapWithCondition(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/ItemCooldownManager;set(Lnet/minecraft/item/Item;I)V"))
     private boolean shouldApplyCooldown(ItemCooldownManager instance, Item item, int duration){
         // true表示禁用，所以取反
-        return !DTTConfig.getInstance().getServerConfig().item_config.disable_mental_health_scale_cooldown;
+        return !DTTConfig.getInstance().getServerConfig().itemConfig.disableMentalHealthScaleCooldown;
     }
 
     @Redirect(
@@ -40,7 +40,7 @@ public class MentalHealthScaleItemMixin {
     )
     private TypedActionResult<ItemStack> itemDecrement(Item instance, World world, PlayerEntity player, Hand interactionHand) {
         ItemStack itemStack = player.getStackInHand(interactionHand);
-        if (DTTConfig.getInstance().getServerConfig().item_config.disposable_mental_health_scale) {
+        if (DTTConfig.getInstance().getServerConfig().itemConfig.disposableMentalHealthScale) {
             if (!player.isCreative()) {
                 itemStack.decrement(1);
             }
@@ -59,7 +59,7 @@ public class MentalHealthScaleItemMixin {
             )
     )
     private boolean enhancedFirstMessage(PlayerEntity player, Text message, @Local(name = "mentalStatus") ClientMentalStatus mentalStatus) {
-        if (DTTConfig.getInstance().getServerConfig().item_config.enhanced_mental_health_scale_action) {
+        if (DTTConfig.getInstance().getServerConfig().itemConfig.enhancedMentalHealthScaleAction) {
             // 心理健康指数
             player.sendMessage(
                     Text.translatable(
@@ -87,7 +87,7 @@ public class MentalHealthScaleItemMixin {
             )
     )
     private boolean enhancedSecondMessage(PlayerEntity player, Text message, @Local(name = "mentalStatus") ClientMentalStatus mentalStatus) {
-        if (DTTConfig.getInstance().getServerConfig().item_config.enhanced_mental_health_scale_action) {
+        if (DTTConfig.getInstance().getServerConfig().itemConfig.enhancedMentalHealthScaleAction) {
             // 心理评估结果
             player.sendMessage(
                     Text.translatable(

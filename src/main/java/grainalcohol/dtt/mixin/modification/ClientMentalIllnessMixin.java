@@ -22,7 +22,7 @@ public class ClientMentalIllnessMixin {
     )
     private MutableText closeEyesMessageVariant(String originalKey, Operation<MutableText> original) {
         // TODO: 使文案能够根据精神健康状态不同而不同
-        int variantCount = DTTConfig.getInstance().getClientConfig().message_variant_config.close_eyes_message_variant_count;
+        int variantCount = DTTConfig.getInstance().getClientConfig().messageVariantConfig.closeEyesMessageVariantCount;
         if (variantCount > 0) {
             return original.call(StringUtil.findTranslationKeyVariant("message.dtt.close_eyes", variantCount, new Random(), null));
         }

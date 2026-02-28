@@ -177,7 +177,7 @@ public enum MentalHealthStatus {
 
     public boolean isHealthierThan(MentalHealthStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is healthier when one is CLEAR");
+            LOGGER.error("Cannot compare which is healthier when one is NONE");
             return false;
         }
         return this.getSeverity().isHealthierThan(other.getSeverity());
@@ -185,7 +185,7 @@ public enum MentalHealthStatus {
 
     public boolean isSickerThan(MentalHealthStatus other) {
         if (this == NONE || other == NONE) {
-            LOGGER.error("Cannot compare which is sicker when one is CLEAR");
+            LOGGER.error("Cannot compare which is sicker when one is NONE");
             return false;
         }
         return this.getSeverity().isSickerThan(other.getSeverity());
