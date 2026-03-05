@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import grainalcohol.dtt.api.event.SymptomEvent;
+import grainalcohol.dtt.client.DTTServerConfigCache;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStat;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.diary.topic.TopicWeightCalculator;
@@ -43,6 +44,7 @@ public class DTTCommand {
                         .then(literal("combat_status").executes(DTTCommand::checkCombatStatus))
                         .then(literal("is_close_eyes").executes(DTTCommand::checkIsCloseEyes))
                         .then(literal("daily_stat").executes(DTTCommand::checkDailyStat))
+                        .then(literal("server_config_cache").executes(DTTCommand::checkServerConfigCache))
                 )
                 .then(literal("daily_stat")
                         .requires(source -> source.hasPermissionLevel(2))
@@ -72,6 +74,18 @@ public class DTTCommand {
 
         player.sendMessage(Text.literal("Added monster killed daily stat by:" + amount));
         player.sendMessage(Text.literal("Current amount is" + dailyStat.getNumberStat(DTTDailyStat.MONSTER_KILLED)));
+
+        return 1;
+    }
+
+    private static int checkServerConfigCache(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        player.sendMessage(Text.literal("Disable Mental Trait Select Screen: " + DTTServerConfigCache.disableMentalTraitSelectScreen));
+        player.sendMessage(Text.literal("Safer Catatonic Stupor: " + DTTServerConfigCache.saferCatatonicStupor));
 
         return 1;
     }

@@ -35,6 +35,7 @@ public class DTTMod implements ModInitializer {
         DTTListener.archEventInit();
         DTTListener.dttEventInit();
         DTTListener.dttAPIEventInit();
+        DTTListener.fabricEventInit();
         DTTCommand.register();
 	}
 }

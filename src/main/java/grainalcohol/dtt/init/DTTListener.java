@@ -2,6 +2,7 @@ package grainalcohol.dtt.init;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.api.event.PTSDEvent;
@@ -9,11 +10,18 @@ import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.api.internal.PendingMessageQueueController;
 import grainalcohol.dtt.config.DTTConfig;
+import grainalcohol.dtt.config.ServerConfig;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
+import grainalcohol.dtt.network.ServerConfigPacket;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -95,6 +103,17 @@ public class DTTListener {
             if (player instanceof EyesStatusFlagController controller) {
                 controller.dtt$setIsEyesClosedFlag(false);
             }
+        });
+    }
+    public static void fabricEventInit() {
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayerEntity player = handler.getPlayer();
+            ServerConfig serverConfig = DTTConfig.getInstance().getServerConfig();
+
+            DTTNetwork.CHANNEL.sendToPlayer(player, new ServerConfigPacket(
+                    serverConfig.combatConfig.saferCatatonicStupor,
+                    serverConfig.commonConfig.disableMentalTraitSelectScreen
+            ));
         });
     }
 

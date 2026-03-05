@@ -2,6 +2,7 @@ package grainalcohol.dtt.mixin.modification;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.internal.BlockBreakMentalHealCooldownController;
 import grainalcohol.dtt.config.DTTConfig;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -112,7 +114,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
     @Inject(method = "viewDetect", at = @At("HEAD"), cancellable = true)
     private void onViewDetectHead(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         double distance = this.player.getPos().distanceTo(entity.getPos());
-        if (distance > DTTConfig.getInstance().getServerConfig().commonConfig.maxDistanceToTriggerPTSDBySight) {
+        if (distance > DTTConfig.getInstance().getServerConfig().PTSDConfig.maxDistanceToTriggerPTSDBySight) {
             cir.setReturnValue(false);
         }
     }
@@ -121,14 +123,85 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
             method = "mentalHeal(Ljava/lang/String;D)D",
             constant = @Constant(doubleValue = 2.0)
     )
-    private double modifyPTSDHealThreshold(double original) {
+    private double modifyMentalHealBoredomInfluence(double original) {
         double boredomStrength = DTTConfig.getInstance().getServerConfig().commonConfig.boredomStrength;
         return 1 / boredomStrength; // 原数据为2.0，即(1 / 0.5)
     }
 
+    @WrapOperation(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/Map$Entry;setValue(Ljava/lang/Object;)Ljava/lang/Object;",
+                    ordinal = 2
+            )
+    )
+    private Object modifyPTSDRecoveryLatent(Map.Entry<String, Double> PTSDEntry, Object value, Operation<Object> original) {
+        if (value instanceof Double doubleValue) {
+            ServerConfig.PTSDConfig PTSDConfig = DTTConfig.getInstance().getServerConfig().PTSDConfig;
+            double baseMultiplier = PTSDConfig.PTSDRecoveryMultiplier;
+            double multiplier = PTSDConfig.PTSDRecoveryMultiplierLatent;
+            return original.call(PTSDEntry, doubleValue * baseMultiplier * multiplier);
+        }
+        return original.call(PTSDEntry, value);
+    }
+
+    @WrapOperation(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/Map$Entry;setValue(Ljava/lang/Object;)Ljava/lang/Object;",
+                    ordinal = 3
+            )
+    )
+    private Object modifyPTSDRecoveryActive(Map.Entry<String, Double> PTSDEntry, Object value, Operation<Object> original) {
+        if (value instanceof Double doubleValue) {
+            ServerConfig.PTSDConfig PTSDConfig = DTTConfig.getInstance().getServerConfig().PTSDConfig;
+            double baseMultiplier = PTSDConfig.PTSDRecoveryMultiplier;
+            double multiplier = PTSDConfig.PTSDRecoveryMultiplierActive;
+            return original.call(PTSDEntry, doubleValue * baseMultiplier * multiplier);
+        }
+        return original.call(PTSDEntry, value);
+    }
+
+    // TODO: 加一个修改mentalHurt中黑暗环境对伤害量加成的mixin
+
+    @WrapOperation(
+            method = "mentalHurt(Ljava/lang/String;D)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/ConcurrentHashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    ordinal = 1
+            )
+    )
+    private Object modifyPTSDBufferValue(
+            ConcurrentHashMap<String, Double> PTSDValueBufferMap, Object key, Object value, Operation<Object> original,
+            @Local(name = "originValue") Double originValue,
+            @Local(argsOnly = true) double damage
+    ) {
+        double multiplier = DTTConfig.getInstance().getServerConfig().PTSDConfig.PTSDValueGainMultiplier;
+        return original.call(PTSDValueBufferMap, key, originValue + damage * multiplier);
+    }
+
+    @WrapOperation(
+            method = "mentalHurt(Ljava/lang/String;D)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/ConcurrentHashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    ordinal = 3
+            )
+    )
+    private Object modifyPTSDTimeBufferValue2(
+            ConcurrentHashMap<String, Double> PTSDValueBufferMap, Object key, Object value, Operation<Object> original,
+            @Local(argsOnly = true) double damage
+    ) {
+        double multiplier = DTTConfig.getInstance().getServerConfig().PTSDConfig.PTSDValueGainMultiplier;
+        return original.call(PTSDValueBufferMap, key, damage * multiplier);
+    }
+
     @Inject(method = "tick", at = @At("HEAD"))
     private void clearPTSDData(CallbackInfo ci) {
-        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList;
+        Set<String> blacklist = DTTConfig.getInstance().getServerConfig().PTSDConfig.universalPTSDBlackList;
         MiscUtil.cleanMap(PTSD, blacklist::contains);
         MiscUtil.cleanMap(PTSDTimeBuffer, blacklist::contains);
         MiscUtil.cleanMap(PTSDValueBuffer, blacklist::contains);
@@ -140,7 +213,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().PTSDConfig.universalPTSDBlackList.contains(id)) {
             DTTMod.LOGGER.info("Blocked mental health value hurt by damage source but string: {}", id);
             mentalHurt(amount);
             ci.cancel();
@@ -152,7 +225,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
         if (id.equals("player") || id.equals("minecraft:player")) {
             return;
         }
-        if (DTTConfig.getInstance().getServerConfig().commonConfig.universalPTSDBlackList.contains(id)) {
+        if (DTTConfig.getInstance().getServerConfig().PTSDConfig.universalPTSDBlackList.contains(id)) {
             DTTMod.LOGGER.info("Blocked trigger ptsd from hurt by damage type source but string: {}", id);
             ci.cancel();
         }

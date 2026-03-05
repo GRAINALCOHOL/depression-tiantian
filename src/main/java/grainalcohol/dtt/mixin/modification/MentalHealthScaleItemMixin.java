@@ -64,7 +64,7 @@ public class MentalHealthScaleItemMixin {
             player.sendMessage(
                     Text.translatable(
                             "message.dtt.mental_health_scale.mental_health_index",
-                            String.format("%.2f", MentalStatusHelper.getMentalHealthRate(mentalStatus.mentalHealthValue) * 10) // 这可能是暂时的？
+                            String.format("%.2f", MentalStatusHelper.getMentalHealthRateWithEmotionAffection(mentalStatus.mentalHealthValue, mentalStatus.emotionValue, 0.6) * 10) // 这可能是暂时的？
                     ).formatted(Formatting.UNDERLINE)
                     // 悬停时显示详细数据
                     .styled(style -> style.withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable(

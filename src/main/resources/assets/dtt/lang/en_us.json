@@ -386,6 +386,11 @@
   "message.dtt.in_rain.2": "（冰冷的雨水带走体温，让你忍不住微微发抖）",
   "message.dtt.in_rain.3": "淋雨提示文案3",
 
+  "message.dtt.darkness": "（四周的漆黑让你感到恐惧）",
+  "message.dtt.darkness.1": "黑暗环境提示文案1",
+  "message.dtt.darkness.2": "黑暗环境提示文案2",
+  "message.dtt.darkness.3": "黑暗环境提示文案3",
+
   "message.dtt.kill_entity_heal.positive": "（击杀 %s 让你感到一阵兴奋）",
   "message.dtt.kill_entity_heal.negative": "（击杀 %s 让你感到一阵反胃）",
 

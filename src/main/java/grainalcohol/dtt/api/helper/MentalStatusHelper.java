@@ -12,6 +12,7 @@ import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
@@ -52,6 +53,24 @@ public class MentalStatusHelper {
      * 中度与严重的分界线
      */
     public static final double BETWEEN_MODERATE_AND_MAJOR = 20.0;
+
+    /**
+     * 获取精神健康率，并根据情绪值进行调整，
+     * 情绪值为负数时会降低精神健康率，调整幅度根据情绪值的绝对值的平方和minFactor决定
+     * @param mentalHealthValue 精神健康值
+     * @param emotionValue 情绪值
+     * @param minFactor 调整的最小因子，范围0.0~1.0，表示当情绪值为-20时精神健康率至少保留的比例
+     * @return 应用情绪影响后的精神健康率，范围0.0~1.0
+     */
+    public static double getMentalHealthRateWithEmotionAffection(double mentalHealthValue, double emotionValue, double minFactor) {
+        double baseRate = getMentalHealthRate(mentalHealthValue);
+        if (emotionValue >= 0) return baseRate;
+
+        minFactor = MathHelper.clamp(minFactor, 0.0, 1.0);
+        double influence = Math.pow(-emotionValue / 20, 2);
+        double adjustmentFactor = 1 - influence * (1 - minFactor);
+        return baseRate * adjustmentFactor;
+    }
 
     /**
      * 获取精神健康值对应的精神健康率，即当前值和最大值的比率<br>

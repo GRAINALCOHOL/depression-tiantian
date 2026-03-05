@@ -20,6 +20,8 @@ public class ServerConfig {
     public DiaryConfig diaryConfig = new DiaryConfig();
     @SerializedName("combat_config")
     public CombatConfig combatConfig = new CombatConfig();
+    @SerializedName("ptsd_config")
+    public PTSDConfig PTSDConfig = new PTSDConfig();
     @SerializedName("common_config")
     public CommonConfig commonConfig = new CommonConfig();
     @SerializedName("item_config")
@@ -246,9 +248,18 @@ public class ServerConfig {
     public static class CombatConfig {
         /**
          * 默认false，启用后战斗状态下不会因为病情或困意闭眼/打盹
+         * @see grainalcohol.dtt.mixin.event.MentalIllnessMixin
          */
         @SerializedName("safer_combat")
         public boolean saferCombat = false;
+        /**
+         * 默认false，启用后紧张性木僵不再禁用键盘输入，但会给予负面效果
+         * @see ClientTickEventListenerMixin
+         * @see grainalcohol.dtt.mixin.modification.KeyboardMixinMixin
+         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
+         */
+        @SerializedName("safer_catatonic_stupor")
+        public boolean saferCatatonicStupor = false;
 
         /**
          * 默认false，启用后无论情绪值如何，攻击或受击都将进入战斗状态
@@ -257,6 +268,62 @@ public class ServerConfig {
          */
         @SerializedName("easier_combat_state")
         public boolean easierCombatState = false;
+    }
+
+    public static class PTSDConfig {
+        /**
+         * 默认20，单位为方块，当玩家可能通过看到某个实体触发PTSD时，如果玩家与该实体之间的距离超过这个值，则不会触发PTSD
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        @SerializedName("max_distance_to_trigger_ptsd_by_sight")
+        public int maxDistanceToTriggerPTSDBySight = 20;
+
+        /**
+         * depression原版为1.0，默认0.5，受伤时创伤值累积的倍率<br>
+         * 该因子越大，受伤时创伤值增长越快，反之亦然
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        @SerializedName("ptsd_value_gain_multiplier")
+        public double PTSDValueGainMultiplier = 0.5;
+
+        /**
+         * depression原版为1.0，默认1.0，任意等级PTSD的创伤值自然恢复的倍率<br>
+         * 该因子越大，创伤值自然恢复越快，反之亦然
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        @SerializedName("ptsd_recovery_multiplier")
+        public double PTSDRecoveryMultiplier = 1.0;
+
+        /**
+         * depression原版为1.0，默认1.5，潜伏期PTSD的创伤值自然恢复的倍率<br>
+         * 该因子越大，潜伏期PTSD的创伤值自然恢复越快，反之亦然
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        @SerializedName("ptsd_recovery_multiplier_latent")
+        public double PTSDRecoveryMultiplierLatent = 1.5;
+
+        /**
+         * depression原版为1.0，默认1.0，非潜伏期PTSD的创伤值自然恢复的倍率<br>
+         * 该因子越大，非潜伏期PTSD的创伤值自然恢复越快，反之亦然
+         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
+         */
+        @SerializedName("ptsd_recovery_multiplier_active")
+        public double PTSDRecoveryMultiplierActive  = 1.0;
+
+        @SerializedName("comment_for_black_list")
+        public String commentForBlackList = "To prevent certain damage types from triggering PTSD, add the damage type IDs in 'camelCase without namespace prefix' format. Only vanilla damage types are likely supported, " +
+                "e.g., minecraft:generic_kill should be written as genericKill." + "Additionally, to prevent certain entities from triggering PTSD, add their full entity IDs, " +
+                "e.g., minecraft:zombie (no changes needed here)." + "Finally, to prevent certain sound event mappings from triggering PTSD, add their mapping targets from config/depression/damagesource-sound-map.toml." +
+                "Note: Damage types and entity IDs related to 'player' can never be blocked.";
+        @SerializedName("comment_for_black_list_zh_cn")
+        public String commentForBlackListZHCN = "如果你想阻止某些伤害类型触发PTSD，就把你需要的伤害类型的id的“不带命名空间前缀，使用首字母小写驼峰命名法”版本添加进去，而且大概率只能使用原版的伤害类型，" +
+                "比如：minecraft:generic_kill 应该写成 genericKill。" + "再然后，如果你想阻止某些实体触发PTSD，就把它们完整的实体id添加进去，" +
+                "比如：minecraft:zombie，这里不需要改。" + "最后，如果你想阻止某些声音事件映射触发PTSD，就把它们的映射目标添加进去，就是config/depression/damagesource-sound-map.toml里面的内容。" +
+                "最后的最后，与“player”相关的伤害类型和实体id是永远无法被阻止的。";
+        @SerializedName("universal_ptsd_black_list")
+        public Set<String> universalPTSDBlackList = Set.of(
+                "genericKill"
+        );
     }
 
     public static class CommonConfig {
@@ -273,33 +340,31 @@ public class ServerConfig {
         @SerializedName("mental_fatigue_trigger_chance_fixer")
         public boolean mentalFatigueTriggerChanceFixer = true;
         /**
-         * 默认20，单位为方块，当玩家可能通过看到某个实体触发PTSD时，如果玩家与该实体之间的距离超过这个值，则不会触发PTSD
-         * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
-         */
-        @SerializedName("max_distance_to_trigger_ptsd_by_sight")
-        public int maxDistanceToTriggerPTSDBySight = 20;
-        /**
          * depression原版为0.5，默认1.6，无聊值对情绪值恢复的影响强度<br>
          * 多次恢复的恢复原因相同时，值越大，递减的速度越快
          * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
          */
         @SerializedName("boredom_strength")
         public double boredomStrength = 1.6;
+        /**
+         * 默认7，玩家在低于此字段的光照等级下一段时间后将触发周围黑暗的消息提示
+         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
+         */
+        @SerializedName("darkness_message_light_level_threshold")
+        public int darknessMessageLightLevelThreshold = 7;
 
-        @SerializedName("comment_for_black_list")
-        public String commentForBlackList = "To prevent certain damage types from triggering PTSD, add the damage type IDs in 'camelCase without namespace prefix' format. Only vanilla damage types are likely supported, " +
-                "e.g., minecraft:generic_kill should be written as genericKill." + "Additionally, to prevent certain entities from triggering PTSD, add their full entity IDs, " +
-                "e.g., minecraft:zombie (no changes needed here)." + "Finally, to prevent certain sound event mappings from triggering PTSD, add their mapping targets from config/depression/damagesource-sound-map.toml." +
-                "Note: Damage types and entity IDs related to 'player' can never be blocked.";
-        @SerializedName("comment_for_black_list_zh_cn")
-        public String commentForBlackListZHCN = "如果你想阻止某些伤害类型触发PTSD，就把你需要的伤害类型的id的“不带命名空间前缀，使用首字母小写驼峰命名法”版本添加进去，而且大概率只能使用原版的伤害类型，" +
-                "比如：minecraft:generic_kill 应该写成 genericKill。" + "再然后，如果你想阻止某些实体触发PTSD，就把它们完整的实体id添加进去，" +
-                "比如：minecraft:zombie，这里不需要改。" + "最后，如果你想阻止某些声音事件映射触发PTSD，就把它们的映射目标添加进去，就是config/depression/damagesource-sound-map.toml里面的内容。" +
-                "最后的最后，与“player”相关的伤害类型和实体id是永远无法被阻止的。";
-        @SerializedName("universal_ptsd_black_list")
-        public Set<String> universalPTSDBlackList = Set.of(
-                "genericKill"
-        );
+        /**
+         * 默认120，单位为秒，处于黑暗环境多久才能触发周围黑暗的提示消息，并等待这个时间后才允许再次触发
+         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
+         */
+        public int darknessMessageTriggerSeconds = 120;
+
+//        /**
+//         * 默认60，单位为秒，周围黑暗的提示消息需要多久才能重新累计（暂未实现）
+//         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
+//         */
+//        @SerializedName("darkness_message_cooldown_seconds")
+//        public int darknessMessageCooldownSeconds = 60;
     }
 
     public enum NearbyMultipleBlocksHealMode {

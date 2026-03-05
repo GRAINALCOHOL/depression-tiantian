@@ -19,7 +19,9 @@ public class OpenEyesEventPacket {
     // 应用
     public void apply(Supplier<NetworkManager.PacketContext> context) {
         if (context.get().getPlayer() instanceof ServerPlayerEntity serverPlayerEntity) {
-            SymptomEvent.OPEN_EYES_EVENT.invoker().onOpenEyes(serverPlayerEntity);
+            context.get().queue(
+                    () -> SymptomEvent.OPEN_EYES_EVENT.invoker().onOpenEyes(serverPlayerEntity)
+            );
         }
     }
 }

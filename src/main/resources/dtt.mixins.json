@@ -3,14 +3,14 @@
   "package": "grainalcohol.dtt.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "client.GameRenderMixin",
     "client.InGameHudMixin",
     "client.MouseMixin",
     "event.ClientMentalIllnessMixin",
     "modification.ClientActionbarHintMixin",
     "modification.ClientMentalIllnessMixin",
     "modification.ClientPTSDManagerMixin",
-    "modification.ClientTickEventListenerMixin"
+    "modification.ClientTickEventListenerMixin",
+    "modification.KeyboardMixinMixin"
   ],
   "mixins": [
     "AnimalEntityMixin",

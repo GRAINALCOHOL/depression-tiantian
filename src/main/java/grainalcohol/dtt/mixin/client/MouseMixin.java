@@ -2,6 +2,7 @@ package grainalcohol.dtt.mixin.client;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
+import grainalcohol.dtt.client.DTTServerConfigCache;
 import net.depression.client.ClientMentalStatus;
 import net.depression.client.DepressionClient;
 import net.minecraft.client.Mouse;
@@ -23,7 +24,9 @@ public class MouseMixin {
         boolean isSeverelyIll = MentalIllnessStatus.from(clientMentalStatus.mentalHealthId).isSeverelyIll();
         boolean isEyesClosed = clientMentalStatus.mentalIllness.isCloseEye;
 
-        // 患重病且闭眼时固定视角
+        // 开启了安全地木僵配置，不固定视角
+        if (DTTServerConfigCache.saferCatatonicStupor) return true;
+        // 患重病且闭眼（即紧张性木僵）时固定视角
         if (isSeverelyIll && isEyesClosed) return false;
         return true;
     }

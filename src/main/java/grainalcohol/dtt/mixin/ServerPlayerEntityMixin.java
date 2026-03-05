@@ -1,5 +1,6 @@
 package grainalcohol.dtt.mixin;
 
+import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.api.internal.PendingMessageQueueController;
 import grainalcohol.dtt.config.DTTConfig;
@@ -15,7 +16,12 @@ import net.depression.mental.MentalStatus;
 import net.depression.network.ActionbarHintPacket;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,6 +31,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,6 +52,11 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
     @Unique private boolean dtt$hasSendInRainMessage = false;
     @Unique private boolean dtt$hasSendResetSpawnPointMessage = false;
     @Unique private boolean dtt$hasSendJukeboxHealMessage = false;
+
+    // 黑暗消息要在离开黑暗环境后重置
+    @Unique private static final int dtt$darknessMessageMaxTime = 10; // 200秒
+    @Unique private int dtt$darknessMessageTimer = 0;
+    @Unique private boolean dtt$hasSendDarknessMessage = false;
 
     // 用于避免文案触发频繁导致的覆盖问题
     @Unique private final Queue<Text> dtt$pendingMessageQueue = new LinkedList<>();
@@ -119,6 +131,41 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
             dtt$hasSendInRainMessage = true;
         }
 
+        // TODO: 发送消息的逻辑也太复杂了，考虑做个系统单独管理
+
+        // 黑暗环境中
+        if (self.age % 20 == 0) {
+            ServerConfig.CommonConfig commonConfig = DTTConfig.getInstance().getServerConfig().commonConfig;
+            int maxSeconds = commonConfig.darknessMessageTriggerSeconds;
+            // getLightLevel会返回天空光和区块光的较大值
+            int lightLevelThreshold = MathHelper.clamp(commonConfig.darknessMessageLightLevelThreshold, 0, 15);
+            boolean inDarkness = serverWorld.getLightLevel(self.getBlockPos()) <= lightLevelThreshold;
+
+            if (inDarkness) {
+                if (dtt$darknessMessageTimer < maxSeconds) {
+                    dtt$darknessMessageTimer++;
+                }
+            } else {
+                if (dtt$darknessMessageTimer > 0) {
+                    dtt$darknessMessageTimer--;
+                }
+
+                if (dtt$darknessMessageTimer <= 0) {
+                    // 这里有一个重复赋值的问题
+                    dtt$hasSendDarknessMessage = false;
+                }
+            }
+
+            // 发送消息
+            if (dtt$darknessMessageTimer >= maxSeconds && !dtt$hasSendDarknessMessage) {
+                EmotionHelper.mentalHurt(self, 8.0);
+                self.sendMessage(Text.translatable(StringUtil.findTranslationKeyVariant(
+                        "message.dtt.darkness", 3
+                )), true);
+                dtt$hasSendDarknessMessage = true;
+            }
+        }
+
         ServerConfig.MentalHealConfig mentalHealConfig = DTTConfig.getInstance().getServerConfig().mentalHealConfig;
         MentalStatus mentalStatus = MentalStatusHelper.getMentalStatus(self);
         // 宠物恢复情绪
@@ -156,9 +203,10 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
     private void onTickTail(CallbackInfo ci) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
         ServerWorld serverWorld = self.getServerWorld();
+        ServerConfig serverConfig = DTTConfig.getInstance().getServerConfig();
         if (serverWorld.getTimeOfDay() % 24000 == 0) {
             // 每天0时更新统计数据
-            double EMA_Factor = DTTConfig.getInstance().getServerConfig().diaryConfig.EMAFactor;
+            double EMA_Factor = serverConfig.diaryConfig.EMAFactor;
             DailyStatManager.updateDailyStat(self.getUuid(), EMA_Factor);
         }
         if (serverWorld.getTimeOfDay() % 12000 == 0) {
@@ -166,6 +214,21 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
             dtt$hasSendInRainMessage = false;
             dtt$hasSendResetSpawnPointMessage = false;
             dtt$hasSendJukeboxHealMessage = false;
+        }
+        if (dtt$isEyesClosed && self.age % 20 == 0 && serverConfig.combatConfig.saferCatatonicStupor) {
+            // 缓慢 + 挖掘疲劳 + 虚弱
+            self.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.SLOWNESS,
+                    30, 4
+            ));
+            self.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.MINING_FATIGUE,
+                    30, 4
+            ));
+            self.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.WEAKNESS,
+                    30, 4
+            ));
         }
     }
 
@@ -240,8 +303,21 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
     private void onWriteCustomDataToNbt(NbtCompound nbt, CallbackInfo ci) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 
-        this.dtt$hasSendInRainMessage = nbt.getBoolean("dtt$hasCheckInRain");
-        this.dtt$hasSendResetSpawnPointMessage = nbt.getBoolean("dtt$hasResetSpawnPoint");
+        nbt.putBoolean("dtt$isEyesClosed", this.dtt$isEyesClosed);
+
+        nbt.putBoolean("dtt$hasCheckInRain", this.dtt$hasSendInRainMessage);
+        nbt.putBoolean("dtt$hasResetSpawnPoint", this.dtt$hasSendResetSpawnPointMessage);
+        nbt.putBoolean("dtt$hasSendJukeboxHealMessage", this.dtt$hasSendJukeboxHealMessage);
+
+        nbt.putInt("dtt$darknessMessageTimer", this.dtt$darknessMessageTimer);
+        nbt.putBoolean("dtt$hasSendDarknessMessage", this.dtt$hasSendDarknessMessage);
+
+        NbtList pendingMessagesNbt = new NbtList();
+        for (Text message : this.dtt$pendingMessageQueue) {
+            // 不对啊，不能存结果，应该存translation key
+            pendingMessagesNbt.add(NbtString.of(message.getString()));
+        }
+        nbt.put("dtt$pendingMessageQueue", pendingMessagesNbt);
 
         DailyStatManager.writeToNbt(self.getUuid(), nbt);
 
@@ -252,8 +328,20 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
     private void onReadCustomDataFromNbt(NbtCompound nbt, CallbackInfo ci) {
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
 
-        nbt.putBoolean("dtt$hasCheckInRain", this.dtt$hasSendInRainMessage);
-        nbt.putBoolean("dtt$hasResetSpawnPoint", this.dtt$hasSendResetSpawnPointMessage);
+        this.dtt$isEyesClosed = nbt.getBoolean("dtt$isEyesClosed");
+
+        this.dtt$hasSendInRainMessage = nbt.getBoolean("dtt$hasCheckInRain");
+        this.dtt$hasSendResetSpawnPointMessage = nbt.getBoolean("dtt$hasResetSpawnPoint");
+        this.dtt$hasSendJukeboxHealMessage = nbt.getBoolean("dtt$hasSendJukeboxHealMessage");
+
+        this.dtt$darknessMessageTimer = nbt.getInt("dtt$darknessMessageTimer");
+        this.dtt$hasSendDarknessMessage = nbt.getBoolean("dtt$hasSendDarknessMessage");
+
+        NbtList nbtList = nbt.getList("dtt$pendingMessageQueue", NbtElement.STRING_TYPE);
+        for (NbtElement nbtElement : nbtList) {
+            // 反正就是不应该用翻译结果
+            this.dtt$pendingMessageQueue.add(Text.literal(nbtElement.asString()));
+        }
 
         DailyStatManager.readFromNbt(self.getUuid(), nbt);
 
