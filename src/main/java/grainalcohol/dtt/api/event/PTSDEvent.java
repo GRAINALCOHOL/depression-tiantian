@@ -6,12 +6,17 @@ import dev.architectury.event.EventResult;
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+/**
+ * 对于PTSD的发作、形成、消散（康复）和缓解，
+ * depression使用的名词分别为“onset”、“form”、“disperse”和“remission”。<br>
+ * 但是不知道为啥缓解用了名词，本模组对此不做修正，沿用即可。
+ */
 public interface PTSDEvent {
     /**
      * PTSD发作事件，该事件可以被取消
-     * @see PTSDTriggeredEvent#onPTSDTriggered(ServerPlayerEntity, PTSDLevel, double)
+     * @see PTSDOnsetEvent#onPTSDOnset(ServerPlayerEntity, PTSDLevel, double)
      */
-    Event<PTSDTriggeredEvent> PTSD_TRIGGERED_EVENT = EventFactory.createEventResult();
+    Event<PTSDOnsetEvent> PTSD_ONSET_EVENT = EventFactory.createEventResult();
     /**
      * PTSD幻视触发事件，该事件可以被取消
      * @see PTSDPhotismEvent#onPTSDPhotismTriggered(ServerPlayerEntity, String)
@@ -39,7 +44,7 @@ public interface PTSDEvent {
     Event<PTSDLevelChangedEvent> PTSD_LEVEL_CHANGED_EVENT = EventFactory.createLoop();
     
     @FunctionalInterface
-    interface PTSDTriggeredEvent {
+    interface PTSDOnsetEvent {
         /**
          * PTSD发作事件，但是注意，取消该事件只能阻止服务器发送PTSD发作的相关数据包，
          * 无法阻止情绪值的扣除、幻觉触发和喘息症状。<br>
@@ -47,7 +52,7 @@ public interface PTSDEvent {
          * @param onsetLevel PTSD发作等级，分为5个等级，取值范围[0, 4]。
          * @param distance 触发PTSD的实体与玩家之间的距离，单位为方块（米）。
          */
-        EventResult onPTSDTriggered(ServerPlayerEntity player, PTSDLevel onsetLevel, double distance);
+        EventResult onPTSDOnset(ServerPlayerEntity player, PTSDLevel onsetLevel, double distance);
     }
     
     @FunctionalInterface

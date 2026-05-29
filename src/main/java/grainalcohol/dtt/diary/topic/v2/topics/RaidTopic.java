@@ -20,14 +20,14 @@ public class RaidTopic extends EssentialTopic {
         boolean hasRaidFailed = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.RAID_FAILED);
         boolean hasRaidWon = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.RAID_WON);
 
-        ContextAttribute raidFailed = getDefaultContextAttribute().toBuilder()
+        ContextAttribute raidFailed = getDefaultContextAttributeBuilder()
                 .translationKey("raid_failed")
                 .extremeNegativity()
                 .feelingCompatibility(Feeling.FAILED, 0.6)
                 .feelingCompatibility(Feeling.NIHILISTIC, 0.05)
                 .build();
 
-        ContextAttribute raidWon = getDefaultContextAttribute().toBuilder()
+        ContextAttribute raidWon = getDefaultContextAttributeBuilder()
                 .translationKey("raid_won")
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.6)
                 .feelingCompatibility(Feeling.FAILED, -0.1)

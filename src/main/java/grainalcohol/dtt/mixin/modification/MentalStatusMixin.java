@@ -226,7 +226,7 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
             return;
         }
         if (DTTConfig.getInstance().getServerConfig().PTSDConfig.universalPTSDBlackList.contains(id)) {
-            DTTMod.LOGGER.info("Blocked trigger ptsd from hurt by damage type source but string: {}", id);
+            DTTMod.LOGGER.info("Blocked triggerHintMessage ptsd from hurt by damage type source but string: {}", id);
             ci.cancel();
         }
     }

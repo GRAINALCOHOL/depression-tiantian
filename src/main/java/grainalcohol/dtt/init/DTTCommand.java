@@ -3,7 +3,9 @@ package grainalcohol.dtt.init;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.api.event.SymptomEvent;
+import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import grainalcohol.dtt.client.DTTServerConfigCache;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStat;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
@@ -19,6 +21,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import static grainalcohol.dtt.init.DTTListener.sendPTSDFormMessage;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class DTTCommand {
@@ -37,6 +40,9 @@ public class DTTCommand {
                                 .then(literal("force")
                                         .executes(context -> triggerCloseEyes(context, true))
                                 )
+                        )
+                        .then(literal("ptsd_0")
+                                .executes(DTTCommand::triggerPTSD0)
                         )
                 )
                 .then(literal("check")
@@ -123,6 +129,16 @@ public class DTTCommand {
         MentalStatus mentalStatus = Registry.mentalStatus.get(player.getUuid());
         player.sendMessage(Text.literal(mentalStatus.combatCountdown > 0 ? "In Combat" : "Not in Combat"));
 
+        return 1;
+    }
+
+    private static int triggerPTSD0(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        sendPTSDFormMessage(player, "test_ptsd", PTSDLevel.LATENT);
         return 1;
     }
 

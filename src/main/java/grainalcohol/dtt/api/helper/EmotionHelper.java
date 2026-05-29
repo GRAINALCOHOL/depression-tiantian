@@ -3,6 +3,7 @@ package grainalcohol.dtt.api.helper;
 import grainalcohol.dtt.api.wrapper.EmotionLevel;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
 /**
  * <h1>EmotionHelper</h1>
@@ -81,6 +82,13 @@ public class EmotionHelper {
 
     public static EmotionLevel getEmotionLevel(ServerPlayerEntity serverPlayerEntity) {
         return getEmotionLevel(getEmotionValue(serverPlayerEntity));
+    }
+
+    /**
+     * @see #mentalHeal(ServerPlayerEntity, String, double)
+     */
+    public static void mentalHeal(ServerPlayerEntity serverPlayerEntity, Identifier reason, double healAmount) {
+        mentalHeal(serverPlayerEntity, reason.toString(), healAmount);
     }
 
     /**

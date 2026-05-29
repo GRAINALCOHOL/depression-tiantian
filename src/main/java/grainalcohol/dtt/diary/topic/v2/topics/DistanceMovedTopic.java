@@ -17,7 +17,7 @@ public class DistanceMovedTopic extends StatTopic {
 
     @Override
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
-        ContextAttribute distanceMoved = getDefaultContextAttribute().toBuilder()
+        ContextAttribute distanceMoved = getDefaultContextAttributeBuilder()
                 .translationKey("distance_moved")
                 .weight(TopicWeightCalculator.calculateWeight(player.getUuid(), DTTDailyStat.DISTANCE_MOVED))
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.05)

@@ -17,7 +17,7 @@ public class PotionBrewedTopic extends StatTopic {
 
     @Override
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
-        ContextAttribute brewed = getDefaultContextAttribute().toBuilder()
+        ContextAttribute brewed = getDefaultContextAttributeBuilder()
                 .translationKey("potion_brewed")
                 .weight(TopicWeightCalculator.calculateWeight(player.getUuid(), DTTDailyStat.POTION_BREWED))
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.2)

@@ -20,14 +20,14 @@ public class PetTopic extends EssentialTopic {
         boolean hasPetDied = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.PET_DIED);
         boolean hasPetBred = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.PET_BRED);
 
-        ContextAttribute petDied = getDefaultContextAttribute().toBuilder()
+        ContextAttribute petDied = getDefaultContextAttributeBuilder()
                 .translationKey("pet_died")
                 .extremeNegativity()
                 .feelingCompatibility(Feeling.FAILED, 0.6)
                 .feelingCompatibility(Feeling.NIHILISTIC, 0.1)
                 .build();
 
-        ContextAttribute petBred = getDefaultContextAttribute().toBuilder()
+        ContextAttribute petBred = getDefaultContextAttributeBuilder()
                 .translationKey("pet_bred")
                 .feelingCompatibility(Feeling.WARM, 0.4)
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.1)

@@ -17,7 +17,7 @@ public class DamageTakenTopic extends StatTopic {
 
     @Override
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
-        ContextAttribute damageTaken = getDefaultContextAttribute().toBuilder()
+        ContextAttribute damageTaken = getDefaultContextAttributeBuilder()
                 .translationKey("damage_taken")
                 .weight(TopicWeightCalculator.calculateWeight(player.getUuid(), DTTDailyStat.DAMAGE_TAKEN))
                 .feelingCompatibility(Feeling.FAILED, 0.6)

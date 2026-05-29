@@ -3,6 +3,7 @@ package grainalcohol.dtt.mixin.event;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.architectury.event.EventResult;
+import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.config.DTTConfig;
 import net.depression.mental.MentalIllness;
@@ -22,6 +23,18 @@ public class MentalIllnessMixin {
     @Shadow private ServerPlayerEntity player;
     @Shadow public int mentalHealthId;
     @Shadow public boolean isMania;
+
+    @WrapOperation(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendBipolarPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V"
+            )
+    )
+    private void onMoodPolarityChanged(ServerPlayerEntity serverPlayerEntity, boolean isManicPhase, Operation<Void> original) {
+        MentalIllnessEvent.MOOD_POLARITY_CHANGED_EVENT.invoker().onMoodPolarityChanged(serverPlayerEntity, isManicPhase);
+        original.call(serverPlayerEntity, isManicPhase);
+    }
 
     @Inject(
             method = "tick",

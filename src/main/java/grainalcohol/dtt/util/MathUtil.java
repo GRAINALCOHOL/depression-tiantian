@@ -18,6 +18,10 @@ public class MathUtil {
         return random.nextDouble() < chance;
     }
 
+    public static int inRange(Random random, int bound) {
+        return inRange(random, -bound, bound);
+    }
+
     public static int inRange(Random random, int min, int max) {
         return random.nextInt(max - min) + min;
     }

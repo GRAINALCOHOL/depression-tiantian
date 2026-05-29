@@ -19,7 +19,7 @@ public class EnderDragonKilledTopic extends EssentialTopic {
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
         boolean condition = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.ENDER_DRAGON_KILLED);
 
-        ContextAttribute enderDragonKilled = getDefaultContextAttribute().toBuilder()
+        ContextAttribute enderDragonKilled = getDefaultContextAttributeBuilder()
                 .translationKey("ender_dragon_killed")
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.6)
                 .feelingCompatibility(Feeling.FAILED, -0.2)

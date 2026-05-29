@@ -31,6 +31,7 @@ public class DTTMod implements ModInitializer {
         DTTStat.init();
         DTTDailyStat.init();
         DTTTopic.init();
+        DTTHintMessage.init();
         DTTStatusEffect.init();
         DTTListener.archEventInit();
         DTTListener.dttEventInit();

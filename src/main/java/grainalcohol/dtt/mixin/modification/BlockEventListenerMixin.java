@@ -1,6 +1,5 @@
 package grainalcohol.dtt.mixin.modification;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import grainalcohol.dtt.api.internal.BlockBreakMentalHealCooldownController;

@@ -19,7 +19,7 @@ public class AteTopic extends StatTopic {
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
         boolean condition = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.ATE);
 
-        ContextAttribute ate = getDefaultContextAttribute().toBuilder()
+        ContextAttribute ate = getDefaultContextAttributeBuilder()
                 .translationKey("ate")
                 .weight(1.0)
                 .feelingCompatibility(Feeling.WARM, 0.1)

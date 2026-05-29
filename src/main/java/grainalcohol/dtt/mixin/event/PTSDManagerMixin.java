@@ -65,7 +65,7 @@ public class PTSDManagerMixin {
             )
     )
     private void PTSDTriggerEvent(ServerPlayerEntity player, int onsetLevel, double distance, Operation<Void> original) {
-        EventResult eventResult = PTSDEvent.PTSD_TRIGGERED_EVENT.invoker().onPTSDTriggered(player, PTSDLevel.from(onsetLevel), distance);
+        EventResult eventResult = PTSDEvent.PTSD_ONSET_EVENT.invoker().onPTSDOnset(player, PTSDLevel.from(onsetLevel), distance);
 
         if (eventResult.isPresent() && eventResult.isFalse()) {
             // false

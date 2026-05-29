@@ -17,7 +17,7 @@ public class TradedTopic extends StatTopic {
 
     @Override
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
-        ContextAttribute traded = getDefaultContextAttribute().toBuilder()
+        ContextAttribute traded = getDefaultContextAttributeBuilder()
                 .translationKey("traded")
                 .weight(TopicWeightCalculator.calculateWeight(player.getUuid(), DTTDailyStat.TRADED_COUNT))
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.6)

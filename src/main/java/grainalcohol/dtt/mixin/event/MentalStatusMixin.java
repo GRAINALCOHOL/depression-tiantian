@@ -2,7 +2,6 @@ package grainalcohol.dtt.mixin.event;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.api.event.EmotionEvent;
-import grainalcohol.dtt.api.event.MentalHealthEvent;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
@@ -130,42 +129,6 @@ public class MentalStatusMixin {
         }
 
         dtt$lastTickIsInCombatState = currentIsInCombatState;
-    }
-
-    @Inject(
-            method = "tick",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/depression/network/MentalStatusPacket;sendToPlayer(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/depression/mental/MentalStatus;)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void manicPhaseChangedEvent(CallbackInfo ci) {
-        MentalStatus self = (MentalStatus) (Object) this;
-
-        if (!MentalIllnessStatus.from(self).isBipolarDisorder()) {
-            dtt$lastTickIsManicPhase = false;
-            return;
-        }
-
-        boolean currentIsManicPhase = self.isMania();
-
-        if (dtt$lastTickIsManicPhase == currentIsManicPhase) {
-            // 躁狂状态未改变
-            return;
-        }
-
-        if (!dtt$lastTickIsManicPhase && currentIsManicPhase) {
-            // 进入躁狂相
-            MentalHealthEvent.ENTER_MANIC_PHASE_EVENT.invoker().onEnterManicPhase(player);
-        }
-
-        if (dtt$lastTickIsManicPhase && !currentIsManicPhase) {
-            // 退出躁狂相
-            MentalHealthEvent.EXIT_MANIC_PHASE_EVENT.invoker().onExitManicPhase(player);
-        }
-
-        dtt$lastTickIsManicPhase = currentIsManicPhase;
     }
 
     @Inject(method = "readNbt", at = @At("TAIL"))

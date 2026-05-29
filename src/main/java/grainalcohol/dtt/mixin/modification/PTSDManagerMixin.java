@@ -44,7 +44,7 @@ public class PTSDManagerMixin {
             return;
         }
         if (DTTConfig.getInstance().getServerConfig().PTSDConfig.universalPTSDBlackList.contains(id)) {
-            DTTMod.LOGGER.info("Blocked PTSD trigger from damage type or sound event mapping: {}", id);
+            DTTMod.LOGGER.info("Blocked PTSD triggerHintMessage from damage type or sound event mapping: {}", id);
             ci.cancel();
         }
     }
@@ -59,7 +59,7 @@ public class PTSDManagerMixin {
             return;
         }
         if (DTTConfig.getInstance().getServerConfig().PTSDConfig.universalPTSDBlackList.contains(id)) {
-            DTTMod.LOGGER.info("Blocked PTSD trigger from entity: {}", id);
+            DTTMod.LOGGER.info("Blocked PTSD triggerHintMessage from entity: {}", id);
             ci.cancel();
         }
     }

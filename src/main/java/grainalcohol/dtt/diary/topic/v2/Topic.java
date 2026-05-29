@@ -6,21 +6,20 @@ import net.minecraft.util.Identifier;
 import java.util.Optional;
 
 public abstract class Topic {
-    private final ContextAttribute defaultContextAttribute;
+    private final ContextAttribute.Builder defaultContextAttributeBuilder;
     private final Identifier identifier;
     private final boolean avoidRepetitionFromYesterday;
 
     public Topic(Identifier identifier, boolean avoidRepetitionFromYesterday) {
         this.identifier = identifier;
         this.avoidRepetitionFromYesterday = avoidRepetitionFromYesterday;
-        defaultContextAttribute = ContextAttribute.Builder
+        this.defaultContextAttributeBuilder = ContextAttribute.Builder
                 .builder(getIdentifier().getPath(), getIdentifier())
-                .weight(getDefaultWeight())
-                .build();
+                .weight(getDefaultWeight());
     }
 
-    public ContextAttribute getDefaultContextAttribute() {
-        return defaultContextAttribute;
+    public ContextAttribute.Builder getDefaultContextAttributeBuilder() {
+        return defaultContextAttributeBuilder;
     }
 
     public Identifier getIdentifier() {

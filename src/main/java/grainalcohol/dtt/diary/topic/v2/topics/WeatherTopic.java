@@ -19,11 +19,11 @@ public class WeatherTopic extends EssentialTopic {
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
         boolean hasRained = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.RAINED);
 
-        ContextAttribute weatherRain = getDefaultContextAttribute().toBuilder()
+        ContextAttribute weatherRain = getDefaultContextAttributeBuilder()
                 .translationKey("weather_rain")
                 .feelingCompatibility(Feeling.NIHILISTIC, 0.2)
                 .build();
-        ContextAttribute weatherClear = getDefaultContextAttribute().toBuilder()
+        ContextAttribute weatherClear = getDefaultContextAttributeBuilder()
                 .translationKey("weather_clear")
                 .feelingCompatibility(Feeling.WARM, 0.2)
                 .build();

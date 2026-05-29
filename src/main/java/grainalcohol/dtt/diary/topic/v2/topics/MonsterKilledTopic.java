@@ -17,7 +17,7 @@ public class MonsterKilledTopic extends StatTopic {
 
     @Override
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
-        ContextAttribute monsterKilled = getDefaultContextAttribute().toBuilder()
+        ContextAttribute monsterKilled = getDefaultContextAttributeBuilder()
                 .translationKey("killed_monster")
                 .weight(TopicWeightCalculator.calculateWeight(player.getUuid(), DTTDailyStat.MONSTER_KILLED))
                 .feelingCompatibility(Feeling.SUCCESSFUL, 0.6)

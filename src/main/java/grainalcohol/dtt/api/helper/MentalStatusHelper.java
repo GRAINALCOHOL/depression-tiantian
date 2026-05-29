@@ -24,7 +24,6 @@ import java.util.Random;
  * bug提示：使用{@code /time set}命令修改时间后使用日记可能导致游戏崩溃。<br>
  * @author grainalcohol
  * @since 2026-02-04
- * @see grainalcohol.dtt.api.event.MentalHealthEvent
  * @see grainalcohol.dtt.api.event.PTSDEvent
  * @see grainalcohol.dtt.api.event.MentalIllnessEvent
  * @see grainalcohol.dtt.api.event.SymptomEvent

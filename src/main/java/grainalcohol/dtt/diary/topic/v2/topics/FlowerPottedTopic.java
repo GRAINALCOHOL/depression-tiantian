@@ -19,7 +19,7 @@ public class FlowerPottedTopic extends StatTopic {
     public Optional<ContextAttribute> getAttribute(ServerPlayerEntity player, boolean gentleMode) {
         boolean condition = DailyStatManager.getTodayStat(player.getUuid()).getBooleanStat(DTTDailyStat.FLOWER_POTTED);
 
-        ContextAttribute flowerPotted = getDefaultContextAttribute().toBuilder()
+        ContextAttribute flowerPotted = getDefaultContextAttributeBuilder()
                 .translationKey("flower_potted")
                 .weight(2.0)
                 .feelingCompatibility(Feeling.WARM, 0.2)
