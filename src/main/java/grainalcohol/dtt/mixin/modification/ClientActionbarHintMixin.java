@@ -113,7 +113,7 @@ public class ClientActionbarHintMixin {
         int variantCount = DTTConfig.getInstance().getClientConfig().messageVariantConfig.mentalFatigueMessageVariantCount;
         if (variantCount > 0) {
             return original.call(StringUtil.findTranslationKeyVariant(
-                    "message.dtt.mental_fatigue", variantCount, RANDOM
+                    originalKey, variantCount, RANDOM
             ));
         }
         return original.call(originalKey);

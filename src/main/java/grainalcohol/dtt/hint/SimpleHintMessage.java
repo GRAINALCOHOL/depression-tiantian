@@ -4,6 +4,6 @@ import net.minecraft.util.Identifier;
 
 public abstract class SimpleHintMessage extends HintMessage {
     public SimpleHintMessage(Identifier identifier, boolean isImportant, int variantCount) {
-        super(identifier, isImportant, true, variantCount);
+        super(identifier, isImportant, variantCount);
     }
 }

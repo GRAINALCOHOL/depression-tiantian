@@ -24,31 +24,9 @@ public class Timer {
 
     }
 
-//    public Timer(int time, TimeUnit timeUnit, @NotNull Predicate<ServerPlayerEntity> condition) {
-//        this.timeUnit = timeUnit;
-//        this.time = time;
-//        this.ticks = getTime() * getTimeUnit().getDurationTicks();
-//        this.condition = condition;
-//    }
-//
-//    public Timer(int time, TimeUnit timeUnit) {
-//        this(time, timeUnit, player -> true);
-//    }
-//
-//    protected Timer(int time, TimeUnit timeUnit, int extraTicks, @NotNull Predicate<ServerPlayerEntity> condition) {
-//        this.timeUnit = timeUnit;
-//        this.time = time;
-//        this.ticks = getTime() * getTimeUnit().getDurationTicks() + extraTicks;
-//        this.condition = condition;
-//    }
-//
-//    protected Timer(int time, TimeUnit timeUnit, int extraTime, TimeUnit extraTimeUnit, @NotNull Predicate<ServerPlayerEntity> condition) {
-//        this(time, timeUnit, extraTime * extraTimeUnit.getDurationTicks(), condition);
-//    }
-//
-//    protected Timer(int time, TimeUnit timeUnit, int extraTime) {
-//        this(time, timeUnit, extraTime, player -> true);
-//    }
+    public static Timer of(int time, TimeUnit timeUnit) {
+        return new Builder(time, timeUnit).build();
+    }
 
     public void tick(ServerPlayerEntity player) {
         if (ticks > 0 && condition.test(player)) {

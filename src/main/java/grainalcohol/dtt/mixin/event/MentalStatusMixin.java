@@ -1,21 +1,29 @@
 package grainalcohol.dtt.mixin.event;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import grainalcohol.dtt.api.event.EmotionEvent;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
+import grainalcohol.dtt.api.event.PTSDContext;
 import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
 import grainalcohol.dtt.api.helper.PTSDHelper;
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import net.depression.mental.MentalStatus;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(MentalStatus.class)
 public class MentalStatusMixin {
@@ -26,51 +34,83 @@ public class MentalStatusMixin {
     @Unique private boolean dtt$lastTickIsManicPhase = false;
 
     @Inject(
-            method = "tick",
+            method = "lambda$tick$0",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/EntityType;get(Ljava/lang/String;)Ljava/util/Optional;",
-                    ordinal = 0
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendPTSDFormPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V"
             )
     )
-    private void PTSDFormEvent(ServerPlayerEntity player, CallbackInfo ci, @Local(name = "string") String PTSDId) {
-        // PTSD形成事件
-        PTSDEvent.PTSD_FORM_EVENT.invoker().onPTSDFormed(player, PTSDId, PTSDLevel.LATENT);
+    private static void PTSDFormEvent1(ServerPlayerEntity player, EntityType<?> entityType, CallbackInfo ci) {
+        String ptsdId = EntityType.getId(entityType).toString();
+        PTSDContext context = PTSDContext.of(ptsdId, entityType.getName().getString());
+        PTSDEvent.PTSD_FORM_EVENT.invoker().onPTSDFormed(player, context, PTSDLevel.LATENT);
     }
 
-    @Inject(
+    @WrapOperation(
+            method = "lambda$tick$1",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendPTSDFormPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V"
+            )
+    )
+    private void PTSDFormEvent2(ServerPlayerEntity player, Text id, Operation<Void> original, @Local(name = "string", argsOnly = true) String key) {
+        PTSDContext context = PTSDContext.of(key, id.toString());
+        PTSDEvent.PTSD_FORM_EVENT.invoker().onPTSDFormed(player, context, PTSDLevel.LATENT);
+        original.call(player, id);
+    }
+
+    @WrapOperation(
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Ljava/util/concurrent/ConcurrentHashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                    shift = At.Shift.AFTER
+                    target = "Ljava/util/concurrent/ConcurrentHashMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
             )
     )
-    private void PTSDLevelChangedEvent(
-            ServerPlayerEntity player, CallbackInfo ci,
-            @Local(name = "string") String PTSDId,
-            @Local(name = "originValue") Double originValue,
-            @Local(name = "damage") Double damage
+    private Object PTSDLevelChangedEvent(
+            ConcurrentHashMap<String, Double> map, Object key, Object value,
+            Operation<Object> original,
+            @Local(name = "originValue") Double originValue
     ) {
         PTSDLevel lastLevel = PTSDHelper.getPTSDLevel(originValue);
-        PTSDLevel currentLevel = PTSDHelper.getPTSDLevel(originValue + damage);
+        PTSDLevel currentLevel = PTSDHelper.getPTSDLevel((Double) value);
         if (lastLevel != currentLevel) {
             // PTSD等级发生变化
-            PTSDEvent.PTSD_LEVEL_CHANGED_EVENT.invoker().onPTSDLevelChanged(this.player, PTSDId, lastLevel, currentLevel);
+            AtomicReference<String> info = new AtomicReference<>();
+
+            EntityType.get((String) key).ifPresentOrElse(entityType -> {
+                info.set(entityType.getName().getString());
+            }, () -> info.set((String) key));
+
+            PTSDContext context = PTSDContext.of((String) key, info.get());
+            PTSDEvent.PTSD_LEVEL_CHANGED_EVENT.invoker().onPTSDLevelChanged(this.player, context, lastLevel, currentLevel);
         }
+        return original.call(map, key, value);
     }
 
     @Inject(
-            method = "removePTSD",
+            method = "lambda$removePTSD$4",
             at = @At(
                     value = "INVOKE",
-                    target = "Ljava/util/concurrent/ConcurrentHashMap;remove(Ljava/lang/Object;)Ljava/lang/Object;",
-                    shift = At.Shift.AFTER
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendPTSDDispersePacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V"
             )
     )
-    private void PTSDDisperseEvent(String PTSDId, CallbackInfo ci) {
-        // PTSD消散事件
-        PTSDEvent.PTSD_DISPERSE_EVENT.invoker().onPTSDDisperse(this.player, PTSDId);
+    private void PTSDDisperseEvent1(EntityType<?> entityType, CallbackInfo ci) {
+        String ptsdId = EntityType.getId(entityType).toString();
+        PTSDContext context = PTSDContext.of(ptsdId, entityType.getName().toString());
+        PTSDEvent.PTSD_DISPERSE_EVENT.invoker().onPTSDDisperse(this.player, context);
+    }
+
+    @WrapOperation(
+            method = "lambda$removePTSD$5",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendPTSDDispersePacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V"
+            )
+    )
+    private void PTSDDisperseEvent2(ServerPlayerEntity player, Text id, Operation<Void> original, @Local(name = "id", argsOnly = true) String key) {
+        PTSDContext context = PTSDContext.of(key, id.toString());
+        PTSDEvent.PTSD_DISPERSE_EVENT.invoker().onPTSDDisperse(player, context);
+        original.call(player, id);
     }
 
     @Inject(

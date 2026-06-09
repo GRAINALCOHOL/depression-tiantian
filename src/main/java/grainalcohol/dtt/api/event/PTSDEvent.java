@@ -24,22 +24,22 @@ public interface PTSDEvent {
     Event<PTSDPhotismEvent> PTSD_PHOTISM_EVENT = EventFactory.createEventResult();
     /**
      * PTSD消散事件
-      * @see PTSDDisperseEvent#onPTSDDisperse(ServerPlayerEntity, String)
+      * @see PTSDDisperseEvent#onPTSDDisperse(ServerPlayerEntity, PTSDContext)
      */
     Event<PTSDDisperseEvent> PTSD_DISPERSE_EVENT = EventFactory.createLoop();
     /**
      * PTSD缓解事件
-     * @see PTSDRemissionEvent#onPTSDRemission(ServerPlayerEntity, String, PTSDLevel)
+     * @see PTSDRemissionEvent#onPTSDRemission(ServerPlayerEntity, PTSDContext, PTSDLevel)
      */
     Event<PTSDRemissionEvent> PTSD_REMISSION_EVENT = EventFactory.createLoop();
     /**
      * PTSD形成事件，该事件可以被取消
-     * @see PTSDFormEvent#onPTSDFormed(ServerPlayerEntity, String, PTSDLevel)
+     * @see PTSDFormEvent#onPTSDFormed(ServerPlayerEntity, PTSDContext, PTSDLevel)
      */
     Event<PTSDFormEvent> PTSD_FORM_EVENT = EventFactory.createEventResult();
     /**
      * PTSD等级变化事件
-     * @see PTSDLevelChangedEvent#onPTSDLevelChanged(ServerPlayerEntity, String, PTSDLevel, PTSDLevel)
+     * @see PTSDLevelChangedEvent#onPTSDLevelChanged(ServerPlayerEntity, PTSDContext, PTSDLevel, PTSDLevel)
      */
     Event<PTSDLevelChangedEvent> PTSD_LEVEL_CHANGED_EVENT = EventFactory.createLoop();
     
@@ -67,30 +67,30 @@ public interface PTSDEvent {
     @FunctionalInterface
     interface PTSDDisperseEvent {
         /**
-         * @param ptsdId 消散的PTSD的id。
+         * @param context 消散的PTSD的上下文信息。
          * @see grainalcohol.dtt.mixin.event.MentalStatusMixin
          */
-        void onPTSDDisperse(ServerPlayerEntity player, String ptsdId);
+        void onPTSDDisperse(ServerPlayerEntity player, PTSDContext context);
     }
 
     @FunctionalInterface
     interface PTSDRemissionEvent {
         /**
-         * @param ptsdId 缓解的PTSD的id。
+         * @param context 缓解的PTSD的上下文信息。
          * @param currentLevel 缓解后的PTSD等级。
          * @see grainalcohol.dtt.mixin.event.PTSDManagerMixin
          */
-        void onPTSDRemission(ServerPlayerEntity player, String ptsdId, PTSDLevel currentLevel);
+        void onPTSDRemission(ServerPlayerEntity player, PTSDContext context, PTSDLevel currentLevel);
     }
 
     @FunctionalInterface
     interface PTSDFormEvent {
         /**
-         * @param formId 形成的PTSD的id。
+         * @param context 形成的PTSD的上下文信息。
          * @param currentLevel 形成后的PTSD等级。
          * @see grainalcohol.dtt.mixin.event.MentalStatusMixin
          */
-        EventResult onPTSDFormed(ServerPlayerEntity player, String formId, PTSDLevel currentLevel);
+        EventResult onPTSDFormed(ServerPlayerEntity player, PTSDContext context, PTSDLevel currentLevel);
     }
 
     @FunctionalInterface
@@ -98,10 +98,10 @@ public interface PTSDEvent {
         /**
          * PTSD等级改变
          * @param player PTSD等级改变的玩家
-         * @param ptsdId PTSD的id
+         * @param context 改变的PTSD的上下文信息。
          * @param lastLevel 改变前的PTSD等级
          * @param currentLevel 改变后的PTSD等级
          */
-        void onPTSDLevelChanged(ServerPlayerEntity player, String ptsdId, PTSDLevel lastLevel, PTSDLevel currentLevel);
+        void onPTSDLevelChanged(ServerPlayerEntity player, PTSDContext context, PTSDLevel lastLevel, PTSDLevel currentLevel);
     }
 }

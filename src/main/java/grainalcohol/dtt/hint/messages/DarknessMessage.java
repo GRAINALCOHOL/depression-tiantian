@@ -9,13 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DarknessMessage extends SimpleHintMessage {
-    private final Timer COOLDOWN_TIMER = Timer.Builder.builder(12, TimeUnit.GAME_HOUR)
+    private static final Timer COOLDOWN_TIMER = Timer.Builder.builder(12, TimeUnit.GAME_HOUR)
             // 亮度大于7开始处理冷却
             .condition(player -> player.getServerWorld().getLightLevel(player.getBlockPos()) > 7)
             .build();
-    private final Timer ACCUMULATE_TIMER = Timer.Builder.builder(2, TimeUnit.MINUTE)
+    private static final Timer ACCUMULATE_TIMER = Timer.Builder.builder(2, TimeUnit.MINUTE)
             // 亮度小于4开始积累
             .condition(player -> player.getServerWorld().getLightLevel(player.getBlockPos()) < 4)
             .build();
@@ -25,8 +26,13 @@ public class DarknessMessage extends SimpleHintMessage {
     }
 
     @Override
-    public boolean getGlobalCondition(ServerPlayerEntity player) {
+    public boolean autoSend() {
         return true;
+    }
+
+    @Override
+    public @Nullable Predicate<ServerPlayerEntity> getGlobalCondition() {
+        return null;
     }
 
     @Override

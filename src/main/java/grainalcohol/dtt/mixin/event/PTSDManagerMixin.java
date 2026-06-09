@@ -4,11 +4,14 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.architectury.event.EventResult;
+import grainalcohol.dtt.api.event.PTSDContext;
 import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.api.helper.PTSDHelper;
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import net.depression.mental.PTSDManager;
+import net.minecraft.entity.EntityType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,22 +23,34 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(PTSDManager.class)
 public class PTSDManagerMixin {
-    @Shadow
-    @Final
-    private ConcurrentHashMap<String, Double> PTSD;
+    @Shadow @Final private ConcurrentHashMap<String, Double> PTSD;
 
     @Inject(
-            method = "tick",
+            method = "lambda$tick$2",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/EntityType;get(Ljava/lang/String;)Ljava/util/Optional;",
-                    ordinal = 0,
-                    shift = At.Shift.AFTER
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendPTSDRemissionPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V"
             )
     )
-    private void PTSDRemissionEvent(ServerPlayerEntity player, CallbackInfo ci, @Local(name = "key") String PTSDId) {
+    private static void PTSDRemissionEvent1(ServerPlayerEntity player, EntityType<?> entityType, CallbackInfo ci) {
         // PTSD缓解事件
-        PTSDEvent.PTSD_REMISSION_EVENT.invoker().onPTSDRemission(player, PTSDId, PTSDHelper.getPTSDLevel(this.PTSD.get(PTSDId)));
+        String ptsdId = EntityType.getId(entityType).toString();
+        PTSDContext context = PTSDContext.of(ptsdId, entityType.getName().getString());
+        PTSDEvent.PTSD_REMISSION_EVENT.invoker().onPTSDRemission(player, context, PTSDHelper.getPTSDLevel(player, ptsdId));
+    }
+
+    @WrapOperation(
+            method = "lambda$tick$3",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/network/ActionbarHintPacket;sendPTSDRemissionPacket(Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/text/Text;)V"
+            )
+    )
+    private void PTSDRemissionEvent2(ServerPlayerEntity player, Text id, Operation<Void> original, @Local(name = "key", argsOnly = true) String key) {
+        // PTSD缓解事件
+        PTSDContext context = PTSDContext.of(key, id.toString());
+        PTSDEvent.PTSD_REMISSION_EVENT.invoker().onPTSDRemission(player, context, PTSDHelper.getPTSDLevel(player, key));
+        original.call(player, id);
     }
 
     @WrapOperation(

@@ -1,7 +1,6 @@
 package grainalcohol.dtt.hint.messages;
 
 import grainalcohol.dtt.api.helper.EmotionHelper;
-import grainalcohol.dtt.hint.HintMessageContext;
 import grainalcohol.dtt.hint.SimpleHintMessage;
 import grainalcohol.dtt.hint.timer.TimeUnit;
 import grainalcohol.dtt.hint.timer.Timer;
@@ -11,17 +10,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class InRainMessage extends SimpleHintMessage {
-    private final Timer COOLDOWN_TIMER = Timer.Builder.builder(12, TimeUnit.GAME_HOUR).build();
-
     public InRainMessage(Identifier identifier) {
         super(identifier, false, 3);
     }
 
     @Override
-    public boolean getGlobalCondition(ServerPlayerEntity player) {
-        return player.getServerWorld().hasRain(player.getBlockPos());
+    public boolean autoSend() {
+        return true;
+    }
+
+    @Override
+    public @Nullable Predicate<ServerPlayerEntity> getGlobalCondition() {
+        return player -> player.getServerWorld().hasRain(player.getBlockPos());
     }
 
     @Override
@@ -36,7 +39,7 @@ public class InRainMessage extends SimpleHintMessage {
 
     @Override
     public @NotNull Timer getCooldownTimer() {
-    return COOLDOWN_TIMER;
+        return DEFAULT_TIMER;
     }
 
     @Override

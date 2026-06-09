@@ -3,7 +3,6 @@ package grainalcohol.dtt.init;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
 import grainalcohol.dtt.client.DTTServerConfigCache;
@@ -21,7 +20,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-import static grainalcohol.dtt.init.DTTListener.sendPTSDFormMessage;
+import static grainalcohol.dtt.init.DTTListener.onPTSDLevelUp;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class DTTCommand {
@@ -138,7 +137,7 @@ public class DTTCommand {
 
         if (player == null) return 0;
 
-        sendPTSDFormMessage(player, "test_ptsd", PTSDLevel.LATENT);
+        onPTSDLevelUp(player, "test_ptsd_name", PTSDLevel.LATENT);
         return 1;
     }
 

@@ -1,6 +1,5 @@
 package grainalcohol.dtt.hint.messages;
 
-import grainalcohol.dtt.api.helper.EmotionHelper;
 import grainalcohol.dtt.hint.SubscriptionHintMessage;
 import grainalcohol.dtt.hint.timer.TimeUnit;
 import grainalcohol.dtt.hint.timer.Timer;
@@ -11,19 +10,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class ResetSpawnPointMessage extends SubscriptionHintMessage {
-    public ResetSpawnPointMessage(Identifier identifier) {
-        super(identifier, true, 3);
+public class PetMessage extends SubscriptionHintMessage {
+    public PetMessage(Identifier identifier) {
+        super(identifier, false, 3);
     }
 
     @Override
     public @NotNull String getTranslationKey() {
-        return "hint.dtt.reset_spawn_point";
+        return "hint.dtt.pet";
     }
 
     @Override
     public @Nullable Consumer<ServerPlayerEntity> getAfterSend() {
-        return player -> EmotionHelper.mentalHeal(player, getIdentifier(), 2.0);
+        return null;
     }
 
     @Override

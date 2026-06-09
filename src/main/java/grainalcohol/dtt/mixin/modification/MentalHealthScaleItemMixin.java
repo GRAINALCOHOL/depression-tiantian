@@ -63,12 +63,12 @@ public class MentalHealthScaleItemMixin {
             // 心理健康指数
             player.sendMessage(
                     Text.translatable(
-                            "message.dtt.mental_health_scale.mental_health_index",
+                            "message.dtt.mental_health_scale.index",
                             String.format("%.2f", MentalStatusHelper.getMentalHealthRateWithEmotionAffection(mentalStatus.mentalHealthValue, mentalStatus.emotionValue, 0.6) * 10) // 这可能是暂时的？
                     ).formatted(Formatting.UNDERLINE)
                     // 悬停时显示详细数据
                     .styled(style -> style.withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable(
-                            "text.dtt.mental_health_scale.mental_health_index.hover",
+                            "text.dtt.mental_health_scale.index.hover",
                             String.format("%.4f", mentalStatus.mentalHealthValue),
                             String.format("%.2f", mentalStatus.emotionValue))))
                     )
@@ -92,7 +92,7 @@ public class MentalHealthScaleItemMixin {
             player.sendMessage(
                     Text.translatable(
                             "message.dtt.mental_health_scale.assessment",
-                            MentalStatusHelper.getAssessmentText(MentalHealthStatus.from(mentalStatus))
+                            MentalHealthStatus.from(mentalStatus).getAssessmentText()
                     ).formatted(Formatting.UNDERLINE)
                     // 悬停时显示患病情况
                     .styled(style -> style.withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable(

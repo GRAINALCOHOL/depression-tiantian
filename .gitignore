@@ -38,3 +38,11 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+# open-mem
+
+.open-mem/
+
+# open-mem: Auto-generated folder context files.
+# Uncomment to exclude from version control (recommended for large projects):
+# **/AGENTS.md

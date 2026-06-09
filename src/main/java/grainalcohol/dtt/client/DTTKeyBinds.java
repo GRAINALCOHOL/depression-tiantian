@@ -17,11 +17,8 @@ public class DTTKeyBinds {
             "category." + DTTMod.MOD_ID
     );
 
-    public static void registerKeyBindings() {
-        KeyBindingHelper.registerKeyBinding(KEY);
-    }
-
     public static void init() {
+        KeyBindingHelper.registerKeyBinding(KEY);
         ClientTickEvent.CLIENT_POST.register(client -> {
             if (KEY.isPressed()) {
                 // Toggle a custom shader effect

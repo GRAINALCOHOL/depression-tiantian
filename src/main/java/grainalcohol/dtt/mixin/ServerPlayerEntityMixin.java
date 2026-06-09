@@ -5,7 +5,7 @@ import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.config.ServerConfig;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.diary.topic.v2.TopicManager;
-import grainalcohol.dtt.hint.HintMessageSender;
+import grainalcohol.dtt.hint.HintMessageManager;
 import grainalcohol.dtt.init.DTTDailyStat;
 import grainalcohol.dtt.api.helper.MentalStatusHelper;
 import grainalcohol.dtt.init.DTTHintMessage;
@@ -71,7 +71,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
                 Thread.sleep(5000);
 
                 serverWorld.getServer().execute(() ->
-                        HintMessageSender.trigger(self, DTTHintMessage.RESET_SPAWN_POINT_MESSAGE)
+                        DTTHintMessage.RESET_SPAWN_POINT_MESSAGE.trigger(self)
                 );
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -93,8 +93,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
                 // 每隔一段时间，并且附近存在宠物时
                 double healValue = mentalStatus.mentalHeal("pet", 1.5);
                 if (healValue > 0.5) {
-                    // depression原版的管线
-                    ActionbarHintPacket.sendPetHealPacket(self, Text.translatable("message.dtt.pet"));
+                    DTTHintMessage.PET_MESSAGE.trigger(self, Text.translatable("message.dtt.any_pet"));
                 }
             }
         }
@@ -107,7 +106,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
                 Identifier recordItemId = Registries.ITEM.getId(nearestPlayingJukebox.getStack().getItem());
                 double healValue = mentalStatus.mentalHeal(recordItemId.toString(), 1.0);
                 if (healValue > 0.5) {
-                    HintMessageSender.trigger(self, DTTHintMessage.JUKEBOX_MESSAGE);
+                    DTTHintMessage.JUKEBOX_MESSAGE.trigger(self);
                 }
             }
         }
@@ -123,21 +122,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
             double EMA_Factor = serverConfig.diaryConfig.EMAFactor;
             DailyStatManager.updateDailyStat(self.getUuid(), EMA_Factor);
         }
-        if (dtt$isEyesClosed && self.age % 20 == 0 && serverConfig.combatConfig.saferCatatonicStupor) {
-            // 缓慢 + 挖掘疲劳 + 虚弱
-            self.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.SLOWNESS,
-                    30, 4
-            ));
-            self.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.MINING_FATIGUE,
-                    30, 4
-            ));
-            self.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.WEAKNESS,
-                    30, 4
-            ));
-        }
+        HintMessageManager.tick(self);
     }
 
     @Inject(
@@ -216,6 +201,8 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         DailyStatManager.writeToNbt(self.getUuid(), nbt);
 
         TopicManager.writeToNbt(self.getUuid(), nbt);
+
+        HintMessageManager.writeToNbt(self.getUuid(), nbt);
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
@@ -227,5 +214,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         DailyStatManager.readFromNbt(self.getUuid(), nbt);
 
         TopicManager.readFromNbt(self.getUuid(), nbt);
+
+        HintMessageManager.readFromNbt(self.getUuid(), nbt);
     }
 }

@@ -5,6 +5,7 @@ import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,6 +174,18 @@ public enum MentalHealthStatus {
                 yield MentalHealthStatus.NONE;
             }
         };
+    }
+
+    /**
+     * 获取精神健康评估文本，用于精神健康量表回复内容
+     * @return 评估文本
+     */
+    public Text getAssessmentText() {
+        return Text.translatable("mental.assessment.dtt." + this.getName());
+    }
+
+    public Text getDisplayText() {
+        return Text.translatable("mental.status.dtt." + this.getName());
     }
 
     public boolean isHealthierThan(MentalHealthStatus other) {

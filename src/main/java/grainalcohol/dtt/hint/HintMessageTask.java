@@ -2,6 +2,10 @@ package grainalcohol.dtt.hint;
 
 import grainalcohol.dtt.hint.timer.TimeUnit;
 import grainalcohol.dtt.hint.timer.Timer;
+import grainalcohol.dtt.registry.DTTRegistries;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -10,35 +14,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class HintMessageTask implements Sendable {
-    private final Identifier identifier;
-    private final String translationKey;
-    private final int variantCount;
-    @Nullable
-    private final Consumer<ServerPlayerEntity> afterSend;
-    @Nullable
-    private final HintMessageContext<?> context;
     @NotNull
-    private final Timer lifecycleTimer = Timer.Builder.builder(30, TimeUnit.SECOND).build();
+    private final HintMessage hintMessage;
+    @NotNull
+    private final String[] context;
+    @NotNull
+    private final Timer lifecycleTimer = Timer.of(30, TimeUnit.SECOND);
 
-    public HintMessageTask(Sendable sendable) {
-        this(sendable, null);
+    public HintMessageTask(@NotNull HintMessage hintMessage) {
+        this(hintMessage, null);
     }
 
-    public HintMessageTask(Sendable sendable, @Nullable HintMessageContext<?> context) {
-        this(sendable.getIdentifier(), sendable.getTranslationKey(),
-                sendable.getVariantCount(), sendable.getAfterSend(), context);
-    }
-
-    private HintMessageTask(
-            Identifier identifier, String translationKey, int variantCount,
-            @Nullable Consumer<ServerPlayerEntity> afterSend,
-            @Nullable HintMessageContext<?> context
-    ) {
-        this.identifier = identifier;
-        this.translationKey = translationKey;
-        this.variantCount = variantCount;
-        this.afterSend = afterSend;
-        this.context = context;
+    public HintMessageTask(@NotNull HintMessage hintMessage, @Nullable String[] context) {
+        this.hintMessage = hintMessage;
+        this.context = context == null ? new String[0] : context;
     }
 
     public void tick(ServerPlayerEntity player) {
@@ -50,38 +39,38 @@ public class HintMessageTask implements Sendable {
     }
 
     @Override
-    public Identifier getIdentifier() {
-        return this.identifier;
+    public @NotNull Identifier getIdentifier() {
+        return asHintMessage().getIdentifier();
     }
 
     @Override
-    public String getTranslationKey() {
-        return this.translationKey;
+    public @NotNull String getTranslationKey() {
+        return asHintMessage().getTranslationKey();
     }
 
     @Override
     public int getVariantCount() {
-        return this.variantCount;
+        return asHintMessage().getVariantCount();
     }
 
     @Override
     public boolean isImportant() {
-        // 这是即将要发送的消息，为false的话就永远在队列里发不出去了
         return true;
     }
 
     @Override
     public void send(ServerPlayerEntity player) {
-        HintMessageSender.send(player, this);
-    }
-
-    public @Nullable HintMessageContext<?> getHintMessageContext() {
-        return this.context;
+        HintMessageSender.immediately(player, this);
+        if (getAfterSend() != null) getAfterSend().accept(player);
     }
 
     @Override
+    public @NotNull String[] getContext() {
+        return context;
+    }
+
     public @Nullable Consumer<ServerPlayerEntity> getAfterSend() {
-        return this.afterSend;
+        return asHintMessage().getAfterSend();
     }
 
     public @NotNull Timer getLifecycleTimer() {
@@ -91,5 +80,45 @@ public class HintMessageTask implements Sendable {
     @Override
     public String toString() {
         return getIdentifier().toString();
+    }
+
+    @Override
+    public @NotNull HintMessage asHintMessage() {
+        return hintMessage;
+    }
+
+    public NbtCompound toNbt() {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putString("Identifier", getIdentifier().toString());
+        if (getContext().length > 0) {
+            NbtList contextList = new NbtList();
+            for (String ctx : getContext()) {
+                NbtCompound ctxNbt = new NbtCompound();
+                ctxNbt.putString("Value", ctx);
+                contextList.add(ctxNbt);
+            }
+            nbt.put("Context", contextList);
+        }
+        nbt.putInt("LifecycleTimerTicks", getLifecycleTimer().getTicks());
+        return nbt;
+    }
+
+    public static HintMessageTask fromNbt(NbtCompound nbt) {
+        Identifier identifier = new Identifier(nbt.getString("Identifier"));
+        HintMessage hintMessage = DTTRegistries.GLOBAL_HINT_MESSAGE_REGISTRY.get(identifier);
+        if (hintMessage == null) throw new IllegalStateException("No HintMessage found for identifier: " + identifier);
+
+        String[] context = null;
+        if (nbt.contains("Context")) {
+            NbtList contextList = nbt.getList("Context", NbtElement.COMPOUND_TYPE);
+            context = new String[contextList.size()];
+            for (int i = 0; i < contextList.size(); i++) {
+                context[i] = contextList.getCompound(i).getString("Value");
+            }
+        }
+
+        HintMessageTask task = new HintMessageTask(hintMessage, context);
+        task.getLifecycleTimer().setTicks(nbt.getInt("LifecycleTimerTicks"));
+        return task;
     }
 }

@@ -62,7 +62,7 @@ public enum Severity {
     }
 
     public Text getDisplayText() {
-        return Text.translatable("mental.severity.dtt." + name + ".name");
+        return Text.translatable("mental.severity.dtt." + this.getName());
     }
 
     public boolean isHealthierThan(Severity other) {

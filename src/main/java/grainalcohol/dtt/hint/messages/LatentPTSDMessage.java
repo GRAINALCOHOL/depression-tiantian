@@ -1,8 +1,8 @@
 package grainalcohol.dtt.hint.messages;
 
-import grainalcohol.dtt.hint.SubscriptionHintMessage;
 import grainalcohol.dtt.hint.timer.TimeUnit;
 import grainalcohol.dtt.hint.timer.Timer;
+import grainalcohol.dtt.hint.SubscriptionHintMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -11,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class LatentPTSDMessage extends SubscriptionHintMessage {
-    private final Timer COOLDOWN_TIMER = Timer.Builder.builder(12, TimeUnit.GAME_HOUR).build();
-
     public LatentPTSDMessage(Identifier identifier) {
         super(identifier, false, 3);
     }
@@ -29,6 +27,6 @@ public class LatentPTSDMessage extends SubscriptionHintMessage {
 
     @Override
     public @NotNull Timer getCooldownTimer() {
-        return COOLDOWN_TIMER;
+        return DEFAULT_TIMER;
     }
 }

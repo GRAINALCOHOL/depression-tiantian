@@ -2,20 +2,20 @@ package grainalcohol.dtt.init;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
-import grainalcohol.dtt.DTTMod;
 import grainalcohol.dtt.api.event.MentalIllnessEvent;
 import grainalcohol.dtt.api.event.PTSDEvent;
 import grainalcohol.dtt.api.event.SymptomEvent;
+import grainalcohol.dtt.api.helper.MentalStatusHelper;
 import grainalcohol.dtt.api.internal.EyesStatusFlagController;
 import grainalcohol.dtt.config.DTTConfig;
 import grainalcohol.dtt.config.ServerConfig;
 import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
-import grainalcohol.dtt.hint.HintMessageContext;
 import grainalcohol.dtt.hint.HintMessageManager;
-import grainalcohol.dtt.hint.HintMessageSender;
 import grainalcohol.dtt.network.ServerConfigPacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -72,30 +72,49 @@ public class DTTListener {
                 }
             }
         });
-        PTSDEvent.PTSD_LEVEL_CHANGED_EVENT.register(((player, ptsdId, lastLevel, currentLevel) -> {
+        PTSDEvent.PTSD_LEVEL_CHANGED_EVENT.register(((player, context, lastLevel, currentLevel) -> {
             if (currentLevel.isSickerThan(lastLevel)) {
                 // PTSD等级提升
-                sendPTSDFormMessage(player, ptsdId, currentLevel);
-            }
-            if (currentLevel.isHealthierThan(lastLevel)) {
-                // PTSD等级降低
-                sendPTSDDisperseMessage(player, ptsdId, currentLevel);
+                onPTSDLevelUp(player, context.getPtsdInfo(), currentLevel);
             }
         }));
-        PTSDEvent.PTSD_REMISSION_EVENT.register((player, ptsdId, currentLevel) -> {
-            sendPTSDRemissionMessage(player, ptsdId);
+        PTSDEvent.PTSD_DISPERSE_EVENT.register((player, context) -> {
+            onPTSDDisperse(player, context.getPtsdInfo());
+        });
+        PTSDEvent.PTSD_REMISSION_EVENT.register((player, context, currentLevel) -> {
+            onPTSDRemission(player, context.getPtsdInfo());
+        });
+        SymptomEvent.CLOSE_EYES_EVENT.register((player, causedBySleepinessStatusEffect) -> {
+            if (!causedBySleepinessStatusEffect &&
+                    MentalStatusHelper.isInCatatonicStuporStatus(player) &&
+                    DTTConfig.getInstance().getServerConfig().combatConfig.saferCatatonicStupor
+            ) {
+                // 缓慢 + 挖掘疲劳 + 虚弱
+                player.addStatusEffect(new StatusEffectInstance(
+                        StatusEffects.SLOWNESS,
+                        30, 4
+                ));
+                player.addStatusEffect(new StatusEffectInstance(
+                        StatusEffects.MINING_FATIGUE,
+                        30, 4
+                ));
+                player.addStatusEffect(new StatusEffectInstance(
+                        StatusEffects.WEAKNESS,
+                        30, 4
+                ));
+            }
+            return EventResult.pass();
         });
     }
-    public static void dttAPIEventInit() {
+
+    public static void dttInternalEventInit() {
         SymptomEvent.CLOSE_EYES_EVENT.register((player, causedBySleepinessStatusEffect) -> {
-            DTTMod.LOGGER.info("close eyes event triggered");
             if (player instanceof EyesStatusFlagController controller) {
                 controller.dtt$setIsEyesClosedFlag(true);
             }
             return EventResult.pass();
         });
         SymptomEvent.OPEN_EYES_EVENT.register(player -> {
-            DTTMod.LOGGER.info("open eyes event triggered");
             if (player instanceof EyesStatusFlagController controller) {
                 controller.dtt$setIsEyesClosedFlag(false);
             }
@@ -111,42 +130,40 @@ public class DTTListener {
                     serverConfig.commonConfig.disableMentalTraitSelectScreen
             ));
 
-            HintMessageManager.init(player);
+//            HintMessageManager.init(player);
+            HintMessageManager.onLogin(player);
         });
     }
 
-    public static void sendPTSDFormMessage(ServerPlayerEntity player, String ptsdId, PTSDLevel currentLevel) {
+    public static void onPTSDLevelUp(ServerPlayerEntity player, String ptsdInfo, PTSDLevel currentLevel) {
         if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDFormationMessage) {
             return;
         }
         // PTSD等级提升至0级
         if (currentLevel.isLatent()) {
-            HintMessageSender.trigger(player, DTTHintMessage.LATENT_PTSD_MESSAGE, HintMessageContext.of(ptsdId));
+            DTTHintMessage.LATENT_PTSD_MESSAGE.trigger(player, ptsdInfo);
         }
         // PTSD等级提升至1、2、3级
         if (currentLevel.hasSymptoms()) {
-            HintMessageSender.trigger(player, DTTHintMessage.FORM_PTSD_MESSAGE, HintMessageContext.of(ptsdId));
+            DTTHintMessage.FORM_PTSD_MESSAGE.trigger(player, ptsdInfo);
         }
         // PTSD等级提升至4级
         if (currentLevel.isExtreme()) {
-            HintMessageSender.trigger(player, DTTHintMessage.EXTREME_PTSD_MESSAGE, HintMessageContext.of(ptsdId));
+            DTTHintMessage.EXTREME_PTSD_MESSAGE.trigger(player, ptsdInfo);
         }
     }
 
-    private static void sendPTSDDisperseMessage(ServerPlayerEntity player, String ptsdId, PTSDLevel currentLevel) {
+    private static void onPTSDDisperse(ServerPlayerEntity player, String ptsdInfo) {
         if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDDispersalMessage) {
             return;
         }
-        // PTSD等级降低至0级
-        if (currentLevel.isLatent()) {
-            HintMessageSender.trigger(player, DTTHintMessage.DISPERSE_PTSD_MESSAGE, HintMessageContext.of(ptsdId));
-        }
+        DTTHintMessage.DISPERSE_PTSD_MESSAGE.trigger(player, ptsdInfo);
     }
 
-    private static void sendPTSDRemissionMessage(ServerPlayerEntity player, String ptsdId) {
+    private static void onPTSDRemission(ServerPlayerEntity player, String ptsdInfo) {
         if (!DTTConfig.getInstance().getClientConfig().messageDisplayConfig.enhancedPTSDRemissionMessage) {
             return;
         }
-        HintMessageSender.trigger(player, DTTHintMessage.REMISSION_PTSD_MESSAGE, HintMessageContext.of(ptsdId));
+        DTTHintMessage.REMISSION_PTSD_MESSAGE.trigger(player, ptsdInfo);
     }
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class TimerHolder<K, T extends Timer> implements Iterable<Map.Entry<K, T>> {
@@ -19,9 +20,12 @@ public class TimerHolder<K, T extends Timer> implements Iterable<Map.Entry<K, T>
         timerMap.put(key, timer);
     }
 
-    @Nullable
     public T get(K key) {
-        return timerMap.getOrDefault(key, null);
+        return timerMap.get(key);
+    }
+
+    public T computeIfAbsent(K key, @NotNull Function<? super K, ? extends T> mappingFunction) {
+        return timerMap.computeIfAbsent(key, mappingFunction);
     }
 
     public void tick(ServerPlayerEntity player) {

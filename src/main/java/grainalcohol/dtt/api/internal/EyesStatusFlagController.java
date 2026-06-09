@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
  * @see grainalcohol.dtt.network.OpenEyesEventPacket
  * @see net.depression.client.ClientMentalIllness#isCloseEye
- * @see grainalcohol.dtt.init.DTTListener#dttAPIEventInit()
+ * @see grainalcohol.dtt.init.DTTListener#dttInternalEventInit()
  */
 public interface EyesStatusFlagController {
     boolean dtt$getIsEyesClosedFlag();

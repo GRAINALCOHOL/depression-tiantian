@@ -1,6 +1,7 @@
 package grainalcohol.dtt.api.helper;
 
 import grainalcohol.dtt.api.wrapper.PTSDLevel;
+import net.depression.mental.PTSDManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +39,10 @@ public class PTSDHelper {
 
     public static Map<String,Double> getPTSDForAnything(ServerPlayerEntity player) {
         return MentalStatusHelper.getMentalStatus(player).PTSD;
+    }
+
+    public static PTSDManager getPTSDManager(ServerPlayerEntity player) {
+        return MentalStatusHelper.getMentalStatus(player).ptsdManager;
     }
 
     /**

@@ -11,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class DispersePTSDMessage extends SubscriptionHintMessage {
-    private final Timer COOLDOWN_TIMER = Timer.Builder.builder(12, TimeUnit.GAME_HOUR).build();
-
     public DispersePTSDMessage(Identifier identifier) {
         super(identifier, false, 3);
     }
@@ -29,6 +27,6 @@ public class DispersePTSDMessage extends SubscriptionHintMessage {
 
     @Override
     public @NotNull Timer getCooldownTimer() {
-        return COOLDOWN_TIMER;
+        return DEFAULT_TIMER;
     }
 }

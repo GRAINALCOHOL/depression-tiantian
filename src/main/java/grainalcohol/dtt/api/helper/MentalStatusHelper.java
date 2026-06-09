@@ -11,7 +11,6 @@ import net.depression.mental.MentalIllness;
 import net.depression.mental.MentalStatus;
 import net.depression.server.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
@@ -84,15 +83,6 @@ public class MentalStatusHelper {
         } else {
             return (mentalHealthValue / MAX_MENTAL_HEALTH_VALUE);
         }
-    }
-
-    /**
-     * 获取精神健康评估文本，用于精神健康量表回复内容<br>
-     * @param mentalHealthStatus 玩家精神健康状态
-     * @return 评估文本
-     */
-    public static Text getAssessmentText(MentalHealthStatus mentalHealthStatus) {
-        return Text.translatable("mental.assessment.dtt." + mentalHealthStatus.getName());
     }
 
     /**

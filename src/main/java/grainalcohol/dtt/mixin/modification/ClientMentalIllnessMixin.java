@@ -24,7 +24,9 @@ public class ClientMentalIllnessMixin {
         // TODO: 使文案能够根据精神健康状态不同而不同
         int variantCount = DTTConfig.getInstance().getClientConfig().messageVariantConfig.closeEyesMessageVariantCount;
         if (variantCount > 0) {
-            return original.call(StringUtil.findTranslationKeyVariant("message.dtt.close_eyes", variantCount, new Random(), null));
+            return original.call(StringUtil.findTranslationKeyVariant(
+                    originalKey, variantCount, new Random()
+            ));
         }
         return original.call(originalKey);
     }

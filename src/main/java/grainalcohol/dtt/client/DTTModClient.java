@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 public class DTTModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        DTTKeyBinds.registerKeyBindings();
         DTTKeyBinds.init();
     }
 }
