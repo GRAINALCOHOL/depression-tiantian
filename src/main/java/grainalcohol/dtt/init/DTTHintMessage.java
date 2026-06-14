@@ -12,8 +12,8 @@ public class DTTHintMessage {
     public static final SimpleHintMessage DARKNESS_MESSAGE = new DarknessMessage(DTTMod.id("darkness"));
     public static final SimpleHintMessage IN_RAIN_MESSAGE = new InRainMessage(DTTMod.id("in_rain"));
     public static final SubscriptionHintMessage RESET_SPAWN_POINT_MESSAGE = new ResetSpawnPointMessage(DTTMod.id("reset_spawn_point"));
-    public static final SubscriptionHintMessage JUKEBOX_MESSAGE = new JukeboxMessage(DTTMod.id("jukebox"));
-    public static final SubscriptionHintMessage PET_MESSAGE = new PetMessage(DTTMod.id("pet"));
+    public static final SimpleHintMessage JUKEBOX_MESSAGE = new JukeboxMessage(DTTMod.id("jukebox"));
+    public static final SimpleHintMessage PET_MESSAGE = new PetMessage(DTTMod.id("pet"));
     // PTSD
     public static final SubscriptionHintMessage LATENT_PTSD_MESSAGE = new LatentPTSDMessage(DTTMod.id("ptsd_latent"));
     public static final SubscriptionHintMessage FORM_PTSD_MESSAGE = new FormPTSDMessage(DTTMod.id("ptsd_form"));

@@ -7,23 +7,14 @@ import grainalcohol.dtt.diary.dailystat.v2.DailyStatManager;
 import grainalcohol.dtt.diary.topic.v2.TopicManager;
 import grainalcohol.dtt.hint.HintMessageManager;
 import grainalcohol.dtt.init.DTTDailyStat;
-import grainalcohol.dtt.api.helper.MentalStatusHelper;
 import grainalcohol.dtt.init.DTTHintMessage;
-import grainalcohol.dtt.util.NearbyMentalHealHelper;
-import net.depression.mental.MentalStatus;
-import net.depression.network.ActionbarHintPacket;
-import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -65,6 +56,7 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
         ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
         ServerWorld serverWorld = self.getServerWorld();
 
+        // TODO: 把延迟功能做到HintMessage里
         new Thread(() -> {
             try {
                 // 5s later
@@ -77,39 +69,6 @@ public abstract class ServerPlayerEntityMixin implements EyesStatusFlagControlle
                 throw new RuntimeException(e);
             }
         }).start();
-    }
-
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void onTickHead(CallbackInfo ci) {
-        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
-
-        ServerConfig.MentalHealConfig mentalHealConfig = DTTConfig.getInstance().getServerConfig().mentalHealConfig;
-        MentalStatus mentalStatus = MentalStatusHelper.getMentalStatus(self);
-        // 宠物恢复情绪
-        if (mentalHealConfig.nearbyPetMode == ServerConfig.NearbyAnythingHealMode.EXIST) {
-            // exist模式
-            if (self.age % mentalHealConfig.nearbyPetIntervalTicks == 0
-                    && NearbyMentalHealHelper.isPetNearby(self, 4)) {
-                // 每隔一段时间，并且附近存在宠物时
-                double healValue = mentalStatus.mentalHeal("pet", 1.5);
-                if (healValue > 0.5) {
-                    DTTHintMessage.PET_MESSAGE.trigger(self, Text.translatable("message.dtt.any_pet"));
-                }
-            }
-        }
-        // 唱片机恢复情绪
-        if (mentalHealConfig.nearbyJukeboxMode == ServerConfig.NearbyAnythingHealMode.EXIST) {
-            // exist模式
-            JukeboxBlockEntity nearestPlayingJukebox = NearbyMentalHealHelper.findNearestPlayingJukeboxEntity(self, 4);
-            if (self.age % mentalHealConfig.nearbyJukeboxIntervalTicks == 0 && nearestPlayingJukebox != null) {
-                // 每隔一段时间，并且附近存在正在播放的唱片机时
-                Identifier recordItemId = Registries.ITEM.getId(nearestPlayingJukebox.getStack().getItem());
-                double healValue = mentalStatus.mentalHeal(recordItemId.toString(), 1.0);
-                if (healValue > 0.5) {
-                    DTTHintMessage.JUKEBOX_MESSAGE.trigger(self);
-                }
-            }
-        }
     }
 
     @Inject(method = "tick", at = @At("TAIL"))

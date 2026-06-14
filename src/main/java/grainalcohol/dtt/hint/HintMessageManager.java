@@ -33,10 +33,9 @@ public class HintMessageManager {
     public static void onLogin(ServerPlayerEntity player) {
         UUID playerUuid = player.getUuid();
 
-        if (!hintMessageInstanceMap.containsKey(playerUuid)) {
-            for (HintMessage hintMessage : DTTRegistries.GLOBAL_HINT_MESSAGE_REGISTRY) {
-                hintMessageInstanceMap.computeIfAbsent(playerUuid, k -> new SendableManager<>()).register(hintMessage.createInstance());
-            }
+        for (HintMessage hintMessage : DTTRegistries.GLOBAL_HINT_MESSAGE_REGISTRY) {
+            hintMessageInstanceMap.computeIfAbsent(playerUuid, k -> new SendableManager<>())
+                    .register(hintMessage.createInstance());
         }
         if (!pollingTimerHolder.containsKey(playerUuid)) pollingTimerHolder.add(playerUuid, DEFAULT_TIMER.copy());
         if (!pendingHintMessageTaskQueueMap.containsKey(playerUuid)) pendingHintMessageTaskQueueMap.put(playerUuid, new ArrayDeque<>());

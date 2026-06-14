@@ -19,7 +19,7 @@ public class HintMessageTask implements Sendable {
     @NotNull
     private final String[] context;
     @NotNull
-    private final Timer lifecycleTimer = Timer.of(30, TimeUnit.SECOND);
+    private final Timer lifecycleTimer = Timer.of(12, TimeUnit.SECOND);
 
     public HintMessageTask(@NotNull HintMessage hintMessage) {
         this(hintMessage, null);

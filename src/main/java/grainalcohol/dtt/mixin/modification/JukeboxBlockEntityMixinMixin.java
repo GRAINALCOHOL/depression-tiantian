@@ -34,9 +34,11 @@ public class JukeboxBlockEntityMixinMixin {
     )
     @Inject(
             method = "@MixinSquared:Handler",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void injectJukeboxTick(World level, BlockPos blockPos, BlockState blockState, CallbackInfo originalCi, CallbackInfo ci) {
+        // 原版逻辑是EVERYONE模式
         if (DTTConfig.getInstance().getServerConfig().mentalHealConfig.nearbyJukeboxMode != ServerConfig.NearbyAnythingHealMode.EVERYONE) {
             ci.cancel();
         }

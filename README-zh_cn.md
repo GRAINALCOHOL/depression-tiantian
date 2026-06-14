@@ -52,6 +52,6 @@ Depression作者：[Block-137（MC百科）](https://www.mcmod.cn/author/32591.h
 
 美术资源：[食猫兽杨子默（MC百科）](https://www.mcmod.cn/author/32592.html)。
 
-文案贡献者：[泡芙Orz（MC百科）]()、[李天昊（MC百科）](https://www.mcmod.cn/author/33502.html)、[ki_ecao（MC百科）]()。
+文案贡献者：[泡芙Orz（MC百科）](https://www.mcmod.cn/author/40349.html)、[李天昊（MC百科）](https://www.mcmod.cn/author/33502.html)、[ki_ecao（MC百科）](https://www.mcmod.cn/author/40348.html)。
 
 模组名字来源于一首音乐：[TIAN TIAN](https://music.163.com/song?id=2707332868)。

@@ -42,6 +42,8 @@ replay_*.log
 # open-mem
 
 .open-mem/
+.opencode/
+.mimocode/
 
 # open-mem: Auto-generated folder context files.
 # Uncomment to exclude from version control (recommended for large projects):

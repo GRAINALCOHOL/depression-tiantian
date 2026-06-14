@@ -18,11 +18,6 @@ public class InRainMessage extends SimpleHintMessage {
     }
 
     @Override
-    public boolean autoSend() {
-        return true;
-    }
-
-    @Override
     public @Nullable Predicate<ServerPlayerEntity> getGlobalCondition() {
         return player -> player.getServerWorld().hasRain(player.getBlockPos());
     }

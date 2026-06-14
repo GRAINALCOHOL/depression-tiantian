@@ -39,6 +39,10 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
     @Shadow private ServerPlayerEntity player;
     @Shadow public abstract double mentalHeal(double value);
 
+    @Shadow
+    @Final
+    private ConcurrentHashMap<String, Integer> boredom;
+
     @Unique
     @Override
     public int dtt$getCooldownTicks() {
@@ -116,6 +120,29 @@ public abstract class MentalStatusMixin implements BlockBreakMentalHealCooldownC
         double distance = this.player.getPos().distanceTo(entity.getPos());
         if (distance > DTTConfig.getInstance().getServerConfig().PTSDConfig.maxDistanceToTriggerPTSDBySight) {
             cir.setReturnValue(false);
+        }
+    }
+
+    @WrapOperation(
+            method = "mentalHeal(Ljava/lang/String;D)D",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/depression/mental/MentalStatus;mentalHeal(D)D"
+            )
+    )
+    private double wrapMentalHeal(
+            MentalStatus instance, double value, Operation<Double> original,
+            @Local(name = "string", argsOnly = true) String string
+    ) {
+        int noveltyThreshold = DTTConfig.getInstance().getServerConfig().commonConfig.noveltyThreshold;
+        if (noveltyThreshold == 0) return original.call(instance, value);
+
+        int boredom = this.boredom.get(string);
+        // boredom的初始值是2，并且不会是1
+        if (boredom <= noveltyThreshold + 1) {
+            return original.call(instance, value * 1.45);
+        } else {
+            return original.call(instance, value);
         }
     }
 
