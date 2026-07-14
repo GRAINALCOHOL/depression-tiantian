@@ -38,6 +38,12 @@ Depression-TianTian（以下简称本模组）是一个扩展抑郁症（Depress
 
 本模组对日记系统做了系统性重构，可以更容易地添加或修改其中的内容，如果你想要这么做，请查看[WIKI页面](https://github.com/GRAINALCOHOL/depression-tiantian/wiki)
 
+## ❔版本号含义
+
+- 0.0.x ~ 0.1.x：开发版本
+- 0.2.x：增强的日记系统未实装版本
+- 0.3.x：正式版本，内容已基本完善
+
 ## 💭 FAQ
 
 Q: 其它 Minecraft 版本？
@@ -52,6 +58,6 @@ Depression作者：[Block-137（MC百科）](https://www.mcmod.cn/author/32591.h
 
 美术资源：[食猫兽杨子默（MC百科）](https://www.mcmod.cn/author/32592.html)。
 
-文案贡献者：[泡芙Orz（MC百科）]()、[李天昊（MC百科）](https://www.mcmod.cn/author/33502.html)、[ki_ecao（MC百科）]()。
+文案贡献者：[泡芙Orz（MC百科）](https://www.mcmod.cn/author/40349.html)、[李天昊（MC百科）](https://www.mcmod.cn/author/33502.html)、[ki_ecao（MC百科）](https://www.mcmod.cn/author/40348.html)。
 
 模组名字来源于一首音乐：[TIAN TIAN](https://music.163.com/song?id=2707332868)。

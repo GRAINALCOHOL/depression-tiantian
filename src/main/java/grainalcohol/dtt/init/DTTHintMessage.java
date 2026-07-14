@@ -9,6 +9,8 @@ import grainalcohol.dtt.registry.DTTRegistries;
 import net.minecraft.registry.Registry;
 
 public class DTTHintMessage {
+    public static final SubscriptionHintMessage ANOREXIA_MESSAGE = new AnorexiaMessage(DTTMod.id("anorexia"));
+    public static final SubscriptionHintMessage ANOREXIA_WORSEN_MESSAGE = new AnorexiaWorsenMessage(DTTMod.id("anorexia_worsen"));
     public static final SimpleHintMessage DARKNESS_MESSAGE = new DarknessMessage(DTTMod.id("darkness"));
     public static final SimpleHintMessage IN_RAIN_MESSAGE = new InRainMessage(DTTMod.id("in_rain"));
     public static final SubscriptionHintMessage RESET_SPAWN_POINT_MESSAGE = new ResetSpawnPointMessage(DTTMod.id("reset_spawn_point"));
@@ -22,6 +24,7 @@ public class DTTHintMessage {
     public static final SubscriptionHintMessage REMISSION_PTSD_MESSAGE = new RemissionPTSDMessage(DTTMod.id("ptsd_remission"));
 
     public static void init() {
+        register(ANOREXIA_MESSAGE);
         register(DARKNESS_MESSAGE);
         register(IN_RAIN_MESSAGE);
         register(RESET_SPAWN_POINT_MESSAGE);

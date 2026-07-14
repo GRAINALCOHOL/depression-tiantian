@@ -192,11 +192,11 @@ public class ServerConfig {
 
     public static class DiaryConfig {
         /**
-         * 默认true，启用后使用增强的日记生成器
+         * 默认false，启用后使用增强的日记生成器（实验性内容）
          * @see DiaryContentHandler
          */
         @SerializedName("enhanced_diary_generator")
-        public boolean enhancedDiaryGenerator = true;
+        public boolean enhancedDiaryGenerator = false;
 
         /**
          * 默认3，日记本地化时查找的变体数量

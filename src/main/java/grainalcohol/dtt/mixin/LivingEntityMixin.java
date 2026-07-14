@@ -3,6 +3,7 @@ package grainalcohol.dtt.mixin;
 import dev.architectury.event.EventResult;
 import grainalcohol.dtt.api.event.SymptomEvent;
 import grainalcohol.dtt.api.internal.AnorexiaController;
+import grainalcohol.dtt.init.DTTHintMessage;
 import grainalcohol.dtt.init.DTTStatusEffect;
 import grainalcohol.dtt.api.wrapper.MentalHealthStatus;
 import grainalcohol.dtt.api.wrapper.MentalIllnessStatus;
@@ -14,7 +15,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -80,8 +80,7 @@ public class LivingEntityMixin implements AnorexiaController {
                     DTTStatusEffect.ANOREXIA, durationTicks, Math.max(0, severity.getLevel() - 1),
                     false, true, true)
             );
-            // 这里期望换成actionbar的提示
-            player.sendMessage(Text.literal("eating food is interrupted due to anorexia!"));
+            DTTHintMessage.ANOREXIA_MESSAGE.trigger(player);
             this.dtt$shouldInterruptEating = false;
         }
     }
