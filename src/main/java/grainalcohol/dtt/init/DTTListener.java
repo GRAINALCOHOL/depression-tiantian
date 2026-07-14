@@ -130,7 +130,6 @@ public class DTTListener {
                     serverConfig.commonConfig.disableMentalTraitSelectScreen
             ));
 
-//            HintMessageManager.init(player);
             HintMessageManager.onLogin(player);
         });
     }

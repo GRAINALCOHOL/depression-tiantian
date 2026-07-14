@@ -43,11 +43,11 @@ public class Timer {
     }
 
     public void reset() {
-        setTicks(getTime() * getTimeUnit().getDurationTicks());
+        setTicks(getMaxTicks());
     }
 
     public void setTicks(int ticks) {
-        this.ticks = ticks;
+        this.ticks = Math.min(ticks, getMaxTicks());
     }
 
     public int getTime() {
@@ -80,6 +80,10 @@ public class Timer {
 
     public TimeUnit getExtraTimeUnit() {
         return extraTimeUnit;
+    }
+
+    public int getMaxTicks() {
+        return getTime() * getTimeUnit().getDurationTicks();
     }
 
     @Override

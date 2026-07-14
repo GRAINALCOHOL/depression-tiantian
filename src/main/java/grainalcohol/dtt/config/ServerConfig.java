@@ -48,7 +48,7 @@ public class ServerConfig {
         public NearbyMultipleBlocksHealMode nearbyBlockMode = NearbyMultipleBlocksHealMode.MAX_ONLY;
 
         /**
-         * depression原版为20，默认600，单位为tick，宠物恢复情绪值的间隔时间
+         * depression原版为20，默认600，单位为tick，宠物恢复情绪值的间隔时间，仅nearbyPetMode为EVERYONE时有效
          */
         @SerializedName("nearby_pet_interval_ticks")
         public int nearbyPetIntervalTicks = 600;
@@ -65,7 +65,7 @@ public class ServerConfig {
         public NearbyAnythingHealMode nearbyPetMode = NearbyAnythingHealMode.EXIST;
 
         /**
-         * depression原版为20，默认600，单位为tick，唱片机恢复情绪的间隔时间
+         * depression原版为20，默认600，单位为tick，唱片机恢复情绪的间隔时间，仅nearbyJukeboxMode为EVERYONE时有效
          */
         @SerializedName("nearby_jukebox_interval_ticks")
         public int nearbyJukeboxIntervalTicks = 600;
@@ -340,31 +340,17 @@ public class ServerConfig {
         @SerializedName("mental_fatigue_trigger_chance_fixer")
         public boolean mentalFatigueTriggerChanceFixer = true;
         /**
-         * depression原版为0.5，默认1.6，无聊值对情绪值恢复的影响强度<br>
+         * depression原版为0.5，默认0.5，无聊值对情绪值恢复的影响强度<br>
          * 多次恢复的恢复原因相同时，值越大，递减的速度越快
          * @see grainalcohol.dtt.mixin.modification.MentalStatusMixin
          */
         @SerializedName("boredom_strength")
-        public double boredomStrength = 1.6;
+        public double boredomStrength = 0.5;
         /**
-         * 默认7，玩家在低于此字段的光照等级下一段时间后将触发周围黑暗的消息提示
-         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
+         * 默认2，无聊次数在此阈值内时恢复效果有45%加成
          */
-        @SerializedName("darkness_message_light_level_threshold")
-        public int darknessMessageLightLevelThreshold = 7;
-
-        /**
-         * 默认120，单位为秒，处于黑暗环境多久才能触发周围黑暗的提示消息，并等待这个时间后才允许再次触发
-         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
-         */
-        public int darknessMessageTriggerSeconds = 120;
-
-//        /**
-//         * 默认60，单位为秒，周围黑暗的提示消息需要多久才能重新累计（暂未实现）
-//         * @see grainalcohol.dtt.mixin.ServerPlayerEntityMixin
-//         */
-//        @SerializedName("darkness_message_cooldown_seconds")
-//        public int darknessMessageCooldownSeconds = 60;
+        @SerializedName("novelty_threshold")
+        public int noveltyThreshold = 2;
     }
 
     public enum NearbyMultipleBlocksHealMode {

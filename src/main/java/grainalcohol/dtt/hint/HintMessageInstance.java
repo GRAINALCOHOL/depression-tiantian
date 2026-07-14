@@ -124,4 +124,9 @@ public class HintMessageInstance implements Sendable {
         }
         return instance;
     }
+
+    @Override
+    public String toString() {
+        return "HintMessageInstance(" + getIdentifier() + ")";
+    }
 }

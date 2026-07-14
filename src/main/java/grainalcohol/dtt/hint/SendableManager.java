@@ -39,11 +39,6 @@ public class SendableManager<S extends Sendable> implements Iterable<Map.Entry<I
         sendableMap.remove(identifier);
     }
 
-//    public void sendsendable(Identifier identifier, ServerPlayerEntity player) {
-//        S sendable = sendableMap.get(identifier);
-//        if (sendable != null) sendable.sendsendable(player);
-//    }
-
     public Set<Map.Entry<Identifier, S>> entrySet() {
         return sendableMap.entrySet();
     }

@@ -26,11 +26,6 @@ public class DarknessMessage extends SimpleHintMessage {
     }
 
     @Override
-    public boolean autoSend() {
-        return true;
-    }
-
-    @Override
     public @Nullable Predicate<ServerPlayerEntity> getGlobalCondition() {
         return null;
     }
