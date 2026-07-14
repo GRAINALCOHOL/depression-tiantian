@@ -30,6 +30,7 @@
     "event.PTSDManagerMixin",
     "modification.BlockEventListenerMixin",
     "modification.DiaryItemMixin",
+    "modification.DiaryUpdatePacketMixin",
     "modification.JukeboxBlockEntityMixinMixin",
     "modification.MentalHealthScaleItemMixin",
     "modification.MentalStatusMixin",
