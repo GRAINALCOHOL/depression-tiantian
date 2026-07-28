@@ -271,9 +271,9 @@
   "diary.dtt.manic_phase.closing.successful": "哈哈哈哈哈！我今天简直度过了人生中最棒的一天！我根本不知道我找了多少宝藏遇到了多少好东西，这样的日子为什么不能一直都在持续下去啊！",
   "diary.dtt.manic_phase.closing.failed": "今天到这里就结束了，我都开始分不清我写的那些令人兴奋的事情是真的令人兴奋，还是我已经无法分辨心脏狂跳和兴奋的差别了，都不重要，不重要，我想我该尝试睡觉了，我知道用的。",
 
-  "diary.dtt.healthy.cured": "健康状态 - 精神健康状态康复", // FIXME
-  "diary.dtt.mild_depression.cured": "轻度抑郁状态 - 精神健康状态康复", // FIXME
-  "diary.dtt.moderate_depression.cured": "中度抑郁状态 - 精神健康状态康复", // FIXME
+  "diary.dtt.healthy.cured": "今天的风很舒服，你也是这么认为的，就像乌云散开~",
+  "diary.dtt.mild_depression.cured": "你渐渐感受到身子没有那么沉了，面对阳光也只是轻松地呼出一口气，再也没了厌恶的情绪。",
+  "diary.dtt.moderate_depression.cured": "隐约间，你觉得自己好像比从前更有力气了些，但心里依旧沉重不堪。",
   "diary.dtt.major_depression.cured": "重度抑郁状态 - 精神健康状态康复，由于这已经是最严重的情况，所以实际不会出现",
   "diary.dtt.manic_phase.cured": "躁狂期状态 - 精神健康状态康复，由于这已经是最严重的情况，所以实际不会出现",
 
@@ -410,5 +410,6 @@
   "commands.dtt.trigger.close_eyes.no_effect": "无效的目标。",
   "commands.dtt.trigger.close_eyes.not_depressed": "目标当前不处于抑郁状态。",
 
-  "effect.dtt.anorexia": "厌食"
+  "effect.dtt.anorexia": "厌食",
+  "diary.dtt.mild_depression.weather.weather_rain.nihilistic.1": "Ugh, it's raining again outside. The damp air with this temperature just makes me uncomfortable. Might as well stare outside and zone out, wait for the rain to stop, and then... I don't know what to do either."
 }

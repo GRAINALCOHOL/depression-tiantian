@@ -272,9 +272,9 @@
   "diary.dtt.manic_phase.closing.successful": "Hahahaha! Today was absolutely the best day of my life! I can't even remember how much treasure I found and how many great things I encountered! Why can't days like this just keep going forever?!",
   "diary.dtt.manic_phase.closing.failed": "That's it for today. I can't even tell anymore whether the exciting things I wrote about are really exciting, or if I've just lost the ability to tell the difference between a racing heart and genuine excitement. None of it matters. I think I'll try to sleep. I know it won't work.",
 
-  "diary.dtt.healthy.cured": "Healthy - Mental health recovered", // FIXME
-  "diary.dtt.mild_depression.cured": "Mild depression - Mental health recovered", // FIXME
-  "diary.dtt.moderate_depression.cured": "Moderate depression - Mental health recovered", // FIXME
+  "diary.dtt.healthy.cured": "The wind feels nice today, and you think so too — like the clouds have finally parted~",
+  "diary.dtt.mild_depression.cured": "You gradually feel your body isn't as heavy as before. Facing the sun, you just exhale softly — the resentment is finally gone.",
+  "diary.dtt.moderate_depression.cured": "Faintly, you feel you have a little more strength than before — but your heart is still unbearably heavy.",
   "diary.dtt.major_depression.cured": "Major depression - Mental health recovered. Since this is the most severe state, this will never actually appear.",
   "diary.dtt.manic_phase.cured": "Manic phase - Mental health recovered. Since this is the most severe state, this will never actually appear.",
 
