@@ -25,6 +25,7 @@ public class DTTHintMessage {
 
     public static void init() {
         register(ANOREXIA_MESSAGE);
+        register(ANOREXIA_WORSEN_MESSAGE);
         register(DARKNESS_MESSAGE);
         register(IN_RAIN_MESSAGE);
         register(RESET_SPAWN_POINT_MESSAGE);

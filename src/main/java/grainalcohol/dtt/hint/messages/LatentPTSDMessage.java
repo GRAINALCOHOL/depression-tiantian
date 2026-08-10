@@ -1,6 +1,5 @@
 package grainalcohol.dtt.hint.messages;
 
-import grainalcohol.dtt.hint.timer.TimeUnit;
 import grainalcohol.dtt.hint.timer.Timer;
 import grainalcohol.dtt.hint.SubscriptionHintMessage;
 import net.minecraft.server.network.ServerPlayerEntity;

@@ -2,7 +2,7 @@ package grainalcohol.dtt.mixin.modification;
 
 import dev.architectury.networking.NetworkManager;
 import grainalcohol.dtt.config.DTTConfig;
-import grainalcohol.dtt.diary.v2.DiaryContentProducer;
+import grainalcohol.dtt.diary.DiaryContentProducer;
 import io.netty.buffer.Unpooled;
 import net.depression.mental.MentalStatus;
 import net.depression.network.DiaryUpdatePacket;
@@ -22,13 +22,13 @@ public class DiaryUpdatePacketMixin {
             return;
         }
 
-        PacketByteBuf buf = new PacketByteBuf (Unpooled.buffer());
-        DiaryContentProducer diaryContentProducer = new DiaryContentProducer(player);
-
         MentalStatus mentalStatus = Registry.mentalStatus.get(player.getUuid());
         if (mentalStatus == null) {
             Registry.mentalStatus.put(player.getUuid(), new MentalStatus(player));
         }
+
+        PacketByteBuf buf = new PacketByteBuf (Unpooled.buffer());
+        DiaryContentProducer diaryContentProducer = new DiaryContentProducer(player);
 
         buf.writeCharSequence(diaryContentProducer.completeTranslationKeyProcess(), DiaryUpdatePacket.charset);
         NetworkManager.sendToPlayer(player, DiaryUpdatePacket.DIARY_UPDATE_PACKET, buf);

@@ -1,7 +1,7 @@
 package grainalcohol.dtt.config;
 
 import com.google.gson.annotations.SerializedName;
-import grainalcohol.dtt.diary.DiaryContentHandler;
+import grainalcohol.dtt.diary.DiaryContentProducer;
 import grainalcohol.dtt.diary.DiaryParagraph;
 import grainalcohol.dtt.diary.feeling.FeelingProducer;
 import grainalcohol.dtt.diary.topic.TopicWeightCalculator;
@@ -193,14 +193,14 @@ public class ServerConfig {
     public static class DiaryConfig {
         /**
          * 默认false，启用后使用增强的日记生成器（实验性内容）
-         * @see DiaryContentHandler
+         * @see DiaryContentProducer
          */
         @SerializedName("enhanced_diary_generator")
         public boolean enhancedDiaryGenerator = false;
 
         /**
          * 默认3，日记本地化时查找的变体数量
-         * @see DiaryContentHandler#findRandomVariant(String, int)
+         * @see DiaryContentProducer#findRandomVariant(String, int)
          */
         @SerializedName("diary_translation_key_variant_count")
         public int diaryTranslationKeyVariantCount = 3;
@@ -210,7 +210,7 @@ public class ServerConfig {
          * 其一：是如果消极感受得分高于积极感受得分，则将消极感受得分压缩20%<br>
          * 其二：是在生成日记时排除被标记为“由于消极属性应该被排除”的话题
          * @see FeelingProducer
-         * @see DiaryContentHandler#generateTranslationKey(DiaryParagraph, boolean)
+         * @see DiaryContentProducer#generateTranslationKey(DiaryParagraph, boolean)
          */
         @SerializedName("gentle_mode")
         public boolean gentleMode = false;

@@ -58,3 +58,5 @@ replay_*.log
 .opencode/
 .mimocode/
 .codegraph/
+
+libs/

@@ -9,12 +9,11 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class HintMessage {
-    public static final Timer DEFAULT_TIMER = Timer.of(12, TimeUnit.GAME_HOUR);
+    public static final Timer DEFAULT_TIMER = Timer.of(3, TimeUnit.GAME_HOUR);
     private final Identifier identifier;
     private final boolean isImportant;
     private final int variantCount;

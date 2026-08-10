@@ -347,10 +347,10 @@
   "hint.dtt.ptsd_latent.2": "(Whenever you think of %s ... unease wells up inside you)",
   "hint.dtt.ptsd_latent.3": "(Thinking about what happened with %s, your heart skips a beat)",
 
-  "hint.dtt.ptsd_form": "Is %s watching me? No... that's just a memory...",
-  "hint.dtt.ptsd_form.1": "(From now on, %1$s is no longer %1$s 鈥?it's a warning)",
-  "hint.dtt.ptsd_form.2": "(You're afraid to see %s again. Just thinking about it makes you shudder)",
-  "hint.dtt.ptsd_form.3": "%s has become your nightmare of fear...",
+  "hint.dtt.form_ptsd": "Is %s watching me? No... that's just a memory...",
+  "hint.dtt.form_ptsd.1": "(From now on, %1$s is no longer %1$s 鈥?it's a warning)",
+  "hint.dtt.form_ptsd.2": "(You're afraid to see %s again. Just thinking about it makes you shudder)",
+  "hint.dtt.form_ptsd.3": "%s has become your nightmare of fear...",
 
   "hint.dtt.ptsd_extreme": "I don't want to run into %s again... it hurts so much, so much, so much...",
   "hint.dtt.ptsd_extreme.1": "Breathing, heartbeat, tears 鈥?none of them listen to me anymore... I'm just a bystander, watching myself fall apart...",

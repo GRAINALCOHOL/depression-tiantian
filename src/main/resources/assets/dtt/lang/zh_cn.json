@@ -346,10 +346,10 @@
   "hint.dtt.ptsd_latent.2": "（每当你想起 %s ……不安便涌上心头）",
   "hint.dtt.ptsd_latent.3": "（想到刚才遭遇 %s 的场景，你的心揪了一下）",
 
-  "hint.dtt.ptsd_form": "%s 在看着我吗？不……那是记忆……",
-  "hint.dtt.ptsd_form.1": "（从今以后， %1$s 不再是 %1$s ——是警报）",
-  "hint.dtt.ptsd_form.2": "（你害怕再见到 %s ，光是想到这里就让你冷战）",
-  "hint.dtt.ptsd_form.3": "%s 成了你恐惧的梦魇……",
+  "hint.dtt.form_ptsd": "%s 在看着我吗？不……那是记忆……",
+  "hint.dtt.form_ptsd.1": "（从今以后， %1$s 不再是 %1$s ——是警报）",
+  "hint.dtt.form_ptsd.2": "（你害怕再见到 %s ，光是想到这里就让你冷战）",
+  "hint.dtt.form_ptsd.3": "%s 成了你恐惧的梦魇……",
 
   "hint.dtt.ptsd_extreme": "我不想再遇到 %s 了……好难受好难受好难受……",
   "hint.dtt.ptsd_extreme.1": "呼吸、心跳、眼泪，都不听话了……我就像个旁观者，只能看着自己崩溃……",
