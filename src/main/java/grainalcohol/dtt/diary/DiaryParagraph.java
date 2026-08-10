@@ -1,24 +1,24 @@
 package grainalcohol.dtt.diary;
 
 public enum DiaryParagraph {
-    OPENING("opening"),
-    HAS_CURED("has_cured"),
-    HAS_WORSENED("has_worsened"),
-    BODY_NORMAL("body_normal"),
-    BODY_ESSENTIAL("body_essential"),
-    BODY_MAJOR_IMPACT("body_major_impact"),
-    CLOSING("closing"),
+    WEATHER("weather"),
     NO_DIARY("no_diary"),
-    MANIC_INSERTION("manic_insertion")
+    MANIC_GENERAL("manic_general"),
+    OPENING("opening"),
+    CLOSING("closing"),
+    CURED("cured"),
+    WORSENED("worsened"),
+    GENERAL("general"),
+    TOPIC("topic"),
     ;
 
-    private final String name;
+    private final String translationKey;
 
-    DiaryParagraph(String name) {
-        this.name = name;
+    DiaryParagraph(String translationKey) {
+        this.translationKey = translationKey;
     }
 
-    public String getName() {
-        return name;
+    public String getTranslationKey() {
+        return translationKey;
     }
 }

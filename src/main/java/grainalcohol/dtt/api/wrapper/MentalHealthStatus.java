@@ -77,10 +77,14 @@ public enum MentalHealthStatus {
             return MentalHealthStatus.NONE;
         }
 
+        int mentalHealthId = mentalIllness.mentalHealthId;
         if (mentalIllness.isMania) {
             return MentalHealthStatus.MANIC_PHASE;
+        } else if (mentalHealthId == 4) {
+            return MentalHealthStatus.MAJOR_DEPRESSION;
+        } else {
+            return from(mentalHealthId);
         }
-        return from(mentalIllness.mentalHealthId);
     }
 
     public static MentalHealthStatus from(MentalStatus mentalStatus) {
@@ -114,7 +118,14 @@ public enum MentalHealthStatus {
             case 1 -> MentalHealthStatus.MILD_DEPRESSION;
             case 2 -> MentalHealthStatus.MODERATE_DEPRESSION;
             case 3 -> MentalHealthStatus.MAJOR_DEPRESSION;
-            default -> MentalHealthStatus.NONE;
+            case 4 -> {
+                LOGGER.error("Cannot determine mental health status from mentalHealthId 4 (BIPOLAR_DISORDER) without knowing if the player is in mania phase");
+                yield MentalHealthStatus.NONE;
+            }
+            default -> {
+                LOGGER.error("Invalid mentalHealthId: {}", mentalHealthId);
+                yield  MentalHealthStatus.NONE;
+            }
         };
     }
 
